@@ -4,7 +4,7 @@
       <UBreadcrumb :items="[{ label: 'Listen', to: '/lists' }]" />
 
       <div class="flex gap-4">
-        <UButton icon="i-lucide-plus">Liste erstellen</UButton>
+        <CreateList></CreateList>
       </div>
     </div>
 
@@ -29,10 +29,14 @@ const { pb } = usePocketbase();
 
 const lists = ref();
 
-lists.value = await pb.collection("lists").getFullList({ expand: "author" });
+lists.value = await pb
+  .collection("lists")
+  .getFullList({ expand: "author", requestKey: "listIndex" });
 
 pb.collection("lists").subscribe("*", async (e) => {
-  lists.value = await pb.collection("lists").getFullList({ expand: "author" });
+  lists.value = await pb
+    .collection("lists")
+    .getFullList({ expand: "author", requestKey: "listIndex" });
 });
 
 const columns: TableColumn<any>[] = [

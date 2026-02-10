@@ -38,8 +38,18 @@ const lists = ref();
 lists.value = await pb.collection("lists").getFullList();
 
 pb.collection("lists").subscribe("*", async (e) => {
-  lists.value = await pb.collection("lists").getFullList();
+  lists.value = await pb
+    .collection("lists")
+    .getFullList({ requestKey: "layout" });
 });
+
+const listLinks = computed(() =>
+  lists.value.map((list: any) => ({
+    label: list.name,
+    icon: "i-lucide-clipboard-list",
+    to: `/lists/${list.id}`,
+  })),
+);
 
 const items = computed<NavigationMenuItem[][]>(() => [
   [
@@ -53,11 +63,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
       icon: "i-lucide-folder",
       to: "/lists",
       defaultOpen: true,
-      children: lists.value.map((list: any) => ({
-        label: list.name,
-        icon: "i-lucide-clipboard-list",
-        to: `/lists/${list.id}`,
-      })),
+      children: listLinks.value,
     },
   ],
   [

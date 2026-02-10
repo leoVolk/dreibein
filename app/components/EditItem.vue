@@ -1,4 +1,3 @@
-import { UInput } from '../../.nuxt/components';
 <template>
   <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
     <UButton
