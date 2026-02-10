@@ -102,7 +102,7 @@
 const { pb } = usePocketbase();
 
 const props = defineProps(["item"]);
-const emit = defineEmits(["submit", ""]);
+const emit = defineEmits(["refresh"]);
 
 const toast = useToast();
 const open = ref(false);
@@ -141,7 +141,7 @@ const onSubmit = async () => {
     icon: "i-lucide-save",
   });
 
-  emit("submit");
+  emit("refresh");
 
   loading.value = false;
   open.value = false;

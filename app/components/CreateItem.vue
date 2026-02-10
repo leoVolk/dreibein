@@ -97,7 +97,7 @@
 <script lang="ts" setup>
 const { pb } = usePocketbase();
 
-const emit = defineEmits(["submit", ""]);
+const emit = defineEmits(["refresh"]);
 const props = defineProps(["listId"]);
 
 const toast = useToast();
@@ -145,7 +145,7 @@ const onSubmit = async () => {
     icon: "i-lucide-save",
   });
 
-  emit("submit");
+  emit("refresh");
 
   Object.assign(state, {
     checkout: "",

@@ -9,7 +9,7 @@
       />
 
       <div class="flex gap-4">
-        <CreateItem :list-id="list.id" @submit="refreshItems()"></CreateItem>
+        <CreateItem :list-id="list.id" @refresh="refreshItems()"></CreateItem>
         <UModal title="Liste löschen">
           <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
 
@@ -70,7 +70,7 @@
       <template #actions-cell="{ row }">
         <div class="flex gap-1 items-center">
           <EditItem
-            @submit="refreshItems()"
+            @refresh="refreshItems()"
             :item="items[row.index]"
           ></EditItem>
 

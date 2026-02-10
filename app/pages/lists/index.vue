@@ -13,30 +13,39 @@
       v-if="lists.length"
       :data="lists"
       :columns="columns"
-    ></UTable>
+    >
+      <template #actions-cell="{ row }">
+        <div class="flex gap-1 items-center">
+          <EditList @refresh="getLists()" :list="lists[row.id]"></EditList>
+        </div>
+      </template>
+    </UTable>
   </div>
 </template>
 <script lang="ts" setup>
 import type { TableColumn, TableRow } from "@nuxt/ui";
 
+const router = useRouter();
+const { pb } = usePocketbase();
+
 definePageMeta({
   middleware: ["auth"],
 });
 
-const router = useRouter();
-
-const { pb } = usePocketbase();
-
 const lists = ref();
 
-lists.value = await pb
-  .collection("lists")
-  .getFullList({ expand: "author", requestKey: "listIndex" });
+const getLists = async () => {
+  lists.value = await pb
+    .collection("lists")
+    .getFullList({ expand: "author", requestKey: "refresh_ListsIndex" });
+};
+
+await getLists();
 
 pb.collection("lists").subscribe("*", async (e) => {
   lists.value = await pb
     .collection("lists")
-    .getFullList({ expand: "author", requestKey: "listIndex" });
+    .getFullList({ expand: "author", requestKey: "subscription_ListsIndex" });
 });
 
 const columns: TableColumn<any>[] = [
@@ -54,6 +63,10 @@ const columns: TableColumn<any>[] = [
     header: "Erstellt am",
     accessorKey: "created",
     cell: ({ row }) => new Date(row.getValue("created")).toDateString(),
+  },
+  {
+    header: "",
+    accessorKey: "actions",
   },
 ];
 

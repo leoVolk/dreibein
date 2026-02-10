@@ -1,9 +1,10 @@
 <template>
   <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
     <UButton
-      label="Liste erstellen"
+      variant="ghost"
+      size="sm"
       @click="open = true"
-      icon="i-lucide-plus"
+      icon="i-lucide-edit"
     />
 
     <template #body>
@@ -53,14 +54,15 @@
 const { user } = usePocketbaseAuth();
 const { pb } = usePocketbase();
 
-const router = useRouter();
+const props = defineProps(["list"]);
+const emit = defineEmits(["refresh"]);
 
 const toast = useToast();
 const open = ref(false);
 const loading = ref(false);
 
 const state = reactive({
-  name: "",
+  name: props.list.name,
   author: "",
 });
 
@@ -69,17 +71,17 @@ const onSubmit = async () => {
 
   const record = await pb
     .collection("lists")
-    .create({ ...state, author: user.value?.id });
+    .update(props.list.id, { ...state, author: user.value?.id });
 
   toast.add({
     title: "Liste erstellt",
     icon: "i-lucide-save",
   });
 
+  emit("refresh");
+
   loading.value = false;
   open.value = false;
-
-  router.push(`lists/${record.id}`);
 };
 
 const onAbort = async () => {
