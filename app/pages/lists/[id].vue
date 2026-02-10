@@ -10,7 +10,33 @@
 
       <div class="flex gap-4">
         <CreateItem :list-id="list.id" @submit="refreshItems()"></CreateItem>
-        <UButton color="error" icon="i-lucide-trash">Liste löschen</UButton>
+        <UModal title="Liste löschen">
+          <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
+
+          <template #body>
+            <p>
+              Willst du diesen Liste wirklich löschen? Diese Aktion kann nicht
+              mehr rückgängig gemacht werden.
+            </p>
+          </template>
+
+          <template #footer="{ close }">
+            <div class="flex w-full justify-between gap-2">
+              <UButton
+                color="neutral"
+                variant="outline"
+                label="Abbrechen"
+                @click="close"
+              />
+              <UButton
+                color="error"
+                variant="outline"
+                label="Liste löschen"
+                @click="deleteList(close)"
+              />
+            </div>
+          </template>
+        </UModal>
       </div>
     </div>
 
@@ -100,6 +126,7 @@ definePageMeta({
 const toast = useToast();
 const { pb } = usePocketbase();
 const route = useRoute();
+const router = useRouter();
 
 const list = await pb.collection("lists").getOne(route.params.id as string);
 
@@ -169,5 +196,18 @@ const deleteItem = async (item: any, close: any) => {
   close();
 
   await refreshItems();
+};
+
+const deleteList = async (close: any) => {
+  await pb.collection("lists").delete(list.id);
+
+  toast.add({
+    title: "Liste gelöscht",
+    icon: "i-lucide-trash",
+  });
+
+  close();
+
+  router.push("/lists");
 };
 </script>

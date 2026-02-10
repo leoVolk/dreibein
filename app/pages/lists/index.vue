@@ -27,9 +27,13 @@ const router = useRouter();
 
 const { pb } = usePocketbase();
 
-const lists = await pb
-  .collection<any>("lists")
-  .getFullList({ expand: "author" });
+const lists = ref();
+
+lists.value = await pb.collection("lists").getFullList({ expand: "author" });
+
+pb.collection("lists").subscribe("*", async (e) => {
+  lists.value = await pb.collection("lists").getFullList({ expand: "author" });
+});
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
@@ -49,7 +53,7 @@ const columns: TableColumn<any>[] = [
   },
 ];
 
-const onSelect = (e: Event, row: TableRow<any>) => {
-  router.push(`/lists/${lists[row.id as any].id}`);
+const onSelect = (e: Event, row: any) => {
+  router.push(`/lists/${lists.value[row.id].id}`);
 };
 </script>

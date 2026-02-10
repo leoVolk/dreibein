@@ -33,15 +33,15 @@ const { pb } = usePocketbase();
 
 const router = useRouter();
 
-const lists = await pb.collection("lists").getFullList();
+const lists = ref();
 
-const listLinks = lists.map((list) => ({
-  label: list.name,
-  icon: "i-lucide-clipboard-list",
-  to: `/lists/${list.id}`,
-}));
+lists.value = await pb.collection("lists").getFullList();
 
-const items = ref<NavigationMenuItem[][]>([
+pb.collection("lists").subscribe("*", async (e) => {
+  lists.value = await pb.collection("lists").getFullList();
+});
+
+const items = computed<NavigationMenuItem[][]>(() => [
   [
     {
       label: "Dashboard",
@@ -53,7 +53,11 @@ const items = ref<NavigationMenuItem[][]>([
       icon: "i-lucide-folder",
       to: "/lists",
       defaultOpen: true,
-      children: listLinks,
+      children: lists.value.map((list: any) => ({
+        label: list.name,
+        icon: "i-lucide-clipboard-list",
+        to: `/lists/${list.id}`,
+      })),
     },
   ],
   [
