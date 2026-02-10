@@ -1,0 +1,173 @@
+<template>
+  <div class="flex flex-col gap-4">
+    <div class="flex justify-between">
+      <UBreadcrumb
+        :items="[
+          { label: 'Listen', to: '/lists' },
+          { label: list.name, to: `/lists/${list.id}` },
+        ]"
+      />
+
+      <div class="flex gap-4">
+        <CreateItem :list-id="list.id" @submit="refreshItems()"></CreateItem>
+        <UButton color="error" icon="i-lucide-trash">Liste löschen</UButton>
+      </div>
+    </div>
+
+    <UTable
+      v-if="items.length"
+      loading-color="primary"
+      loading-animation="carousel"
+      :data="items"
+      :columns="columns"
+      :meta="meta"
+    >
+      <template #description-cell="{ row }">
+        <div class="">
+          {{ row.original.description.substring(0, 64) }}
+        </div>
+      </template>
+
+      <template #status-cell="{ row }">
+        <UBadge v-if="row.original.status === 'none'" color="success">
+          Intakt
+        </UBadge>
+        <UBadge v-else-if="row.original.status === 'checkedOut'" color="info">
+          In Benutzung
+        </UBadge>
+        <UBadge v-else-if="row.original.status === 'repair'" color="warning">
+          In Reparatur
+        </UBadge>
+        <UBadge v-else color="error"> Beschädigt </UBadge>
+      </template>
+
+      <template #actions-cell="{ row }">
+        <div class="flex gap-1 items-center">
+          <EditItem
+            @submit="refreshItems()"
+            :item="items[row.index]"
+          ></EditItem>
+
+          <UModal title="Eintrag löschen">
+            <UButton
+              variant="outline"
+              size="sm"
+              color="error"
+              icon="i-lucide-trash"
+            />
+
+            <template #body>
+              <p>
+                Willst du diesen Eintrag wirklich löschen? Diese Aktion kann
+                nicht mehr rückgängig gemacht werden.
+              </p>
+            </template>
+
+            <template #footer="{ close }">
+              <div class="flex w-full justify-between gap-2">
+                <UButton
+                  color="neutral"
+                  variant="outline"
+                  label="Abbrechen"
+                  @click="close"
+                />
+                <UButton
+                  color="error"
+                  variant="outline"
+                  label="Eintrag löschen"
+                  @click="deleteItem(items[row.index], close)"
+                />
+              </div>
+            </template>
+          </UModal>
+        </div>
+      </template>
+    </UTable>
+    <div v-else class="text-center py-8 text-gray-500">
+      Keine Materialien in dieser Liste
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import type { TableColumn } from "@nuxt/ui";
+import type { TableMeta, Row } from "@tanstack/vue-table";
+
+definePageMeta({
+  middleware: ["auth"],
+});
+
+const toast = useToast();
+const { pb } = usePocketbase();
+const route = useRoute();
+
+const list = await pb.collection("lists").getOne(route.params.id as string);
+
+const items = ref();
+
+//TODO: fix asynchData
+items.value = await pb.collection("items").getFullList({
+  filter: `list = "${route.params.id}"`,
+  fields: "name,description,quantity,checkout,weight,status,id,",
+});
+
+//TODO: fix update loop
+const refreshItems = async () => {
+  items.value = await pb.collection("items").getFullList({
+    filter: `list = "${route.params.id}"`,
+    fields: "name,description,quantity,checkout,weight,status,id,",
+  });
+};
+
+const columns: TableColumn<any>[] = [
+  { header: "Name", accessorKey: "name" },
+  {
+    header: "Beschreibung",
+    accessorKey: "description",
+    cell: ({ row }) => `${row.getValue("description") || "-"} `,
+  },
+  { header: "Anzahl", accessorKey: "quantity" },
+  {
+    header: "Ausgegeben am",
+    accessorKey: "checkout",
+    cell: ({ row }) => `${row.getValue("checkout") || "-"} `,
+  },
+  {
+    header: "Gewicht (kg)",
+    accessorKey: "weight",
+    cell: ({ row }) => `${row.getValue("weight")} kg`,
+  },
+  { header: "Status", accessorKey: "status" },
+  { header: "", accessorKey: "actions" },
+];
+
+const meta: TableMeta<any> = {
+  class: {
+    tr: (row: Row<any>) => {
+      if (row.original.status === "checkedOut") {
+        return "bg-info/10";
+      }
+      if (row.original.status === "repair") {
+        return "bg-warning/10";
+      }
+      if (row.original.status === "damaged") {
+        return "bg-error/10";
+      }
+      return "";
+    },
+  },
+};
+
+const deleteItem = async (item: any, close: any) => {
+  await pb.collection("items").delete(item.id);
+
+  toast.add({
+    title: "Eintrag gelöscht",
+    icon: "i-lucide-trash",
+  });
+
+  close();
+
+  await refreshItems();
+};
+</script>
