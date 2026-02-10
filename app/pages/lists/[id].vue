@@ -57,7 +57,7 @@
         <div>
           Aktualisiert am:
           <span class="font-semibold">{{
-            new Date(list.created).toLocaleString()
+            new Date(list.updated).toLocaleString()
           }}</span>
           von
           <span class="font-semibold">{{ list.expand.updatedBy.name }}</span>
@@ -96,6 +96,7 @@
         <div class="flex gap-1 items-center">
           <EditItem
             @refresh="refreshItems()"
+            :list-id="list.id"
             :item="items[row.index]"
           ></EditItem>
 
@@ -134,6 +135,7 @@
         </div>
       </template>
     </UTable>
+
     <div v-else class="text-center py-8 text-gray-500">
       Keine Materialien in dieser Liste
     </div>
@@ -152,14 +154,16 @@ const toast = useToast();
 const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
+const { user } = usePocketbaseAuth();
 
-const list = await pb.collection("lists").getOne(route.params.id as string, {
-  expand: "createdBy,updatedBy",
-});
-
+const list = ref();
 const items = ref();
 
 const refreshItems = async () => {
+  list.value = await pb.collection("lists").getOne(route.params.id as string, {
+    expand: "createdBy,updatedBy",
+  });
+
   items.value = await pb.collection("items").getFullList({
     filter: `list = "${route.params.id}"`,
     fields: "name,description,quantity,checkout,weight,status,id,",
@@ -210,6 +214,10 @@ const meta: TableMeta<any> = {
 const deleteItem = async (item: any, close: any) => {
   await pb.collection("items").delete(item.id);
 
+  await pb
+    .collection("lists")
+    .update(list.value.id, { updatedBy: user.value?.id });
+
   toast.add({
     title: "Eintrag gelöscht",
     icon: "i-lucide-trash",
@@ -221,7 +229,7 @@ const deleteItem = async (item: any, close: any) => {
 };
 
 const deleteList = async (close: any) => {
-  await pb.collection("lists").delete(list.id);
+  await pb.collection("lists").delete(list.value.id);
 
   toast.add({
     title: "Liste gelöscht",

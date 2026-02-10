@@ -96,6 +96,7 @@
 
 <script lang="ts" setup>
 const { pb } = usePocketbase();
+const { user } = usePocketbaseAuth();
 
 const emit = defineEmits(["refresh"]);
 const props = defineProps(["listId"]);
@@ -139,6 +140,9 @@ const onSubmit = async () => {
   loading.value = true;
 
   await pb.collection("items").create(state);
+  await pb
+    .collection("lists")
+    .update(props.listId, { updatedBy: user.value?.id });
 
   toast.add({
     title: "Eintrag eingefügt",
