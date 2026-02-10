@@ -62,7 +62,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type { TableColumn, TableRow } from "@nuxt/ui";
+import type { TableColumn } from "@nuxt/ui";
 
 const router = useRouter();
 const { pb } = usePocketbase();

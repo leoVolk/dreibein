@@ -41,11 +41,29 @@
       </div>
     </div>
 
-    <h2 class="text-2xl">{{ list.name }}</h2>
+    <div>
+      <h2 class="text-2xl">{{ list.name }}</h2>
 
-    <UCard variant="outline">
-      <div></div>
-    </UCard>
+      <div v-if="list.expand" class="flex flex-row gap-4 mt-2">
+        <div>
+          Erstellt am:
+          <span class="font-semibold">{{
+            new Date(list.created).toLocaleString()
+          }}</span>
+          von
+          <span class="font-semibold">{{ list.expand.createdBy.name }}</span>
+        </div>
+        <span>|</span>
+        <div>
+          Aktualisiert am:
+          <span class="font-semibold">{{
+            new Date(list.created).toLocaleString()
+          }}</span>
+          von
+          <span class="font-semibold">{{ list.expand.updatedBy.name }}</span>
+        </div>
+      </div>
+    </div>
 
     <UTable
       v-if="items.length"
@@ -135,23 +153,20 @@ const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
 
-const list = await pb.collection("lists").getOne(route.params.id as string);
+const list = await pb.collection("lists").getOne(route.params.id as string, {
+  expand: "createdBy,updatedBy",
+});
 
 const items = ref();
 
-//TODO: fix asynchData
-items.value = await pb.collection("items").getFullList({
-  filter: `list = "${route.params.id}"`,
-  fields: "name,description,quantity,checkout,weight,status,id,",
-});
-
-//TODO: fix update loop
 const refreshItems = async () => {
   items.value = await pb.collection("items").getFullList({
     filter: `list = "${route.params.id}"`,
     fields: "name,description,quantity,checkout,weight,status,id,",
   });
 };
+
+await refreshItems();
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
