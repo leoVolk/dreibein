@@ -11,11 +11,17 @@
           @click="onSignOut()"
         ></UButton>
       </template>
+      <template #body>
+        <UNavigationMenu
+          :items="items"
+          orientation="vertical"
+          class="-mx-2.5"
+        />
+      </template>
     </UHeader>
     <div class="flex w-full max-w-(--ui-container) mx-auto flex-row">
-      <div class="py-4">
+      <div class="py-4 hidden lg:block">
         <UNavigationMenu orientation="vertical" :items="items">
-          <template #lists-content="{ item }"> </template>
         </UNavigationMenu>
       </div>
 
