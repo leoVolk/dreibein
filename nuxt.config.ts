@@ -1,3 +1,5 @@
+
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false, // Must be false to be used served by pocketbase
@@ -10,7 +12,8 @@ export default defineNuxtConfig({
   },
   nitro: {
     output: {
-      dir: './db/.output'
+      //fix for nuxt dev deleting the generated output folder
+      dir: process.env.NODE_ENV === "development" ? ".output-dev" : "./db/.output",
     }
   },
 });

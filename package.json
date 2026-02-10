@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "npm run generate && concurrently \"npm run dev:*\"",
+    "dev": "npm run generate && concurrently 'npm run dev:*'",
     "build": "nuxt build",
     "dev:nuxt": "nuxt dev",
     "dev:pocketbase": "cd ./db && go run ./main.go serve",
@@ -20,6 +20,7 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@types/node": "^25.2.2",
     "concurrently": "^9.2.1"
   }
 }
