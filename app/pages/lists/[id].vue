@@ -136,9 +136,23 @@
       </template>
     </UTable>
 
-    <div v-else class="text-center py-8 text-gray-500">
-      Keine Materialien in dieser Liste
-    </div>
+    <UEmpty
+      v-else
+      icon="i-lucide-file"
+      title="Malheur!"
+      description="Diese Liste scheint noch keine Einträge zu haben."
+    >
+      <template #actions>
+        <CreateItem :list-id="list.id" @refresh="refreshItems()"></CreateItem>
+        <UButton
+          icon="i-lucide-refresh-cw"
+          label="Aktualisieren"
+          color="neutral"
+          variant="subtle"
+          @click="refreshItems()"
+        ></UButton>
+      </template>
+    </UEmpty>
   </div>
 </template>
 
