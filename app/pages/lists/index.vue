@@ -4,7 +4,7 @@
       <UBreadcrumb :items="[{ label: 'Listen', to: '/lists' }]" />
 
       <div class="flex gap-4">
-        <CreateList></CreateList>
+        <CreateList @refresh="getLists()"></CreateList>
       </div>
     </div>
 
@@ -41,12 +41,6 @@ const getLists = async () => {
 };
 
 await getLists();
-
-pb.collection("lists").subscribe("*", async (e) => {
-  lists.value = await pb
-    .collection("lists")
-    .getFullList({ expand: "author", requestKey: "subscription_ListsIndex" });
-});
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },

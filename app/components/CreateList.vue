@@ -54,6 +54,7 @@ const { user } = usePocketbaseAuth();
 const { pb } = usePocketbase();
 
 const router = useRouter();
+const emit = defineEmits(["refresh"]);
 
 const toast = useToast();
 const open = ref(false);
@@ -75,6 +76,8 @@ const onSubmit = async () => {
     title: "Liste erstellt",
     icon: "i-lucide-save",
   });
+
+  emit("refresh");
 
   loading.value = false;
   open.value = false;
