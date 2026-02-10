@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex justify-between">
+    <div class="flex justify-between items-center">
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
@@ -40,6 +40,12 @@
         </UModal>
       </div>
     </div>
+
+    <h2 class="text-2xl">{{ list.name }}</h2>
+
+    <UCard variant="outline">
+      <div></div>
+    </UCard>
 
     <UTable
       v-if="items.length"

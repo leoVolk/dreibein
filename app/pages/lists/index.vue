@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex justify-between">
+    <div class="flex justify-between items-center">
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
@@ -12,6 +12,8 @@
         <CreateList @refresh="getLists()"></CreateList>
       </div>
     </div>
+
+    <h2 class="text-2xl">Alle Listen</h2>
 
     <UTable
       @select="onSelect"

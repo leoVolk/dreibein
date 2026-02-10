@@ -6,6 +6,8 @@
         { label: 'Einstellungen', to: '/settings' },
       ]"
     />
+
+    <h2 class="text-2xl">Einstellungen</h2>
   </div>
 </template>
 <script setup lang="ts">
