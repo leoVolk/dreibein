@@ -53,7 +53,7 @@
           von
           <span class="font-semibold">{{ list.expand.createdBy.name }}</span>
         </div>
-        <span>|</span>
+        <span v-if="list.expand.updatedBy">|</span>
         <div v-if="list.expand.updatedBy">
           Aktualisiert am:
           <span class="font-semibold">{{

@@ -16,4 +16,9 @@ export default defineNuxtConfig({
       dir: process.env.NODE_ENV === "development" ? ".output-dev" : "./db/.output",
     }
   },
+  app: {
+    head: {
+      title: "3Bein"
+    }
+  }
 });
