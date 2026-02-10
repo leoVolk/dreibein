@@ -54,7 +54,7 @@ const listLinks = computed(() =>
 const items = computed<NavigationMenuItem[][]>(() => [
   [
     {
-      label: "Dashboard",
+      label: "Home",
       icon: "i-lucide-home",
       to: "/",
     },

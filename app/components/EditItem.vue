@@ -2,7 +2,7 @@
   <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
     <UButton
       @click="open = true"
-      variant="outline"
+      variant="ghost"
       size="sm"
       icon="i-lucide-edit"
     />

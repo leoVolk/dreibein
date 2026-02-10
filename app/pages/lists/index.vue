@@ -17,6 +17,38 @@
       <template #actions-cell="{ row }">
         <div class="flex gap-1 items-center">
           <EditList @refresh="getLists()" :list="lists[row.id]"></EditList>
+          <UModal title="Liste löschen">
+            <UButton
+              size="sm"
+              variant="ghost"
+              color="error"
+              icon="i-lucide-trash"
+            />
+
+            <template #body>
+              <p>
+                Willst du diesen Liste wirklich löschen? Diese Aktion kann nicht
+                mehr rückgängig gemacht werden.
+              </p>
+            </template>
+
+            <template #footer="{ close }">
+              <div class="flex w-full justify-between gap-2">
+                <UButton
+                  color="neutral"
+                  variant="outline"
+                  label="Abbrechen"
+                  @click="close"
+                />
+                <UButton
+                  color="error"
+                  variant="outline"
+                  label="Liste löschen"
+                  @click="deleteList(row, close)"
+                />
+              </div>
+            </template>
+          </UModal>
         </div>
       </template>
     </UTable>
@@ -27,6 +59,7 @@ import type { TableColumn, TableRow } from "@nuxt/ui";
 
 const router = useRouter();
 const { pb } = usePocketbase();
+const toast = useToast();
 
 definePageMeta({
   middleware: ["auth"],
@@ -72,5 +105,17 @@ const columns: TableColumn<any>[] = [
 
 const onSelect = (e: Event, row: any) => {
   router.push(`/lists/${lists.value[row.id].id}`);
+};
+
+const deleteList = async (row: any, close: any) => {
+  await pb.collection("lists").delete(lists.value[row.id].id);
+
+  toast.add({
+    title: "Liste gelöscht",
+    icon: "i-lucide-trash",
+  });
+
+  close();
+  await getLists();
 };
 </script>

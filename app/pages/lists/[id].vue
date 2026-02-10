@@ -76,7 +76,7 @@
 
           <UModal title="Eintrag löschen">
             <UButton
-              variant="outline"
+              variant="ghost"
               size="sm"
               color="error"
               icon="i-lucide-trash"

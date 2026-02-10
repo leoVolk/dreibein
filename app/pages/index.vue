@@ -1,6 +1,12 @@
 <template>
-  <div>
-    <span class="text-">Good Day {{ user?.name }}</span>
+  <div class="flex flex-col gap-4">
+    <UBreadcrumb :items="[{ label: 'Home', to: '/' }]" />
+    <div>
+      <h2 class="text-2xl">
+        Hallo, <span class="text-primary underline">{{ user?.name }}</span
+        >!
+      </h2>
+    </div>
   </div>
 </template>
 
