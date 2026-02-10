@@ -62,7 +62,8 @@ const loading = ref(false);
 
 const state = reactive({
   name: "",
-  author: "",
+  createdBy: "",
+  updatedBy: "",
 });
 
 const onSubmit = async () => {
@@ -70,7 +71,7 @@ const onSubmit = async () => {
 
   const record = await pb
     .collection("lists")
-    .create({ ...state, author: user.value?.id });
+    .create({ ...state, createdBy: user.value?.id, updatedBy: user.value?.id });
 
   toast.add({
     title: "Liste erstellt",
@@ -86,7 +87,7 @@ const onSubmit = async () => {
 };
 
 const onAbort = async () => {
-  Object.assign(state, { name: "", author: user.value?.id });
+  Object.assign(state, { name: "", createdBy: "", updatedBy: "" });
   open.value = false;
 };
 </script>

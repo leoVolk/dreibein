@@ -35,9 +35,10 @@ definePageMeta({
 const lists = ref();
 
 const getLists = async () => {
-  lists.value = await pb
-    .collection("lists")
-    .getFullList({ expand: "author", requestKey: "refresh_ListsIndex" });
+  lists.value = await pb.collection("lists").getFullList({
+    expand: "createdBy,updatedBy",
+    requestKey: "refresh_ListsIndex",
+  });
 };
 
 await getLists();
@@ -46,18 +47,23 @@ const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
   {
     header: "Autor",
-    accessorKey: "expand.author.name",
-  },
-  {
-    header: "Aktualisiert am",
-    accessorKey: "updated",
-    cell: ({ row }) => new Date(row.getValue("updated")).toDateString(),
+    accessorKey: "expand.createdBy.name",
   },
   {
     header: "Erstellt am",
     accessorKey: "created",
     cell: ({ row }) => new Date(row.getValue("created")).toDateString(),
   },
+  {
+    header: "Aktualisiert von",
+    accessorKey: "expand.updatedBy.name",
+  },
+  {
+    header: "Aktualisiert am",
+    accessorKey: "updated",
+    cell: ({ row }) => new Date(row.getValue("updated")).toDateString(),
+  },
+
   {
     header: "",
     accessorKey: "actions",
