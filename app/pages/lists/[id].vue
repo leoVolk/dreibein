@@ -54,7 +54,7 @@
           <span class="font-semibold">{{ list.expand.createdBy.name }}</span>
         </div>
         <span>|</span>
-        <div>
+        <div v-if="list.expand.updatedBy">
           Aktualisiert am:
           <span class="font-semibold">{{
             new Date(list.updated).toLocaleString()

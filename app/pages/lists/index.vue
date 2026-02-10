@@ -8,9 +8,7 @@
         ]"
       />
 
-      <div class="flex gap-4">
-        <CreateList @refresh="getLists()"></CreateList>
-      </div>
+      <CreateList @refresh="getLists()"></CreateList>
     </div>
 
     <h2 class="text-2xl">Alle Listen</h2>
@@ -59,6 +57,23 @@
         </div>
       </template>
     </UTable>
+    <UEmpty
+      v-else
+      icon="i-lucide-file"
+      title="Malheur!"
+      description="Diese Liste scheint noch keine Einträge zu haben."
+    >
+      <template #actions>
+        <CreateList @refresh="getLists()"></CreateList>
+        <UButton
+          icon="i-lucide-refresh-cw"
+          label="Aktualisieren"
+          color="neutral"
+          variant="subtle"
+          @click="getLists()"
+        ></UButton>
+      </template>
+    </UEmpty>
   </div>
 </template>
 <script lang="ts" setup>
