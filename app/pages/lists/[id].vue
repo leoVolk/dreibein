@@ -3,6 +3,7 @@
     <div class="flex justify-between">
       <UBreadcrumb
         :items="[
+          { label: 'Home', to: '/' },
           { label: 'Listen', to: '/lists' },
           { label: list.name, to: `/lists/${list.id}` },
         ]"

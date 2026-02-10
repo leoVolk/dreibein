@@ -1,7 +1,12 @@
 <template>
   <div class="flex flex-col gap-4">
     <div class="flex justify-between">
-      <UBreadcrumb :items="[{ label: 'Listen', to: '/lists' }]" />
+      <UBreadcrumb
+        :items="[
+          { label: 'Home', to: '/' },
+          { label: 'Listen', to: '/lists' },
+        ]"
+      />
 
       <div class="flex gap-4">
         <CreateList @refresh="getLists()"></CreateList>

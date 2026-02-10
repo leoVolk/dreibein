@@ -53,7 +53,6 @@ const signIn = async () => {
     return navigateTo("/");
   } catch (error) {
     alert("Error logging in Check console for more details");
-    console.log(error);
   }
 };
 </script>
