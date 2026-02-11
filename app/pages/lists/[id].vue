@@ -194,7 +194,6 @@ const refreshItems = async () => {
 
   items.value = await pb.collection("items").getFullList({
     filter: `list = "${route.params.id}"`,
-    fields: "name,description,quantity,checkout,weight,status,id,",
   });
 };
 
