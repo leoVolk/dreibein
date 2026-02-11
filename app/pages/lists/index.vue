@@ -11,52 +11,51 @@
       <CreateList @refresh="getLists()"></CreateList>
     </div>
 
-    <h2 class="text-2xl">Alle Listen</h2>
-
-    <UTable
-      @select="onSelect"
-      v-if="lists.length"
-      :data="lists"
-      :columns="columns"
-    >
-      <template #actions-cell="{ row }">
-        <div class="flex gap-1 items-center">
-          <EditList @refresh="getLists()" :list="lists[row.id]"></EditList>
-          <UModal title="Liste löschen">
-            <UButton
-              size="sm"
-              variant="ghost"
-              color="error"
-              icon="i-lucide-trash"
-            />
-
-            <template #body>
-              <p>
-                Willst du diesen Liste wirklich löschen? Diese Aktion kann nicht
-                mehr rückgängig gemacht werden.
-              </p>
-            </template>
-
-            <template #footer="{ close }">
-              <div class="flex w-full justify-between gap-2">
+    <UCard v-if="lists.length">
+      <template #header> <h2 class="text-2xl">Alle Listen</h2></template>
+      <template #default>
+        <UTable @select="onSelect" :data="lists" :columns="columns">
+          <template #actions-cell="{ row }">
+            <div class="flex gap-1 items-center">
+              <EditList @refresh="getLists()" :list="lists[row.id]"></EditList>
+              <UModal title="Liste löschen">
                 <UButton
-                  color="neutral"
-                  variant="outline"
-                  label="Abbrechen"
-                  @click="close"
-                />
-                <UButton
+                  size="sm"
+                  variant="ghost"
                   color="error"
-                  variant="outline"
-                  label="Liste löschen"
-                  @click="deleteList(row, close)"
+                  icon="i-lucide-trash"
                 />
-              </div>
-            </template>
-          </UModal>
-        </div>
+
+                <template #body>
+                  <p>
+                    Willst du diesen Liste wirklich löschen? Diese Aktion kann
+                    nicht mehr rückgängig gemacht werden.
+                  </p>
+                </template>
+
+                <template #footer="{ close }">
+                  <div class="flex w-full justify-between gap-2">
+                    <UButton
+                      color="neutral"
+                      variant="outline"
+                      label="Abbrechen"
+                      @click="close"
+                    />
+                    <UButton
+                      color="error"
+                      variant="outline"
+                      label="Liste löschen"
+                      @click="deleteList(row, close)"
+                    />
+                  </div>
+                </template>
+              </UModal>
+            </div>
+          </template>
+        </UTable>
       </template>
-    </UTable>
+    </UCard>
+
     <UEmpty
       v-else
       icon="i-lucide-file"

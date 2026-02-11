@@ -41,100 +41,114 @@
       </div>
     </div>
 
-    <div>
-      <h2 class="text-2xl">{{ list.name }}</h2>
-
-      <div v-if="list.expand" class="flex flex-row gap-4 mt-2">
+    <UCard v-if="items.length">
+      <template #header>
         <div>
-          Erstellt am:
-          <span class="font-semibold">{{
-            new Date(list.created).toLocaleString()
-          }}</span>
-          von
-          <span class="font-semibold">{{ list.expand.createdBy.name }}</span>
-        </div>
-        <span v-if="list.expand.updatedBy">|</span>
-        <div v-if="list.expand.updatedBy">
-          Aktualisiert am:
-          <span class="font-semibold">{{
-            new Date(list.updated).toLocaleString()
-          }}</span>
-          von
-          <span class="font-semibold">{{ list.expand.updatedBy.name }}</span>
-        </div>
-      </div>
-    </div>
+          <h2 class="text-2xl">{{ list.name }}</h2>
 
-    <UTable
-      v-if="items.length"
-      loading-color="primary"
-      loading-animation="carousel"
-      :data="items"
-      :columns="columns"
-      :meta="meta"
-    >
-      <template #description-cell="{ row }">
-        <div class="">
-          {{ row.original.description.substring(0, 64) }}
+          <div v-if="list.expand" class="flex flex-row gap-4 mt-2">
+            <div>
+              Erstellt am:
+              <span class="font-semibold">{{
+                new Date(list.created).toLocaleString()
+              }}</span>
+              von
+              <span class="font-semibold">{{
+                list.expand.createdBy.name
+              }}</span>
+            </div>
+            <span v-if="list.expand.updatedBy">|</span>
+            <div v-if="list.expand.updatedBy">
+              Aktualisiert am:
+              <span class="font-semibold">{{
+                new Date(list.updated).toLocaleString()
+              }}</span>
+              von
+              <span class="font-semibold">{{
+                list.expand.updatedBy.name
+              }}</span>
+            </div>
+          </div>
         </div>
       </template>
+      <template #default>
+        <UTable
+          loading-color="primary"
+          loading-animation="carousel"
+          :data="items"
+          :columns="columns"
+          :meta="meta"
+        >
+          <template #description-cell="{ row }">
+            <div class="">
+              {{ row.original.description.substring(0, 64) }}
+            </div>
+          </template>
 
-      <template #status-cell="{ row }">
-        <UBadge v-if="row.original.status === 'none'" color="success">
-          Intakt
-        </UBadge>
-        <UBadge v-else-if="row.original.status === 'checkedOut'" color="info">
-          In Benutzung
-        </UBadge>
-        <UBadge v-else-if="row.original.status === 'repair'" color="warning">
-          In Reparatur
-        </UBadge>
-        <UBadge v-else color="error"> Beschädigt </UBadge>
-      </template>
+          <template #status-cell="{ row }">
+            <UBadge v-if="row.original.status === 'none'" color="success">
+              Intakt
+            </UBadge>
+            <UBadge
+              v-else-if="row.original.status === 'checkedOut'"
+              color="info"
+            >
+              In Benutzung
+            </UBadge>
+            <UBadge
+              v-else-if="row.original.status === 'repair'"
+              color="warning"
+            >
+              In Reparatur
+            </UBadge>
+            <UBadge v-else color="error"> Beschädigt </UBadge>
+          </template>
 
-      <template #actions-cell="{ row }">
-        <div class="flex gap-1 items-center">
-          <EditItem
-            @refresh="refreshItems()"
-            :list-id="list.id"
-            :item="items[row.index]"
-          ></EditItem>
+          <template #actions-cell="{ row }">
+            <div class="flex gap-1 items-center">
+              <EditItem
+                @refresh="refreshItems()"
+                :list-id="list.id"
+                :item="items[row.index]"
+              ></EditItem>
 
-          <UModal title="Eintrag löschen">
-            <UButton
-              variant="ghost"
-              size="sm"
-              color="error"
-              icon="i-lucide-trash"
-            />
-
-            <template #body>
-              <p>
-                Willst du diesen Eintrag wirklich löschen? Diese Aktion kann
-                nicht mehr rückgängig gemacht werden.
-              </p>
-            </template>
-
-            <template #footer="{ close }">
-              <div class="flex w-full justify-between gap-2">
+              <UModal title="Eintrag löschen">
                 <UButton
-                  color="neutral"
-                  variant="outline"
-                  label="Abbrechen"
-                  @click="close"
-                />
-                <UButton
+                  variant="ghost"
+                  size="sm"
                   color="error"
-                  variant="outline"
-                  label="Eintrag löschen"
-                  @click="deleteItem(items[row.index], close)"
+                  icon="i-lucide-trash"
                 />
-              </div>
-            </template>
-          </UModal>
-        </div>
+
+                <template #body>
+                  <p>
+                    Willst du diesen Eintrag wirklich löschen? Diese Aktion kann
+                    nicht mehr rückgängig gemacht werden.
+                  </p>
+                </template>
+
+                <template #footer="{ close }">
+                  <div class="flex w-full justify-between gap-2">
+                    <UButton
+                      color="neutral"
+                      variant="outline"
+                      label="Abbrechen"
+                      @click="close"
+                    />
+                    <UButton
+                      color="error"
+                      variant="outline"
+                      label="Eintrag löschen"
+                      @click="deleteItem(items[row.index], close)"
+                    />
+                  </div>
+                </template>
+              </UModal>
+            </div>
+          </template>
+        </UTable>
       </template>
-    </UTable>
+    </UCard>
 
     <UEmpty
       v-else
