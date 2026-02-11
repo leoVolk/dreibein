@@ -107,7 +107,21 @@ const onSubmit = async () => {
     .collection("users")
     .create({ ...state, passwordConfirm: state.password });
 
+  toast.add({
+    title: "Benutzer erstellt",
+    icon: "i-lucide-save",
+  });
+
   await pb.collection("users").requestPasswordReset(record.email);
+
+  toast.add({
+    title: "Passwort E-Mail versandt",
+    icon: "i-lucide-mail-check",
+  });
+
+  emit("refresh");
+
+  open.value = false;
 };
 
 const onAbort = async () => {

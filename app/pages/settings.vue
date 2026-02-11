@@ -48,7 +48,7 @@
                 Einstellungen
               </h3>
 
-              <CreateUser></CreateUser>
+              <CreateUser @refresh="getUsers()"></CreateUser>
             </div>
           </template>
 
