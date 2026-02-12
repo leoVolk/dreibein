@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex justify-between items-center">
+    <div
+      class="flex lg:justify-between lg:items-center flex-col lg:flex-row gap-4"
+    >
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
@@ -46,7 +48,7 @@
         <div>
           <h2 class="text-2xl">{{ list.name }}</h2>
 
-          <div v-if="list.expand" class="flex flex-row gap-4 mt-2">
+          <div v-if="list.expand" class="flex lg:flex-row flex-col gap-4 mt-2">
             <div>
               Erstellt am:
               <span class="font-semibold">{{
@@ -57,7 +59,7 @@
                 list.expand.createdBy.name
               }}</span>
             </div>
-            <span v-if="list.expand.updatedBy">|</span>
+            <span class="hidden lg:block" v-if="list.expand.updatedBy">|</span>
             <div v-if="list.expand.updatedBy">
               Aktualisiert am:
               <span class="font-semibold">{{

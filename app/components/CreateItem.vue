@@ -16,7 +16,7 @@
         </div>
 
         <UForm class="mt-4 flex flex-col gap-4" :state="state">
-          <div class="flex gap-4">
+          <div class="flex gap-4 lg:row flex-col">
             <UFormField class="w-full" label="Name" name="name">
               <UInput size="lg" class="w-full" v-model="state.name" />
             </UFormField>
@@ -40,7 +40,7 @@
             />
           </UFormField>
 
-          <div class="flex gap-4">
+          <div class="flex gap-4 lg:row flex-col">
             <UFormField class="w-full" label="Menge" name="quantity">
               <UInput
                 size="lg"
