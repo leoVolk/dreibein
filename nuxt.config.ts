@@ -1,6 +1,7 @@
 
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
+console.log(process.env.POCKETBASE_URL);
 export default defineNuxtConfig({
   ssr: false, // Must be false to be used served by pocketbase
   compatibilityDate: '2025-07-15',
@@ -8,7 +9,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   modules: ['pocketbase-nuxt', '@nuxt/ui'],
   pocketbase: {
-    url: 'http://127.0.0.1:8090' // Your PocketBase URL
+    url: process.env.POCKETBASE_URL,  // Your PocketBase URL
   },
   nitro: {
     output: {
