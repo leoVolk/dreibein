@@ -65,11 +65,18 @@ const items = computed<NavigationMenuItem[][]>(() => [
       to: "/",
     },
     {
-      label: "Listen",
+      label: "Material Listen",
       icon: "i-lucide-folder",
       to: "/lists",
       defaultOpen: true,
       children: listLinks.value,
+    },
+    {
+      label: "Lager Listen",
+      icon: "i-lucide-folder",
+      to: "/camp-lists",
+      defaultOpen: true,
+      children: [],
     },
   ],
   [

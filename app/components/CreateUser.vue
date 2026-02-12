@@ -7,7 +7,7 @@
     />
 
     <template #body>
-      <div class="flex flex-col p-4 min-w-2xl max-w-2xl w-full">
+      <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl w-full">
         <div class="flex justify-between">
           <span class="text-2xl">Neuen Benutzer erstellen</span>
           <UIcon
