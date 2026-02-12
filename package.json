@@ -3,13 +3,16 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "npm run generate && concurrently 'npm run dev:*'",
+    "dev": "nuxt dev",
     "build": "nuxt build",
+    "dev:both": "npm run generate && concurrently 'npm run dev:*'",
     "dev:nuxt": "nuxt dev",
     "dev:pocketbase": "cd ./db && go run ./main.go serve",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "build:local": "npm run generate && cd ./db && go build -o dreibein main.go",
+    "build:linux": "npm run generate && cd ./db && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build"
   },
   "dependencies": {
     "@nuxt/ui": "^4.4.0",
