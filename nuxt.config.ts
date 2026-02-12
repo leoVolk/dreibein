@@ -1,7 +1,6 @@
 
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
-console.log(process.env.POCKETBASE_URL);
 export default defineNuxtConfig({
   ssr: false, // Must be false to be used served by pocketbase
   compatibilityDate: '2025-07-15',
