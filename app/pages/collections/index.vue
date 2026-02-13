@@ -8,7 +8,7 @@
         ]"
       />
 
-      <CreateList @refresh="getLists()"></CreateList>
+      <CreateCollection @refresh="getLists()"></CreateCollection>
     </div>
 
     <UCard v-if="lists.length">
