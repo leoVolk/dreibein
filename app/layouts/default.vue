@@ -123,6 +123,12 @@ const items = computed<NavigationMenuItem[][]>(() => [
       defaultOpen: true,
       children: collectionsLinks.value,
     },
+    {
+      label: "Alle Materialien",
+      icon: "i-lucide-list",
+      to: "/items",
+      defaultOpen: true,
+    },
   ],
   [
     {

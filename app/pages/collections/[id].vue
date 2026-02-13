@@ -12,7 +12,10 @@
       />
 
       <div class="flex gap-4">
-        <CreateItem :list-id="list.id" @refresh="refreshItems()"></CreateItem>
+        <AddCollectionItem
+          :list-id="list.id"
+          @refresh="refreshItems()"
+        ></AddCollectionItem>
         <UModal title="Liste löschen">
           <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
 
@@ -159,7 +162,10 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <CreateItem :list-id="list.id" @refresh="refreshItems()"></CreateItem>
+        <AddCollectionItem
+          :list-id="list.id"
+          @refresh="refreshItems()"
+        ></AddCollectionItem>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
@@ -196,6 +202,7 @@ const refreshItems = async () => {
 
   items.value = await pb.collection("items").getFullList({
     filter: `list = "${route.params.id}"`,
+    requestKey: null,
   });
 };
 
