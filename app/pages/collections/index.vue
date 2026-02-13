@@ -4,7 +4,7 @@
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
-          { label: 'Listen', to: '/lists' },
+          { label: 'Lager Listen', to: '/lists' },
         ]"
       />
 
@@ -92,7 +92,7 @@ const getLists = async () => {
   lists.value = await pb.collection("lists").getFullList({
     expand: "createdBy,updatedBy",
     requestKey: "refresh_ListsIndex",
-    filter: "type != 'collection'",
+    filter: "type != 'default'",
   });
 };
 
@@ -126,7 +126,7 @@ const columns: TableColumn<any>[] = [
 ];
 
 const onSelect = (e: Event, row: any) => {
-  router.push(`/lists/${lists.value[row.id].id}`);
+  router.push(`/collections/${lists.value[row.id].id}`);
 };
 
 const deleteList = async (row: any, close: any) => {

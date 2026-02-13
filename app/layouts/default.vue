@@ -1,35 +1,68 @@
 <template>
-  <div class="min-h-screenflex flex-col">
-    <UHeader title="3Bein">
-      <template #right>
-        <UAvatar :alt="user?.name" size="md" />
-        <UColorModeButton />
-        <UButton
-          variant="ghost"
-          icon="i-lucide-share"
-          class="transform rotate-90"
-          @click="onSignOut()"
-        ></UButton>
-      </template>
-      <template #body>
-        <UNavigationMenu
-          :items="items"
-          orientation="vertical"
-          class="-mx-2.5"
+  <UDashboardGroup>
+    <UDashboardSidebar :ui="{ footer: 'border-t border-default' }">
+      <template #header="{ collapsed }">
+        <h2 v-if="!collapsed" class="font-semibold text-2xl">3Bein</h2>
+        <UIcon
+          v-else
+          name="i-simple-icons-nuxtdotjs"
+          class="size-5 text-primary mx-auto"
         />
       </template>
-    </UHeader>
-    <div class="flex w-full max-w-(--ui-container) mx-auto flex-row">
-      <div class="py-4 hidden lg:block">
-        <UNavigationMenu orientation="vertical" :items="items">
-        </UNavigationMenu>
-      </div>
 
-      <div class="p-4 w-full">
+      <template #default="{ collapsed }">
+        <UDashboardSearchButton
+          :label="collapsed ? undefined : 'Search...'"
+          :square="collapsed"
+          block
+        >
+        </UDashboardSearchButton>
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="items[0]"
+          orientation="vertical"
+        />
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="items[1]"
+          orientation="vertical"
+          class="mt-auto"
+        />
+      </template>
+
+      <template #footer="{ collapsed }">
+        <div class="flex-col flex gap-2 w-full">
+          <UButton
+            :avatar="{
+              alt: user?.name,
+            }"
+            :label="collapsed ? undefined : user?.name"
+            color="neutral"
+            variant="ghost"
+            class="w-full"
+            :block="collapsed"
+          />
+          <UButton
+            label="Abmelden"
+            color="error"
+            class="justify-center"
+            :block="collapsed"
+            @click="onSignOut"
+          />
+        </div>
+      </template>
+    </UDashboardSidebar>
+
+    <UDashboardPanel>
+      <template #body>
         <slot />
-      </div>
-    </div>
-  </div>
+      </template>
+    </UDashboardPanel>
+
+    <UDashboardSearch />
+  </UDashboardGroup>
 </template>
 <script lang="ts" setup>
 import type { NavigationMenuItem } from "@nuxt/ui";
@@ -50,11 +83,23 @@ pb.collection("lists").subscribe("*", async (e) => {
 });
 
 const listLinks = computed(() =>
-  lists.value.map((list: any) => ({
-    label: list.name,
-    icon: "i-lucide-clipboard-list",
-    to: `/lists/${list.id}`,
-  })),
+  lists.value
+    .filter((l: any) => l.type != "collection")
+    .map((list: any) => ({
+      label: list.name,
+      icon: "i-lucide-clipboard-list",
+      to: `/lists/${list.id}`,
+    })),
+);
+
+const collectionsLinks = computed(() =>
+  lists.value
+    .filter((l: any) => l.type != "default")
+    .map((list: any) => ({
+      label: list.name,
+      icon: "i-lucide-clipboard-list",
+      to: `/collections/${list.id}`,
+    })),
 );
 
 const items = computed<NavigationMenuItem[][]>(() => [
@@ -74,12 +119,22 @@ const items = computed<NavigationMenuItem[][]>(() => [
     {
       label: "Lager Listen",
       icon: "i-lucide-folder",
-      to: "/camp-lists",
+      to: "/collections",
       defaultOpen: true,
-      children: [],
+      children: collectionsLinks.value,
     },
   ],
   [
+    {
+      label: "Hilfe & Info",
+      icon: "i-lucide-info",
+      to: "/help",
+    },
+    {
+      label: "Feedback",
+      icon: "i-lucide-message-circle-heart",
+      to: "/feedback",
+    },
     {
       label: "Einstellungen",
       icon: "i-lucide-settings",
