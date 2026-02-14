@@ -12,10 +12,10 @@
       />
 
       <div class="flex gap-4">
-        <AddCollectionItem
+        <AddEventItem
           :list-id="list.id"
           @refresh="refreshItems()"
-        ></AddCollectionItem>
+        ></AddEventItem>
         <UModal title="Liste löschen">
           <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
 
