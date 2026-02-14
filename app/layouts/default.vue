@@ -122,11 +122,18 @@ const items = computed<NavigationMenuItem[][]>(() => [
       children: listLinks.value,
     },
     {
-      label: "Lager Listen",
-      icon: "i-lucide-folder",
-      to: "/events/lists",
-      defaultOpen: true,
-      children: eventListsLinks.value,
+      label: "Läger & Aktionen",
+      icon: "i-lucide-flame-kindling",
+      to: "events",
+      children: [
+        {
+          label: "Lager Listen",
+          icon: "i-lucide-folder",
+          to: "/events/lists",
+          defaultOpen: true,
+          children: eventListsLinks.value,
+        },
+      ],
     },
     {
       label: "Alle Materialien",
