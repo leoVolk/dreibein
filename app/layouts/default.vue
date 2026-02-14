@@ -56,6 +56,9 @@
     </UDashboardSidebar>
 
     <UDashboardPanel>
+      <template #header>
+        <UDashboardNavbar class="lg:hidden" />
+      </template>
       <template #body>
         <slot />
       </template>
@@ -73,33 +76,35 @@ const { pb } = usePocketbase();
 const router = useRouter();
 
 const lists = ref();
+const eventlists = ref();
 
 lists.value = await pb.collection("lists").getFullList();
+eventlists.value = await pb.collection("eventlists").getFullList();
 
 pb.collection("lists").subscribe("*", async (e) => {
+  lists.value = await pb.collection("lists").getFullList({ requestKey: null });
+});
+
+pb.collection("eventlists").subscribe("*", async (e) => {
   lists.value = await pb
-    .collection("lists")
-    .getFullList({ requestKey: "layout" });
+    .collection("eventlists")
+    .getFullList({ requestKey: null });
 });
 
 const listLinks = computed(() =>
-  lists.value
-    .filter((l: any) => l.type != "collection")
-    .map((list: any) => ({
-      label: list.name,
-      icon: "i-lucide-clipboard-list",
-      to: `/lists/${list.id}`,
-    })),
+  lists.value.map((list: any) => ({
+    label: list.name,
+    icon: "i-lucide-clipboard-list",
+    to: `/lists/${list.id}`,
+  })),
 );
 
-const collectionsLinks = computed(() =>
-  lists.value
-    .filter((l: any) => l.type != "default")
-    .map((list: any) => ({
-      label: list.name,
-      icon: "i-lucide-clipboard-list",
-      to: `/collections/${list.id}`,
-    })),
+const eventListsLinks = computed(() =>
+  eventlists.value.map((list: any) => ({
+    label: list.name,
+    icon: "i-lucide-clipboard-list",
+    to: `/events/lists/${list.id}`,
+  })),
 );
 
 const items = computed<NavigationMenuItem[][]>(() => [
@@ -119,9 +124,9 @@ const items = computed<NavigationMenuItem[][]>(() => [
     {
       label: "Lager Listen",
       icon: "i-lucide-folder",
-      to: "/collections",
+      to: "/events/lists",
       defaultOpen: true,
-      children: collectionsLinks.value,
+      children: eventListsLinks.value,
     },
     {
       label: "Alle Materialien",

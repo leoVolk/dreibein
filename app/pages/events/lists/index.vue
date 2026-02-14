@@ -8,11 +8,11 @@
         ]"
       />
 
-      <CreateCollection @refresh="getLists()"></CreateCollection>
+      <CreateEventList @refresh="getLists()"></CreateEventList>
     </div>
 
     <UCard v-if="lists.length">
-      <template #header> <h2 class="text-2xl">Alle Listen</h2></template>
+      <template #header> <h2 class="text-2xl">Alle Lager Listen</h2></template>
       <template #default>
         <UTable @select="onSelect" :data="lists" :columns="columns">
           <template #actions-cell="{ row }">
@@ -89,10 +89,8 @@ definePageMeta({
 const lists = ref();
 
 const getLists = async () => {
-  lists.value = await pb.collection("lists").getFullList({
+  lists.value = await pb.collection("eventlists").getFullList({
     expand: "createdBy,updatedBy",
-    requestKey: "refresh_ListsIndex",
-    filter: "type != 'default'",
   });
 };
 
@@ -126,7 +124,7 @@ const columns: TableColumn<any>[] = [
 ];
 
 const onSelect = (e: Event, row: any) => {
-  router.push(`/collections/${lists.value[row.id].id}`);
+  router.push(`/events/lists/${lists.value[row.id].id}`);
 };
 
 const deleteList = async (row: any, close: any) => {

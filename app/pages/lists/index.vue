@@ -92,7 +92,6 @@ const getLists = async () => {
   lists.value = await pb.collection("lists").getFullList({
     expand: "createdBy,updatedBy",
     requestKey: "refresh_ListsIndex",
-    filter: "type != 'collection'",
   });
 };
 

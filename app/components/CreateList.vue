@@ -71,7 +71,7 @@ const onSubmit = async () => {
 
   const record = await pb
     .collection("lists")
-    .create({ ...state, createdBy: user.value?.id, type: "default" });
+    .create({ ...state, createdBy: user.value?.id });
 
   toast.add({
     title: "Liste erstellt",

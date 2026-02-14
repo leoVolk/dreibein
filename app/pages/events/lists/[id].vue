@@ -196,11 +196,13 @@ const list = ref();
 const items = ref();
 
 const refreshItems = async () => {
-  list.value = await pb.collection("lists").getOne(route.params.id as string, {
-    expand: "createdBy,updatedBy",
-  });
+  list.value = await pb
+    .collection("eventlists")
+    .getOne(route.params.id as string, {
+      expand: "createdBy,updatedBy",
+    });
 
-  items.value = await pb.collection("items").getFullList({
+  items.value = await pb.collection("eventitems").getFullList({
     filter: `list = "${route.params.id}"`,
     requestKey: null,
   });
@@ -248,10 +250,10 @@ const meta: TableMeta<any> = {
 };
 
 const deleteItem = async (item: any, close: any) => {
-  await pb.collection("items").delete(item.id);
+  await pb.collection("eventitems").delete(item.id);
 
   await pb
-    .collection("lists")
+    .collection("eventitems")
     .update(list.value.id, { updatedBy: user.value?.id });
 
   toast.add({
@@ -265,7 +267,7 @@ const deleteItem = async (item: any, close: any) => {
 };
 
 const deleteList = async (close: any) => {
-  await pb.collection("lists").delete(list.value.id);
+  await pb.collection("eventitems").delete(list.value.id);
 
   toast.add({
     title: "Liste gelöscht",
@@ -274,6 +276,6 @@ const deleteList = async (close: any) => {
 
   close();
 
-  router.push("/lists");
+  router.push("/events/lists");
 };
 </script>
