@@ -124,8 +124,13 @@ const items = computed<NavigationMenuItem[][]>(() => [
     {
       label: "Läger & Aktionen",
       icon: "i-lucide-flame-kindling",
-      to: "events",
+      to: "/events",
       children: [
+        {
+          label: "Kalender",
+          icon: "i-lucide-calendar",
+          to: "/events/calendar",
+        },
         {
           label: "Lager Listen",
           icon: "i-lucide-folder",

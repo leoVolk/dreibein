@@ -106,7 +106,7 @@ const columns: TableColumn<any>[] = [
   {
     header: "Erstellt am",
     accessorKey: "created",
-    cell: ({ row }) => new Date(row.getValue("created")).toDateString(),
+    cell: ({ row }) => new Date(row.getValue("created")).toLocaleDateString(),
   },
   {
     header: "Aktualisiert von",
@@ -115,7 +115,7 @@ const columns: TableColumn<any>[] = [
   {
     header: "Aktualisiert am",
     accessorKey: "updated",
-    cell: ({ row }) => new Date(row.getValue("updated")).toDateString(),
+    cell: ({ row }) => new Date(row.getValue("updated")).toLocaleDateString(),
   },
 
   {
