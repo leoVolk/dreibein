@@ -75,7 +75,11 @@ const items = await pb.collection("items").getFullList({ requestKey: null });
 const mappedItems = ref();
 
 mappedItems.value = items
-  .filter((i) => !props.itemsInList.find((item: any) => item.refItem === i.id))
+  .filter((i) => {
+    return !!props.itemsInList
+      ? !props.itemsInList.find((item: any) => item.refItem === i.id)
+      : true;
+  })
   .map((i) => {
     return {
       name: i.name,

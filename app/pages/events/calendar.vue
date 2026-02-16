@@ -58,6 +58,7 @@ const calendarOptions: CalendarOptions = {
       title: e.name,
       start: e.startDate,
       end: e.endDate,
+      daysOfWeek: e.daysOfWeek,
     };
   }),
 };

@@ -7,6 +7,8 @@
           { label: 'Läger & Aktionen', to: '/events' },
         ]"
       />
+
+      <AddEvent @refresh="getEvents()"></AddEvent>
     </div>
 
     <UCard v-if="events.length">
@@ -17,6 +19,24 @@
         </div>
       </template>
     </UCard>
+
+    <UEmpty
+      v-else
+      icon="i-lucide-file"
+      title="Malheur!"
+      description="Diese Liste scheint noch keine Einträge zu haben."
+    >
+      <template #actions>
+        <AddEvent @refresh="getEvents()"></AddEvent>
+        <UButton
+          icon="i-lucide-refresh-cw"
+          label="Aktualisieren"
+          color="neutral"
+          variant="subtle"
+          @click="getEvents()"
+        ></UButton>
+      </template>
+    </UEmpty>
   </div>
 </template>
 
