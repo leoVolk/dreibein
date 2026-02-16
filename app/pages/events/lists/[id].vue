@@ -14,6 +14,7 @@
       <div class="flex gap-4">
         <AddEventItem
           :list-id="list.id"
+          :items-in-list="items"
           @refresh="refreshItems()"
         ></AddEventItem>
         <UModal title="Liste löschen">
@@ -190,7 +191,6 @@ const toast = useToast();
 const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
-const { user } = usePocketbaseAuth();
 
 const list = ref();
 const items = ref();

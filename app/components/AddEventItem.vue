@@ -19,7 +19,7 @@
           <UTable
             v-model:row-selection="rowSelection"
             ref="table"
-            :data="items"
+            :data="mappedItems"
             :columns="columns"
           >
             <template #quantity-cell="{ row }">
@@ -63,7 +63,7 @@ const { pb } = usePocketbase();
 const { user } = usePocketbaseAuth();
 
 const emit = defineEmits(["refresh"]);
-const props = defineProps(["listId"]);
+const props = defineProps(["listId", "itemsInList"]);
 
 const toast = useToast();
 const open = ref(false);
@@ -71,18 +71,21 @@ const loading = ref(false);
 
 const table = useTemplateRef("table");
 const items = await pb.collection("items").getFullList({ requestKey: null });
+
 const mappedItems = ref();
 
-mappedItems.value = items.map((i) => {
-  return {
-    name: i.name,
-    list: props.listId,
-    quantity: i.quantity,
-    weight: i.weight,
-    status: i.status,
-    refItem: i.id,
-  };
-});
+mappedItems.value = items
+  .filter((i) => !props.itemsInList.find((item: any) => item.refItem === i.id))
+  .map((i) => {
+    return {
+      name: i.name,
+      list: props.listId,
+      quantity: i.quantity,
+      weight: i.weight,
+      status: i.status,
+      refItem: i.id,
+    };
+  });
 
 const UCheckbox = resolveComponent("UCheckbox");
 

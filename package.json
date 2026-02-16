@@ -15,6 +15,14 @@
     "build:linux": "npm run generate && cd ./db && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.20",
+    "@fullcalendar/daygrid": "^6.1.20",
+    "@fullcalendar/interaction": "^6.1.20",
+    "@fullcalendar/list": "^6.1.20",
+    "@fullcalendar/multimonth": "^6.1.20",
+    "@fullcalendar/scrollgrid": "^6.1.20",
+    "@fullcalendar/timegrid": "^6.1.20",
+    "@fullcalendar/vue3": "^6.1.20",
     "@nuxt/ui": "^4.4.0",
     "nuxt": "^4.3.0",
     "pocketbase-nuxt": "^0.0.3",

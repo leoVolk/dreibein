@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   ssr: false, // Must be false to be used served by pocketbase
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/full-calendar.css'],
   modules: ['pocketbase-nuxt', '@nuxt/ui'],
   pocketbase: {
     url: process.env.POCKETBASE_URL,  // Your PocketBase URL

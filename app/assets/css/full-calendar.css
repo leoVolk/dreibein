@@ -1,0 +1,51 @@
+:root {
+  /* Typography */
+  --fc-small-font-size: var(--ui-text-sm);
+
+  /* Base colors */
+  --fc-page-bg-color: var(--ui-bg);
+  --fc-neutral-bg-color: var(--ui-bg-muted);
+  --fc-neutral-text-color: var(--ui-text);
+  --fc-border-color: var(--ui-border);
+
+  /* Buttons */
+  --fc-button-text-color: var(--ui-text);
+  --fc-button-bg-color: var(--ui-bg);
+  --fc-button-border-color: var(--ui-border);
+  --fc-button-hover-bg-color: var(--ui-bg-accent);
+  --fc-button-hover-border-color: var(--ui-border);
+  --fc-button-active-bg-color: var(--ui-bg-accent);
+  --fc-button-active-border-color: var(--ui-border);
+
+  /* Events */
+  --fc-event-bg-color: var(--ui-primary);
+  --fc-event-border-color: var(--ui-primary);
+  --fc-event-text-color: var(--ui-primary-foreground);
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+
+  /* More link */
+  --fc-more-link-bg-color: var(--ui-bg-muted);
+  --fc-more-link-text-color: var(--ui-text);
+
+  /* Resizer */
+  --fc-event-resizer-thickness: 8px;
+  --fc-event-resizer-dot-total-width: 8px;
+  --fc-event-resizer-dot-border-width: 1px;
+
+  /* Background events */
+  --fc-non-business-color: color-mix(in srgb, var(--ui-text) 10%, transparent);
+  --fc-bg-event-color: var(--ui-primary);
+  --fc-bg-event-opacity: 0.15;
+
+  /* Highlights */
+  --fc-highlight-color: color-mix(in srgb, var(--ui-primary) 15%, transparent);
+  --fc-today-bg-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  --fc-list-event-hover-bg-color: color-mix(
+    in srgb,
+    var(--ui-primary) 10%,
+    transparent
+  );
+
+  /* Indicators */
+  --fc-now-indicator-color: var(--ui-primary);
+}
