@@ -15,7 +15,8 @@
       <template #header> <h2 class="text-2xl">Läger & Aktionen</h2></template>
       <template #default>
         <div class="flex flex-col gap-4">
-          <UTable :data="events" :columns="columns"> </UTable>
+          <UTable :data="events" :columns="columns" @select="onSelect">
+          </UTable>
         </div>
       </template>
     </UCard>
@@ -42,9 +43,9 @@
 
 <script lang="ts" setup>
 import type { TableColumn } from "@nuxt/ui";
-import { CalendarDate } from "@internationalized/date";
 
 const { pb } = usePocketbase();
+const router = useRouter();
 
 definePageMeta({
   middleware: ["auth"],
@@ -66,12 +67,18 @@ const columns: TableColumn<any>[] = [
   {
     header: "Beginn",
     accessorKey: "startDate",
-    cell: ({ row }) => new Date(row.getValue("startDate")).toLocaleDateString(),
+    cell: ({ row }) =>
+      row.getValue("startDate")
+        ? new Date(row.getValue("startDate")).toLocaleDateString()
+        : "-",
   },
   {
     header: "Ende",
     accessorKey: "endDate",
-    cell: ({ row }) => new Date(row.getValue("endDate")).toLocaleDateString(),
+    cell: ({ row }) =>
+      row.getValue("endDate")
+        ? new Date(row.getValue("endDate")).toLocaleDateString()
+        : "-",
   },
   {
     header: "Autor",
@@ -99,20 +106,9 @@ const columns: TableColumn<any>[] = [
   },
 ];
 
-const calenderEntries = shallowRef(
-  events.value.map((e: any) => {
-    const start = new Date(e.startDate);
-    const end = new Date(e.endDate);
-    return {
-      start: new CalendarDate(
-        start.getFullYear(),
-        start.getMonth(),
-        start.getDate(),
-      ),
-      end: new CalendarDate(end.getFullYear(), end.getMonth(), end.getDate()),
-    };
-  }),
-);
+const onSelect = (e: Event, row: any) => {
+  router.push(`/events/${events.value[row.id].id}`);
+};
 </script>
 
 <style></style>

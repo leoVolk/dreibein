@@ -60,7 +60,9 @@
         <UDashboardNavbar class="lg:hidden" />
       </template>
       <template #body>
-        <slot />
+        <main class="container">
+          <slot />
+        </main>
       </template>
     </UDashboardPanel>
 
@@ -76,19 +78,11 @@ const { pb } = usePocketbase();
 const router = useRouter();
 
 const lists = ref();
-const eventlists = ref();
 
 lists.value = await pb.collection("lists").getFullList();
-eventlists.value = await pb.collection("eventlists").getFullList();
 
 pb.collection("lists").subscribe("*", async (e) => {
   lists.value = await pb.collection("lists").getFullList({ requestKey: null });
-});
-
-pb.collection("eventlists").subscribe("*", async (e) => {
-  lists.value = await pb
-    .collection("eventlists")
-    .getFullList({ requestKey: null });
 });
 
 const listLinks = computed(() =>
@@ -96,14 +90,6 @@ const listLinks = computed(() =>
     label: list.name,
     icon: "i-lucide-clipboard-list",
     to: `/lists/${list.id}`,
-  })),
-);
-
-const eventListsLinks = computed(() =>
-  eventlists.value.map((list: any) => ({
-    label: list.name,
-    icon: "i-lucide-clipboard-list",
-    to: `/events/lists/${list.id}`,
   })),
 );
 
@@ -125,20 +111,11 @@ const items = computed<NavigationMenuItem[][]>(() => [
       label: "Läger & Aktionen",
       icon: "i-lucide-flame-kindling",
       to: "/events",
-      children: [
-        {
-          label: "Kalender",
-          icon: "i-lucide-calendar",
-          to: "/events/calendar",
-        },
-        {
-          label: "Lager Listen",
-          icon: "i-lucide-folder",
-          to: "/events/lists",
-          defaultOpen: true,
-          children: eventListsLinks.value,
-        },
-      ],
+    },
+    {
+      label: "Kalender",
+      icon: "i-lucide-calendar",
+      to: "/calendar",
     },
     {
       label: "Alle Materialien",

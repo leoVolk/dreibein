@@ -24,6 +24,7 @@
     "@fullcalendar/timegrid": "^6.1.20",
     "@fullcalendar/vue3": "^6.1.20",
     "@nuxt/ui": "^4.4.0",
+    "@nuxtjs/mdc": "^0.20.1",
     "nuxt": "^4.3.0",
     "pocketbase-nuxt": "^0.0.3",
     "tailwindcss": "^4.1.18",

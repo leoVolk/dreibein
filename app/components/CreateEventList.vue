@@ -55,6 +55,7 @@ const { pb } = usePocketbase();
 
 const router = useRouter();
 const emit = defineEmits(["refresh"]);
+const props = defineProps(["eventId"]);
 
 const toast = useToast();
 const open = ref(false);
@@ -64,6 +65,7 @@ const state = reactive({
   name: "",
   createdBy: "",
   updatedBy: "",
+  event: props.eventId,
 });
 
 const onSubmit = async () => {

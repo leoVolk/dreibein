@@ -6,8 +6,9 @@
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
-          { label: 'Listen', to: '/lists' },
-          { label: list.name, to: `/lists/${list.id}` },
+          { label: 'Läger & Aktionen', to: '/events' },
+          { label: 'Listen', to: '/events' },
+          { label: list.name },
         ]"
       />
 
@@ -251,7 +252,7 @@ const deleteItem = async (item: any, close: any) => {
 };
 
 const deleteList = async (close: any) => {
-  await pb.collection("eventitems").delete(list.value.id);
+  await pb.collection("eventlists").delete(list.value.id);
 
   toast.add({
     title: "Liste gelöscht",
@@ -260,6 +261,6 @@ const deleteList = async (close: any) => {
 
   close();
 
-  router.push("/events/lists");
+  router.push("/events");
 };
 </script>

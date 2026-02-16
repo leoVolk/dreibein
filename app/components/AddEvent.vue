@@ -110,7 +110,7 @@ const onSubmit = async () => {
   const daysOfWeekIndex = <any>[];
 
   state.daysOfWeek.forEach((d) =>
-    daysOfWeekIndex.push(daysOfWeek.value.indexOf(d)),
+    daysOfWeekIndex.push(daysOfWeek.value.indexOf(d) + 1),
   );
 
   state.daysOfWeek = daysOfWeekIndex;
