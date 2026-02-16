@@ -162,10 +162,10 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <AddCollectionItem
+        <AddEventItem
           :list-id="list.id"
           @refresh="refreshItems()"
-        ></AddCollectionItem>
+        ></AddEventItem>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
@@ -198,9 +198,7 @@ const items = ref();
 const refreshItems = async () => {
   list.value = await pb
     .collection("eventlists")
-    .getOne(route.params.id as string, {
-      expand: "createdBy,updatedBy",
-    });
+    .getOne(route.params.id as string);
 
   items.value = await pb.collection("eventitems").getFullList({
     filter: `list = "${route.params.id}"`,
@@ -212,17 +210,7 @@ await refreshItems();
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
-  {
-    header: "Beschreibung",
-    accessorKey: "description",
-    cell: ({ row }) => `${row.getValue("description") || "-"} `,
-  },
   { header: "Anzahl", accessorKey: "quantity" },
-  {
-    header: "Ausgegeben am",
-    accessorKey: "checkout",
-    cell: ({ row }) => `${row.getValue("checkout") || "-"} `,
-  },
   {
     header: "Gewicht (kg)",
     accessorKey: "weight",
@@ -251,10 +239,6 @@ const meta: TableMeta<any> = {
 
 const deleteItem = async (item: any, close: any) => {
   await pb.collection("eventitems").delete(item.id);
-
-  await pb
-    .collection("eventitems")
-    .update(list.value.id, { updatedBy: user.value?.id });
 
   toast.add({
     title: "Eintrag gelöscht",

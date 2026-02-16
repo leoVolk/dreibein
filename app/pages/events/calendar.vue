@@ -10,7 +10,9 @@
       />
     </div>
 
-    <UCard v-if="events.length"> </UCard>
+    <UCard v-if="events.length">
+      <template #header> <h2 class="text-2xl">Kalender</h2></template>
+    </UCard>
   </div>
 </template>
 
