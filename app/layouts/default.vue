@@ -78,11 +78,19 @@ const { pb } = usePocketbase();
 const router = useRouter();
 
 const lists = ref();
+const events = ref();
 
 lists.value = await pb.collection("lists").getFullList();
+events.value = await pb.collection("events").getFullList();
 
 pb.collection("lists").subscribe("*", async (e) => {
   lists.value = await pb.collection("lists").getFullList({ requestKey: null });
+});
+
+pb.collection("events").subscribe("*", async (e) => {
+  events.value = await pb
+    .collection("events")
+    .getFullList({ requestKey: null });
 });
 
 const listLinks = computed(() =>
@@ -90,6 +98,14 @@ const listLinks = computed(() =>
     label: list.name,
     icon: "i-lucide-clipboard-list",
     to: `/lists/${list.id}`,
+  })),
+);
+
+const eventLinks = computed(() =>
+  events.value.map((event: any) => ({
+    label: event.name,
+    icon: "i-lucide-clipboard-list",
+    to: `/events/${event.id}`,
   })),
 );
 
@@ -109,8 +125,10 @@ const items = computed<NavigationMenuItem[][]>(() => [
     },
     {
       label: "Läger & Aktionen",
-      icon: "i-lucide-flame-kindling",
+      icon: "i-lucide-calendar-1",
       to: "/events",
+      defaultOpen: true,
+      children: eventLinks.value,
     },
     {
       label: "Kalender",

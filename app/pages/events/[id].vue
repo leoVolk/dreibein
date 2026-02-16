@@ -17,6 +17,7 @@
         </div>
       </template>
       <template #default>
+        <!-- TODO: rework design -->
         <div class="flex gap-8 flex-col lg:flex-row">
           <UPageCard
             icon="i-lucide-clipboard-list"
