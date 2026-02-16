@@ -104,7 +104,7 @@ const listLinks = computed(() =>
 const eventLinks = computed(() =>
   events.value.map((event: any) => ({
     label: event.name,
-    icon: "i-lucide-clipboard-list",
+    icon: "i-lucide-calendar-1",
     to: `/events/${event.id}`,
   })),
 );
@@ -125,7 +125,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
     },
     {
       label: "Läger & Aktionen",
-      icon: "i-lucide-calendar-1",
+      icon: "i-lucide-flame-kindling",
       to: "/events",
       defaultOpen: true,
       children: eventLinks.value,
