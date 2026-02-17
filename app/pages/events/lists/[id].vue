@@ -261,6 +261,6 @@ const deleteList = async (close: any) => {
 
   close();
 
-  router.push("/events");
+  router.push(`/events/${list.value.event}`);
 };
 </script>
