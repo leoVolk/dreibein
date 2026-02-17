@@ -18,7 +18,7 @@
       </template>
       <template #default>
         <div class="flex gap-8 flex-col lg:flex-row">
-          <UCard variant="soft" class="w-full max-w-1/3">
+          <UCard variant="soft" class="w-full lg:max-w-1/3">
             <template #header>
               <div class="flex justify-between items-center">
                 <div class="flex gap-2">
@@ -50,7 +50,7 @@
             </div>
           </UCard>
 
-          <UCard variant="soft" class="w-full max-w-1/3">
+          <UCard variant="soft" class="w-full lg:max-w-1/3">
             <template #header>
               <div class="flex justify-between items-center">
                 <div class="flex gap-2">
@@ -79,7 +79,7 @@
             </div>
           </UCard>
 
-          <UCard variant="soft" class="w-full max-w-1/3">
+          <UCard variant="soft" class="w-full lg:max-w-1/3">
             <template #header>
               <div class="flex justify-between items-center">
                 <div class="flex gap-2">
