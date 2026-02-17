@@ -55,7 +55,6 @@ const events = ref();
 
 const getEvents = async () => {
   events.value = await pb.collection("events").getFullList({
-    expand: "createdBy,updatedBy",
     requestKey: null,
   });
 };
@@ -80,26 +79,12 @@ const columns: TableColumn<any>[] = [
         ? new Date(row.getValue("endDate")).toLocaleDateString()
         : "-",
   },
-  {
-    header: "Autor",
-    accessorKey: "expand.createdBy.name",
-  },
 
   {
     header: "Erstellt am",
     accessorKey: "created",
     cell: ({ row }) => new Date(row.getValue("created")).toLocaleDateString(),
   },
-  {
-    header: "Aktualisiert von",
-    accessorKey: "expand.updatedBy.name",
-  },
-  {
-    header: "Aktualisiert am",
-    accessorKey: "updated",
-    cell: ({ row }) => new Date(row.getValue("updated")).toLocaleDateString(),
-  },
-
   {
     header: "",
     accessorKey: "actions",

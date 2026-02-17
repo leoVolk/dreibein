@@ -1,12 +1,12 @@
 <template>
-  <div class="flex flex-col gap-4">
+  <UForm :state="state" class="flex flex-col gap-4">
     <div class="flex justify-between items-center">
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
           { label: 'Läger & Aktionen', to: '/events' },
           { label: 'Notizen', to: '/events' },
-          { label: note.name },
+          { label: 'Neue Notiz' },
         ]"
       />
     </div>
@@ -14,24 +14,25 @@
     <UCard>
       <template #header
         ><div class="flex justify-between items-center">
-          <h2 class="text-2xl">{{ note.name }}</h2>
-
-          <UButton
-            label="Bearbeiten"
-            icon="i-lucide-edit"
-            @click="isEditing = !isEditing"
-          ></UButton>
+          <UFormField class="w-full">
+            <UInput
+              class="w-full"
+              placeholder="Titel"
+              size="lg"
+              v-model="state.name"
+            ></UInput>
+          </UFormField>
         </div>
       </template>
 
       <template #default>
-        <div v-if="isEditing">
+        <div>
           <UEditor
             v-slot="{ editor }"
-            v-model="note.content"
+            v-model="state.content"
             :handlers="customHandlers"
             content-type="html"
-            :ui="{ base: 'p-8 sm:px-16' }"
+            :ui="{ base: 'py-8 ' }"
             class="w-full min-h-74"
           >
             <UEditorToolbar
@@ -49,10 +50,9 @@
             ></UButton>
           </div>
         </div>
-        <MDC v-else :value="note.content" tag="article" />
       </template>
     </UCard>
-  </div>
+  </UForm>
 </template>
 
 <script lang="ts" setup>
@@ -65,16 +65,15 @@ definePageMeta({
 
 const { pb } = usePocketbase();
 const route = useRoute();
+const router = useRouter();
 
 const toast = useToast();
 const loading = ref(false);
 
-const note = ref();
-const isEditing = ref(false);
-
 const state = reactive({
   name: "",
   content: "",
+  event: route.query.event,
 });
 
 const customHandlers = {
@@ -163,7 +162,8 @@ const onSubmit = async () => {
   });
 
   loading.value = false;
-  isEditing.value = false;
+
+  router.push(`/events/${route.query.event}`);
 };
 </script>
 
