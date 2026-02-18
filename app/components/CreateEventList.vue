@@ -1,6 +1,6 @@
 <template>
   <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
-    <UButton @click="open = true" icon="i-lucide-plus" />
+    <UButton color="success" @click="open = true" icon="i-lucide-plus" />
 
     <template #body>
       <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl w-full">

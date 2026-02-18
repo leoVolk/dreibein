@@ -65,6 +65,7 @@
                   <UButton
                     :to="`/events/notes/create?event=${event.id}`"
                     icon="i-lucide-plus"
+                    color="success"
                   ></UButton>
                 </div>
               </div>
@@ -94,7 +95,7 @@
                 </div>
 
                 <div>
-                  <UButton icon="i-lucide-plus"></UButton>
+                  <UButton color="success" icon="i-lucide-plus"></UButton>
                 </div>
               </div>
             </template>
