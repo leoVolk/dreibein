@@ -136,6 +136,11 @@ const items = computed<NavigationMenuItem[][]>(() => [
       to: "/calendar",
     },
     {
+      label: "NaMi Mitglieder",
+      icon: "i-lucide-users",
+      to: "/members",
+    },
+    {
       label: "Alle Materialien",
       icon: "i-lucide-list",
       to: "/items",

@@ -40,11 +40,14 @@
             </h4>
           </div>
 
-          <UAlert
-            color="warning"
-            title="Bei Import werden alle vorherigen Mitglieder & evtl. vorgenommenen Änderungen überschrieben bzw gelöscht."
-            icon="i-lucide-triangle-alert"
-          />
+          <UAlert color="info" icon="i-lucide-info">
+            <template #title>
+              Aktuell unterstützt 3Bein nur die NaMi Export Option:
+              <span class="underline italic font-semibold"
+                >'Mitglieder: Grundinformationen'</span
+              >
+            </template>
+          </UAlert>
 
           <div class="flex items-center gap-4">
             <UFileUpload
@@ -57,10 +60,20 @@
             >
               <div class="flex flex-wrap items-center gap-3">
                 <UButton
+                  v-if="!namiFile"
                   size="lg"
-                  :label="namiFile ? `${namiFile.name}` : 'Upload image'"
+                  label="NaMi Liste hochladen"
                   @click="open()"
                   trailing-icon="i-lucide-upload"
+                />
+
+                <UButton
+                  v-else
+                  size="lg"
+                  color="error"
+                  :label="`${namiFile.name}`"
+                  @click="removeFile()"
+                  trailing-icon="i-lucide-x"
                 />
               </div>
             </UFileUpload>
@@ -73,6 +86,12 @@
             :columns="namiColumns"
             :data="namiFileData"
           ></UTable>
+
+          <UAlert
+            color="warning"
+            title="Bei Import werden alle vorherigen Mitglieder & evtl. vorgenommenen Änderungen überschrieben bzw gelöscht."
+            icon="i-lucide-triangle-alert"
+          />
 
           <div v-if="namiFileData.length" class="flex justify-end">
             <UButton
