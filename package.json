@@ -29,7 +29,8 @@
     "pocketbase-nuxt": "^0.0.3",
     "tailwindcss": "^4.1.18",
     "vue": "^3.5.27",
-    "vue-router": "^4.6.4"
+    "vue-router": "^4.6.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^25.2.2",
