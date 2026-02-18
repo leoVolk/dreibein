@@ -76,6 +76,7 @@
 
           <div v-if="namiFileData.length" class="flex justify-end">
             <UButton
+              :loading="importLoading"
               icon="i-lucide-import"
               @click="onNamiFileImport()"
               label="Importieren"
@@ -93,9 +94,11 @@ import * as XLSX from "xlsx";
 
 const { user } = usePocketbaseAuth();
 const { pb } = usePocketbase();
+const toast = useToast();
 
 const namiFile = ref();
 const namiFileData = ref<any[]>([]);
+const importLoading = ref(false);
 const users = ref();
 
 const getUsers = async () => {
@@ -153,11 +156,70 @@ const createTableHeaders = () => {
       };
     },
   );
-
   namiColumns.value = columns;
 };
 
-const onNamiFileImport = () => {};
+const onNamiFileImport = async () => {
+  importLoading.value = true;
+
+  const members = await pb.collection("members").getFullList();
+
+  try {
+    const deleteBatch = pb.createBatch();
+
+    members.forEach((m) => {
+      deleteBatch.collection("members").delete(m.id);
+    });
+
+    await deleteBatch.send();
+  } catch (error: any) {
+    toast.add({
+      title: "Error",
+      description: error,
+      icon: "i-lucide-import",
+      color: "error",
+    });
+  }
+
+  const importBatch = pb.createBatch();
+
+  namiFileData.value.forEach((m: any) => {
+    const member = {
+      memberNumber: parseInt(m.Mitgliedsnummer),
+      firstName: m.Vorname,
+      lastName: m.Nachname,
+      gender: m.Geschlecht,
+      nationality: m.Staatsangehoerigkeit,
+      street: m.Strasse,
+      postalCode: parseInt(m.PLZ),
+      city: m.Ort,
+      email: m.EMail,
+      guardianEmail: m.EMailErziehungsberechtigter,
+      phone1: m.Telefon1,
+      phone2: m.Telefon2,
+      phone3: m.Telefon3,
+      birthDate: m.GebDatum,
+      membershipType: m.Mitgliedstyp,
+      status: m.Status,
+      joinDate: m.Eintrittsdatum,
+      dataUsageConsent: m.Datenweiterverwendung,
+      magazineDelivery: m.Zeitschriftenversand,
+      groupName: m.Gruppierungsnamemember,
+      groupNumber: parseInt(m.Gruppierungsnummer),
+    };
+
+    importBatch.collection("members").create(member);
+  });
+
+  const result = await importBatch.send();
+
+  importLoading.value = false;
+
+  toast.add({
+    title: "Nami Liste importiert",
+    icon: "i-lucide-import",
+  });
+};
 </script>
 
 <style></style>
