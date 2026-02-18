@@ -11,7 +11,7 @@
       <CreateList @refresh="getLists()"></CreateList>
     </div>
 
-    <UCard v-if="lists.length">
+    <UCard variant="subtle" v-if="lists.length">
       <template #header> <h2 class="text-2xl">Alle Listen</h2></template>
       <template #default>
         <UTable @select="onSelect" :data="lists" :columns="columns">

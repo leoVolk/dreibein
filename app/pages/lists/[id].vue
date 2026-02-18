@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <UCard v-if="items.length">
+    <UCard variant="subtle" v-if="items.length">
       <template #header>
         <div>
           <h2 class="text-2xl">{{ list.name }}</h2>

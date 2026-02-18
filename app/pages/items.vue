@@ -6,7 +6,7 @@
         { label: 'Alle Materialien', to: '/items' },
       ]"
     />
-    <UCard>
+    <UCard variant="subtle">
       <template #header> <h2 class="text-2xl">Alle Materialien</h2> </template>
       <template #default>
         <UTable

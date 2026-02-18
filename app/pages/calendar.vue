@@ -10,7 +10,7 @@
       />
     </div>
 
-    <UCard>
+    <UCard variant="subtle">
       <template #header> <h2 class="text-2xl">Kalender</h2></template>
       <template #default>
         <FullCalendar :options="calendarOptions" />

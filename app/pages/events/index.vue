@@ -11,7 +11,7 @@
       <AddEvent @refresh="getEvents()"></AddEvent>
     </div>
 
-    <UCard v-if="events.length">
+    <UCard variant="subtle" v-if="events.length">
       <template #header> <h2 class="text-2xl">Läger & Aktionen</h2></template>
       <template #default>
         <div class="flex flex-col gap-4">
