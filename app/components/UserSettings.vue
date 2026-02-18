@@ -19,6 +19,7 @@
           <div class="flex justify-end">
             <UButton
               icon="i-lucide-save"
+              color="success"
               @click="onUserNameChange()"
               label="Speichern"
             ></UButton>

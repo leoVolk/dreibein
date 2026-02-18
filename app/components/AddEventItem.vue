@@ -1,6 +1,6 @@
 <template>
   <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
-    <UButton icon="i-lucide-plus" @click="open = true"
+    <UButton color="success" icon="i-lucide-plus" @click="open = true"
       >Material hinzufügen</UButton
     >
 

@@ -4,6 +4,7 @@
       @click="open = true"
       icon="i-lucide-plus"
       label="Benutzer anlegen"
+      color="success"
     />
 
     <template #body>

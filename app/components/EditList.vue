@@ -5,6 +5,7 @@
       size="sm"
       @click="open = true"
       icon="i-lucide-edit"
+      color="success"
     />
 
     <template #body>

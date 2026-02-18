@@ -43,6 +43,7 @@
 
           <div class="flex justify-end">
             <UButton
+              color="success"
               label="Speichern"
               icon="i-lucide-save"
               @click="onSubmit"

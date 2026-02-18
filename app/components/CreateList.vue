@@ -4,6 +4,7 @@
       label="Liste erstellen"
       @click="open = true"
       icon="i-lucide-plus"
+      color="success"
     />
 
     <template #body>
