@@ -128,31 +128,46 @@ definePageMeta({
 const { pb } = usePocketbase();
 const route = useRoute();
 
-const { data: event, refresh: refreshEvent } = await useAsyncData<any>(() =>
+const {
+  data: event,
+  refresh: refreshEvent,
+  execute: executeEvent,
+} = await useAsyncData<any>(() =>
   pb.collection("events").getOne(route.params.id as string),
 );
 
-const { data: lists, refresh: refreshLists } = await useAsyncData<any>(() =>
+const {
+  data: lists,
+  refresh: refreshLists,
+  execute: executeLists,
+} = await useAsyncData<any>(() =>
   pb.collection("eventlists").getFullList({
     filter: `event = "${route.params.id}"`,
     requestKey: null,
   }),
 );
 
-const { data: notes, refresh: refreshNotes } = await useAsyncData<any>(() =>
+const {
+  data: notes,
+  refresh: refreshNotes,
+  execute: executeNotes,
+} = await useAsyncData<any>(() =>
   pb.collection("eventnotes").getFullList({
     filter: `event = "${route.params.id}"`,
     requestKey: null,
   }),
 );
 
-const { data: participantLists, refresh: refreshParticipantLists } =
-  await useAsyncData<any>(() =>
-    pb.collection("participantlists").getFullList({
-      filter: `event = "${route.params.id}"`,
-      requestKey: null,
-    }),
-  );
+const {
+  data: participantLists,
+  refresh: refreshParticipantLists,
+  execute: executeParticipants,
+} = await useAsyncData<any>(() =>
+  pb.collection("participantlists").getFullList({
+    filter: `event = "${route.params.id}"`,
+    requestKey: null,
+  }),
+);
 
 const refreshEventInfos = async () => {
   refreshEvent();

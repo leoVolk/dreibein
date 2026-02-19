@@ -113,12 +113,6 @@
 
           <template #actions-cell="{ row }">
             <div class="flex gap-1 items-center">
-              <EditItem
-                @refresh="refresh()"
-                :list-id="list.id"
-                :item="items[row.index]"
-              ></EditItem>
-
               <UModal title="Eintrag löschen">
                 <UButton
                   variant="ghost"

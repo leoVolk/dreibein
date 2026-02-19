@@ -77,20 +77,20 @@ const { pb } = usePocketbase();
 
 const router = useRouter();
 
-const lists = ref();
-const events = ref();
+const { data: lists, refresh: refreshLists } = await useAsyncData<any>(() =>
+  pb.collection("lists").getFullList(),
+);
 
-lists.value = await pb.collection("lists").getFullList();
-events.value = await pb.collection("events").getFullList();
+const { data: events, refresh: refreshEvents } = await useAsyncData<any>(() =>
+  pb.collection("events").getFullList(),
+);
 
-pb.collection("lists").subscribe("*", async (e) => {
-  lists.value = await pb.collection("lists").getFullList({ requestKey: null });
+pb.collection("lists").subscribe("*", (e) => {
+  refreshLists();
 });
 
-pb.collection("events").subscribe("*", async (e) => {
-  events.value = await pb
-    .collection("events")
-    .getFullList({ requestKey: null });
+pb.collection("events").subscribe("*", (e) => {
+  refreshEvents();
 });
 
 const listLinks = computed(() =>
