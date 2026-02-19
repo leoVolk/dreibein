@@ -72,6 +72,8 @@ const toast = useToast();
 const open = ref(false);
 const loading = ref(false);
 
+const UCheckbox = resolveComponent("UCheckbox");
+
 const state = reactive({
   name: "",
   event: props.eventId,
@@ -90,7 +92,9 @@ const {
 
 const globalFilter = ref("");
 
-const UCheckbox = resolveComponent("UCheckbox");
+watch(open, async (newOpen, oldOpen) => {
+  if (newOpen === true) execute();
+});
 
 const columns: TableColumn<any>[] = [
   {
@@ -136,16 +140,14 @@ const onSubmit = async () => {
   try {
     const batch = pb.createBatch();
 
-    table.value?.tableApi
-      .getFilteredSelectedRowModel()
-      .rows.forEach((element) => {
-        const m = members.value[element.index];
+    table.value?.tableApi.getFilteredSelectedRowModel().rows.forEach((row) => {
+      const m = members.value[row.index];
 
-        if (!m) return;
-        batch
-          .collection("members")
-          .update(m.id, { ...m, lists: [...m.lists, record.id] });
-      });
+      if (!m) return;
+      batch
+        .collection("members")
+        .update(m.id, { ...m, lists: [...m.lists, record.id] });
+    });
 
     const result = await batch.send();
   } catch (error: any) {
