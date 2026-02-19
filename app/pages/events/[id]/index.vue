@@ -32,7 +32,7 @@
                 <div>
                   <CreateEventList
                     :event-id="event.id"
-                    @refresh="getEventInfos()"
+                    @refresh="refreshEventInfos()"
                   ></CreateEventList>
                 </div>
               </div>
@@ -97,7 +97,7 @@
                 <div>
                   <AddParticipantList
                     :event-id="event.id"
-                    @refresh="getEventInfos()"
+                    @refresh="refreshEventInfos()"
                   ></AddParticipantList>
                 </div>
               </div>
@@ -128,30 +128,38 @@ definePageMeta({
 const { pb } = usePocketbase();
 const route = useRoute();
 
-const event = ref();
-const lists = ref();
-const notes = ref();
-const participantLists = ref();
+const { data: event, refresh: refreshEvent } = await useAsyncData<any>(() =>
+  pb.collection("events").getOne(route.params.id as string),
+);
 
-const getEventInfos = async () => {
-  event.value = await pb.collection("events").getOne(route.params.id as string);
-
-  lists.value = await pb.collection("eventlists").getFullList({
+const { data: lists, refresh: refreshLists } = await useAsyncData<any>(() =>
+  pb.collection("eventlists").getFullList({
     filter: `event = "${route.params.id}"`,
     requestKey: null,
-  });
+  }),
+);
 
-  notes.value = await pb.collection("eventnotes").getFullList({
+const { data: notes, refresh: refreshNotes } = await useAsyncData<any>(() =>
+  pb.collection("eventnotes").getFullList({
     filter: `event = "${route.params.id}"`,
     requestKey: null,
-  });
+  }),
+);
 
-  participantLists.value = await pb
-    .collection("participantlists")
-    .getFullList({ filter: `event = "${route.params.id}"`, requestKey: null });
+const { data: participantLists, refresh: refreshParticipantLists } =
+  await useAsyncData<any>(() =>
+    pb.collection("participantlists").getFullList({
+      filter: `event = "${route.params.id}"`,
+      requestKey: null,
+    }),
+  );
+
+const refreshEventInfos = async () => {
+  refreshEvent();
+  refreshNotes();
+  refreshLists();
+  refreshParticipantLists();
 };
-
-await getEventInfos();
 </script>
 
 <style></style>

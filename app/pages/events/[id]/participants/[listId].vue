@@ -41,16 +41,13 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <AddEventItem
-          :list-id="list.id"
-          @refresh="refreshParticipants()"
-        ></AddEventItem>
+        <AddEventItem :list-id="list.id" @refresh="refresh()"></AddEventItem>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
           variant="subtle"
-          @click="refreshParticipants()"
+          @click="refresh()"
         ></UButton>
       </template>
     </UEmpty>
@@ -70,25 +67,26 @@ const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
 
-const list = ref();
-const participants = ref();
+const { data: list, refresh: refreshList } = await useAsyncData<any>(() =>
+  pb.collection("participantlists").getOne(route.params.listId as string),
+);
 
-const refreshParticipants = async () => {
-  list.value = await pb
-    .collection("participantlists")
-    .getOne(route.params.listId as string);
+const { data: participants, refresh: refreshParticipants } =
+  await useAsyncData<any>(() =>
+    pb.collection("members").getFullList({
+      filter: `lists ~ "${route.params.listId}"`,
+      requestKey: null,
+    }),
+  );
 
-  participants.value = await pb.collection("members").getFullList({
-    filter: `lists ~ "${route.params.listId}"`,
-    requestKey: null,
-  });
+const refresh = () => {
+  refreshList();
+  refreshParticipants();
 };
 
 const hasPaid = (paidLists: any) => {
   return paidLists.includes(route.params.listId as string);
 };
-
-await refreshParticipants();
 
 const columns: TableColumn<any>[] = [
   { header: "Bezahlt", accessorKey: "paidLists" },

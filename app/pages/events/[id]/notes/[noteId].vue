@@ -84,16 +84,11 @@ const route = useRoute();
 const toast = useToast();
 const loading = ref(false);
 
-const note = ref();
 const isEditing = ref(false);
 
-const getNote = async () => {
-  note.value = await pb
-    .collection("eventnotes")
-    .getOne(route.params.noteId as string);
-};
-
-await getNote();
+const { data: note, refresh } = await useAsyncData<any>(() =>
+  pb.collection("eventnotes").getOne(route.params.noteId as string),
+);
 
 const customHandlers = {
   imageUpload: {
@@ -175,7 +170,7 @@ const onSubmit = async () => {
 
   note.value = await pb
     .collection("eventnotes")
-    .update(route.params.id as string, note.value);
+    .update(route.params.noteId as string, note.value);
 
   toast.add({
     title: "Notiz aktualisiert",
@@ -184,12 +179,13 @@ const onSubmit = async () => {
 
   loading.value = false;
   isEditing.value = false;
+
+  refresh();
 };
 
 const onAbord = async () => {
-  note.value = await pb
-    .collection("eventnotes")
-    .getOne(route.params.id as string);
+  refresh();
+
   isEditing.value = false;
 };
 </script>

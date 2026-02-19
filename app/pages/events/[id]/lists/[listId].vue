@@ -114,7 +114,7 @@
           <template #actions-cell="{ row }">
             <div class="flex gap-1 items-center">
               <EditItem
-                @refresh="refreshItems()"
+                @refresh="refresh()"
                 :list-id="list.id"
                 :item="items[row.index]"
               ></EditItem>
@@ -164,16 +164,13 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <AddEventItem
-          :list-id="list.id"
-          @refresh="refreshItems()"
-        ></AddEventItem>
+        <AddEventItem :list-id="list.id" @refresh="refresh()"></AddEventItem>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
           variant="subtle"
-          @click="refreshItems()"
+          @click="refresh()"
         ></UButton>
       </template>
     </UEmpty>
@@ -193,21 +190,21 @@ const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
 
-const list = ref();
-const items = ref();
+const { data: list, refresh: refreshList } = await useAsyncData<any>(() =>
+  pb.collection("eventlists").getOne(route.params.listId as string),
+);
 
-const refreshItems = async () => {
-  list.value = await pb
-    .collection("eventlists")
-    .getOne(route.params.listId as string);
-
-  items.value = await pb.collection("eventitems").getFullList({
+const { data: items, refresh: refreshItems } = await useAsyncData<any>(() =>
+  pb.collection("eventitems").getFullList({
     filter: `list = "${route.params.listId}"`,
     requestKey: null,
-  });
-};
+  }),
+);
 
-await refreshItems();
+const refresh = () => {
+  refreshList();
+  refreshItems();
+};
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },

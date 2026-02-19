@@ -89,13 +89,12 @@ const router = useRouter();
 const { pb } = usePocketbase();
 const toast = useToast();
 
-const { data, status, pending, error, refresh, clear } =
-  await useAsyncData<any>(() =>
-    pb.collection("lists").getFullList({
-      expand: "createdBy,updatedBy",
-      requestKey: null,
-    }),
-  );
+const { data, refresh } = await useAsyncData<any>(() =>
+  pb.collection("lists").getFullList({
+    expand: "createdBy,updatedBy",
+    requestKey: null,
+  }),
+);
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
