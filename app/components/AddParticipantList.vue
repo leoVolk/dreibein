@@ -78,9 +78,15 @@ const state = reactive({
 });
 
 const table = useTemplateRef("table");
-const members = await pb
-  .collection("members")
-  .getFullList({ requestKey: null });
+
+const {
+  data: members,
+  refresh,
+  execute,
+} = await useAsyncData<any>(
+  () => pb.collection("members").getFullList({ requestKey: null }),
+  { immediate: false },
+);
 
 const globalFilter = ref("");
 
@@ -133,7 +139,7 @@ const onSubmit = async () => {
     table.value?.tableApi
       .getFilteredSelectedRowModel()
       .rows.forEach((element) => {
-        const m = members[element.index];
+        const m = members.value[element.index];
 
         if (!m) return;
         batch
@@ -157,11 +163,14 @@ const onSubmit = async () => {
 
   emit("refresh");
 
+  members.value = null;
+
   loading.value = false;
   open.value = false;
 };
 
 const onAbort = async () => {
+  members.value = null;
   open.value = false;
 };
 
