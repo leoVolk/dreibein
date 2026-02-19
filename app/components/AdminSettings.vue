@@ -40,6 +40,13 @@
             </h4>
           </div>
 
+          <UAlert
+            v-if="namiFileData.length"
+            color="warning"
+            title="Bei Import werden aktuell alle vorherigen Mitglieder überschrieben bzw gelöscht."
+            icon="i-lucide-triangle-alert"
+          />
+
           <UAlert color="neutral" icon="i-lucide-info">
             <template #title>
               Aktuell unterstützt 3Bein nur die NaMi Export Option:
@@ -51,7 +58,7 @@
             </template>
           </UAlert>
 
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-4 justify-between">
             <UFileUpload
               v-slot="{ open, removeFile }"
               v-model="namiFile"
@@ -67,7 +74,7 @@
                   color="success"
                   label="NaMi Liste hochladen"
                   @click="open()"
-                  trailing-icon="i-lucide-upload"
+                  icon="i-lucide-upload"
                 />
 
                 <UButton
@@ -76,10 +83,21 @@
                   color="error"
                   :label="`${namiFile.name}`"
                   @click="removeFile()"
-                  trailing-icon="i-lucide-x"
+                  icon="i-lucide-x"
                 />
               </div>
             </UFileUpload>
+
+            <div v-if="namiFileData.length" class="flex justify-end">
+              <UButton
+                :loading="importLoading"
+                icon="i-lucide-upload"
+                size="lg"
+                @click="onNamiFileImport()"
+                label="Hochladen"
+                color="success"
+              ></UButton>
+            </div>
           </div>
 
           <UTable
@@ -89,22 +107,6 @@
             :columns="namiColumns"
             :data="namiFileData"
           ></UTable>
-
-          <UAlert
-            v-if="namiFileData.length"
-            color="warning"
-            title="Bei Import werden alle vorherigen Mitglieder & evtl. vorgenommenen Änderungen überschrieben bzw gelöscht."
-            icon="i-lucide-triangle-alert"
-          />
-
-          <div v-if="namiFileData.length" class="flex justify-end">
-            <UButton
-              :loading="importLoading"
-              icon="i-lucide-import"
-              @click="onNamiFileImport()"
-              label="Importieren"
-            ></UButton>
-          </div>
         </div>
       </div>
     </template>
@@ -179,13 +181,16 @@ const createTableHeaders = () => {
       };
     },
   );
+
   namiColumns.value = columns;
 };
 
-const onNamiFileImport = async () => {
+const deleteNaMiMembers = async () => {
   importLoading.value = true;
 
   const members = await pb.collection("members").getFullList();
+
+  if (!members.length) return;
 
   try {
     const deleteBatch = pb.createBatch();
@@ -203,6 +208,14 @@ const onNamiFileImport = async () => {
       color: "error",
     });
   }
+
+  importLoading.value = false;
+};
+
+const onNamiFileImport = async () => {
+  await deleteNaMiMembers();
+
+  importLoading.value = true;
 
   try {
     const importBatch = pb.createBatch();
