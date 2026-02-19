@@ -28,7 +28,7 @@
           :meta="meta"
         >
           <template #paidLists-cell="{ row }">
-            <UCheckbox />
+            <UCheckbox :modelValue="hasPaid(row.original.paidLists)" />
           </template>
         </UTable>
       </template>
