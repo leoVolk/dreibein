@@ -4,7 +4,7 @@
       class="flex lg:justify-between lg:Participants-center flex-col lg:flex-row gap-4"
     >
       <UBreadcrumb
-        :Participants="[
+        :items="[
           { label: 'Home', to: '/' },
           { label: 'Läger & Aktionen', to: '/events' },
           { label: 'Teilnehmerlisten', to: '/events' },
