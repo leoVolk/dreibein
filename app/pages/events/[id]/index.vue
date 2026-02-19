@@ -128,46 +128,40 @@ definePageMeta({
 const { pb } = usePocketbase();
 const route = useRoute();
 
-const {
-  data: event,
-  refresh: refreshEvent,
-  execute: executeEvent,
-} = await useAsyncData<any>(() =>
-  pb.collection("events").getOne(route.params.id as string),
+const id = computed(() => route.params.id as string);
+
+const { data: event, refresh: refreshEvent } = await useAsyncData<any>(
+  () => `event-${id.value}`,
+  () => pb.collection("events").getOne(id.value),
 );
 
-const {
-  data: lists,
-  refresh: refreshLists,
-  execute: executeLists,
-} = await useAsyncData<any>(() =>
-  pb.collection("eventlists").getFullList({
-    filter: `event = "${route.params.id}"`,
-    requestKey: null,
-  }),
+const { data: lists, refresh: refreshLists } = await useAsyncData<any>(
+  () => `lists-${id.value}`,
+  () =>
+    pb.collection("eventlists").getFullList({
+      filter: `event = "${id.value}"`,
+      requestKey: null,
+    }),
 );
 
-const {
-  data: notes,
-  refresh: refreshNotes,
-  execute: executeNotes,
-} = await useAsyncData<any>(() =>
-  pb.collection("eventnotes").getFullList({
-    filter: `event = "${route.params.id}"`,
-    requestKey: null,
-  }),
+const { data: notes, refresh: refreshNotes } = await useAsyncData<any>(
+  () => `notes-${id.value}`,
+  () =>
+    pb.collection("eventnotes").getFullList({
+      filter: `event = "${id.value}"`,
+      requestKey: null,
+    }),
 );
 
-const {
-  data: participantLists,
-  refresh: refreshParticipantLists,
-  execute: executeParticipants,
-} = await useAsyncData<any>(() =>
-  pb.collection("participantlists").getFullList({
-    filter: `event = "${route.params.id}"`,
-    requestKey: null,
-  }),
-);
+const { data: participantLists, refresh: refreshParticipantLists } =
+  await useAsyncData<any>(
+    () => `participantLists-${id.value}`,
+    () =>
+      pb.collection("participantlists").getFullList({
+        filter: `event = "${id.value}"`,
+        requestKey: null,
+      }),
+  );
 
 const refreshEventInfos = async () => {
   refreshEvent();
