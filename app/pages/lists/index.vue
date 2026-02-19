@@ -8,16 +8,19 @@
         ]"
       />
 
-      <CreateList @refresh="getLists()"></CreateList>
+      <CreateList @refresh="refresh()"></CreateList>
     </div>
 
-    <UCard variant="subtle" v-if="lists.length">
+    <UCard variant="subtle" v-if="data">
       <template #header> <h2 class="text-2xl">Alle Listen</h2></template>
       <template #default>
-        <UTable @select="onSelect" :data="lists" :columns="columns">
+        <UTable @select="onSelect" :data="data" :columns="columns">
           <template #actions-cell="{ row }">
             <div class="flex gap-1 items-center">
-              <EditList @refresh="getLists()" :list="lists[row.id]"></EditList>
+              <EditList
+                @refresh="refresh()"
+                :list="data[row.id as any]"
+              ></EditList>
               <UModal title="Liste löschen">
                 <UButton
                   size="sm"
@@ -63,13 +66,13 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <CreateList @refresh="getLists()"></CreateList>
+        <CreateList @refresh="refresh()"></CreateList>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
           variant="subtle"
-          @click="getLists()"
+          @click="refresh()"
         ></UButton>
       </template>
     </UEmpty>
@@ -78,24 +81,21 @@
 <script lang="ts" setup>
 import type { TableColumn } from "@nuxt/ui";
 
-const router = useRouter();
-const { pb } = usePocketbase();
-const toast = useToast();
-
 definePageMeta({
   middleware: ["auth"],
 });
 
-const lists = ref();
+const router = useRouter();
+const { pb } = usePocketbase();
+const toast = useToast();
 
-const getLists = async () => {
-  lists.value = await pb.collection("lists").getFullList({
-    expand: "createdBy,updatedBy",
-    requestKey: "refresh_ListsIndex",
-  });
-};
-
-await getLists();
+const { data, status, pending, error, refresh, clear } =
+  await useAsyncData<any>(() =>
+    pb.collection("lists").getFullList({
+      expand: "createdBy,updatedBy",
+      requestKey: null,
+    }),
+  );
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
@@ -125,11 +125,11 @@ const columns: TableColumn<any>[] = [
 ];
 
 const onSelect = (e: Event, row: any) => {
-  router.push(`/lists/${lists.value[row.id].id}`);
+  router.push(`/lists/${data.value[row.id].id}`);
 };
 
 const deleteList = async (row: any, close: any) => {
-  await pb.collection("lists").delete(lists.value[row.id].id);
+  await pb.collection("lists").delete(data.value[0].id);
 
   toast.add({
     title: "Liste gelöscht",
@@ -137,6 +137,6 @@ const deleteList = async (row: any, close: any) => {
   });
 
   close();
-  await getLists();
+  refresh();
 };
 </script>
