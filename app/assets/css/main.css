@@ -2,15 +2,9 @@
 @import "@nuxt/ui";
 
 @theme {
-  --font-sans: "Inter", sans-serif;
+  --font-sans: "Raleway", sans-serif;
 }
 
-/* :root {
-  --ui-primary: black;
-  --ui-bg: white;
+:root {
+  --ui-radius: 0.5rem;
 }
-
-.dark {
-  --ui-primary: white;
-  --ui-bg: black;
-} */
