@@ -37,7 +37,7 @@
             ref="table"
             v-model:global-filter="globalFilter"
             sticky
-            class="max-h-256"
+            class="max-h-225"
             :data="members"
             :columns="columns"
           />
