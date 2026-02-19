@@ -186,20 +186,17 @@ const route = useRoute();
 const router = useRouter();
 const { user } = usePocketbaseAuth();
 
-const list = ref();
-const items = ref();
-
-const refreshItems = async () => {
-  list.value = await pb.collection("lists").getOne(route.params.id as string, {
+const { data: list, refresh: refreshList } = await useAsyncData<any>(() =>
+  pb.collection("lists").getOne(route.params.id as string, {
     expand: "createdBy,updatedBy",
-  });
+  }),
+);
 
-  items.value = await pb.collection("items").getFullList({
+const { data: items, refresh: refreshItems } = await useAsyncData<any>(() =>
+  pb.collection("items").getFullList({
     filter: `list = "${route.params.id}"`,
-  });
-};
-
-await refreshItems();
+  }),
+);
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
