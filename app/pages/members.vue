@@ -23,8 +23,25 @@
         </p></template
       >
       <template #default>
-        <UTable sticky class="max-h-256" :data="members" :columns="columns">
-        </UTable>
+        <div class="flex flex-col flex-1 w-full">
+          <div class="flex pb-4 border-b border-accented">
+            <UInput
+              size="xl"
+              v-model="globalFilter"
+              class="w-full"
+              placeholder="Suche..."
+            />
+          </div>
+
+          <UTable
+            ref="table"
+            v-model:global-filter="globalFilter"
+            sticky
+            class="max-h-256"
+            :data="members"
+            :columns="columns"
+          />
+        </div>
       </template>
     </UCard>
 
@@ -44,6 +61,7 @@ import type { TableColumn } from "@nuxt/ui";
 const { pb } = usePocketbase();
 
 const members = ref();
+const globalFilter = ref("");
 
 const getNamiMembers = async () => {
   members.value = await pb.collection("members").getFullList();
