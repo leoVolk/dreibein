@@ -1,45 +1,38 @@
 <template>
-  <div class="flex flex-col gap-4">
+  <UForm :state="state" class="flex flex-col gap-4">
     <div class="flex justify-between items-center">
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
           { label: 'Läger & Aktionen', to: '/events' },
           { label: 'Notizen', to: '/events' },
-          { label: note.name },
+          { label: 'Neue Notiz' },
         ]"
       />
     </div>
 
-    <UCard variant="subtle">
-      <template #header>
-        <div v-if="!isEditing" class="flex justify-between items-center">
-          <h2 class="text-2xl">{{ note.name }}</h2>
-
-          <UButton
-            label="Bearbeiten"
-            icon="i-lucide-edit"
-            @click="isEditing = !isEditing"
-          ></UButton>
+    <UCard>
+      <template #header
+        ><div class="flex justify-between items-center">
+          <UFormField class="w-full">
+            <UInput
+              class="w-full"
+              placeholder="Titel"
+              size="lg"
+              v-model="state.name"
+            ></UInput>
+          </UFormField>
         </div>
-        <UFormField v-else class="w-full">
-          <UInput
-            class="w-full"
-            placeholder="Titel"
-            size="lg"
-            v-model="note.name"
-          ></UInput>
-        </UFormField>
       </template>
 
       <template #default>
-        <div v-if="isEditing">
+        <div>
           <UEditor
             v-slot="{ editor }"
-            v-model="note.content"
+            v-model="state.content"
             :handlers="customHandlers"
             content-type="html"
-            :ui="{ base: 'p-8 sm:px-16' }"
+            :ui="{ base: 'py-8 ' }"
             class="w-full min-h-74"
           >
             <UEditorToolbar
@@ -49,13 +42,7 @@
             />
           </UEditor>
 
-          <div class="flex justify-between">
-            <UButton
-              color="error"
-              label="Abbrechen"
-              icon="i-lucide-x"
-              @click="onAbord"
-            ></UButton>
+          <div class="flex justify-end">
             <UButton
               color="success"
               label="Speichern"
@@ -64,10 +51,9 @@
             ></UButton>
           </div>
         </div>
-        <MDC v-else :value="note.content" tag="article" />
       </template>
     </UCard>
-  </div>
+  </UForm>
 </template>
 
 <script lang="ts" setup>
@@ -80,20 +66,16 @@ definePageMeta({
 
 const { pb } = usePocketbase();
 const route = useRoute();
+const router = useRouter();
 
 const toast = useToast();
 const loading = ref(false);
 
-const note = ref();
-const isEditing = ref(false);
-
-const getNote = async () => {
-  note.value = await pb
-    .collection("eventnotes")
-    .getOne(route.params.id as string);
-};
-
-await getNote();
+const state = reactive({
+  name: "",
+  content: "",
+  event: route.params.id,
+});
 
 const customHandlers = {
   imageUpload: {
@@ -173,9 +155,7 @@ const items = [
 const onSubmit = async () => {
   loading.value = true;
 
-  note.value = await pb
-    .collection("eventnotes")
-    .update(route.params.id as string, note.value);
+  await pb.collection("eventnotes").create(state);
 
   toast.add({
     title: "Notiz aktualisiert",
@@ -183,14 +163,8 @@ const onSubmit = async () => {
   });
 
   loading.value = false;
-  isEditing.value = false;
-};
 
-const onAbord = async () => {
-  note.value = await pb
-    .collection("eventnotes")
-    .getOne(route.params.id as string);
-  isEditing.value = false;
+  router.push(`/events/${route.query.event}`);
 };
 </script>
 

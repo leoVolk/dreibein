@@ -41,7 +41,7 @@
             <div class="flex flex-col gap-2">
               <ULink
                 v-for="value in lists"
-                :to="`lists/${value.id}`"
+                :to="`/events/${event.id}/lists/${value.id}`"
                 class="flex gap-2 items-center underline"
               >
                 <UIcon name="i-lucide-list" class="size-4"></UIcon>
@@ -63,7 +63,7 @@
 
                 <div>
                   <UButton
-                    :to="`/events/notes/create?event=${event.id}`"
+                    :to="`/events/${event.id}/notes/create`"
                     icon="i-lucide-plus"
                     color="success"
                   ></UButton>
@@ -74,7 +74,7 @@
             <div class="flex flex-col gap-2">
               <ULink
                 v-for="value in notes"
-                :to="`notes/${value.id}`"
+                :to="`/events/${event.id}/notes/${value.id}`"
                 class="flex gap-2 items-center underline"
               >
                 <UIcon name="i-lucide-notebook" class="size-4"></UIcon>
@@ -95,7 +95,10 @@
                 </div>
 
                 <div>
-                  <UButton color="success" icon="i-lucide-plus"></UButton>
+                  <AddParticipantList
+                    :event-id="event.id"
+                    @refresh="getEventInfos()"
+                  ></AddParticipantList>
                 </div>
               </div>
             </template>
@@ -103,7 +106,7 @@
             <div class="flex flex-col gap-2">
               <ULink
                 v-for="value in participantLists"
-                :to="`lists/${value.id}`"
+                :to="`/events/${event.id}/participants/${value.id}`"
                 class="flex gap-2 items-center underline"
               >
                 <UIcon name="i-lucide-list" class="size-4"></UIcon>
@@ -142,6 +145,10 @@ const getEventInfos = async () => {
     filter: `event = "${route.params.id}"`,
     requestKey: null,
   });
+
+  participantLists.value = await pb
+    .collection("participantlists")
+    .getFullList({ filter: `event = "${route.params.id}"`, requestKey: null });
 };
 
 await getEventInfos();

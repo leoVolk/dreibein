@@ -199,10 +199,10 @@ const items = ref();
 const refreshItems = async () => {
   list.value = await pb
     .collection("eventlists")
-    .getOne(route.params.id as string);
+    .getOne(route.params.listId as string);
 
   items.value = await pb.collection("eventitems").getFullList({
-    filter: `list = "${route.params.id}"`,
+    filter: `list = "${route.params.listId}"`,
     requestKey: null,
   });
 };
