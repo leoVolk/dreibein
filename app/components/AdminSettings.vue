@@ -47,7 +47,7 @@
             icon="i-lucide-triangle-alert"
           />
 
-          <UAlert color="neutral" icon="i-lucide-info">
+          <UAlert color="info" icon="i-lucide-info">
             <template #title>
               Aktuell unterstützt 3Bein nur die NaMi Export Option:
               <ULink class="text-inverted" to="/help" target="_blank">
@@ -71,10 +71,10 @@
                 <UButton
                   v-if="!namiFile"
                   size="lg"
-                  color="success"
-                  label="NaMi Liste hochladen"
+                  color="neutral"
+                  label="NaMi Liste importieren"
                   @click="open()"
-                  icon="i-lucide-upload"
+                  icon="i-lucide-import"
                 />
 
                 <UButton
@@ -88,7 +88,7 @@
               </div>
             </UFileUpload>
 
-            <div v-if="namiFileData.length" class="flex justify-end">
+            <div v-if="namiFile" class="flex justify-end">
               <UButton
                 :loading="importLoading"
                 icon="i-lucide-upload"

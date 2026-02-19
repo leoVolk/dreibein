@@ -11,9 +11,9 @@
       />
     </div>
 
-    <UCard>
-      <template #header
-        ><div class="flex justify-between items-center">
+    <UCard variant="subtle">
+      <template #header>
+        <div v-if="!isEditing" class="flex justify-between items-center">
           <h2 class="text-2xl">{{ note.name }}</h2>
 
           <UButton
@@ -22,6 +22,14 @@
             @click="isEditing = !isEditing"
           ></UButton>
         </div>
+        <UFormField v-else class="w-full">
+          <UInput
+            class="w-full"
+            placeholder="Titel"
+            size="lg"
+            v-model="note.name"
+          ></UInput>
+        </UFormField>
       </template>
 
       <template #default>
@@ -41,7 +49,13 @@
             />
           </UEditor>
 
-          <div class="flex justify-end">
+          <div class="flex justify-between">
+            <UButton
+              color="error"
+              label="Abbrechen"
+              icon="i-lucide-x"
+              @click="onAbord"
+            ></UButton>
             <UButton
               color="success"
               label="Speichern"
@@ -159,7 +173,7 @@ const items = [
 const onSubmit = async () => {
   loading.value = true;
 
-  await pb
+  note.value = await pb
     .collection("eventnotes")
     .update(route.params.id as string, note.value);
 
@@ -169,6 +183,13 @@ const onSubmit = async () => {
   });
 
   loading.value = false;
+  isEditing.value = false;
+};
+
+const onAbord = async () => {
+  note.value = await pb
+    .collection("eventnotes")
+    .getOne(route.params.id as string);
   isEditing.value = false;
 };
 </script>
