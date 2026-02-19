@@ -8,7 +8,7 @@
         ]"
       />
 
-      <AddEvent @refresh="getEvents()"></AddEvent>
+      <AddEvent @refresh="refresh()"></AddEvent>
     </div>
 
     <UCard variant="subtle" v-if="events.length">
@@ -28,13 +28,13 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <AddEvent @refresh="getEvents()"></AddEvent>
+        <AddEvent @refresh="refresh()"></AddEvent>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
           variant="subtle"
-          @click="getEvents()"
+          @click="refresh()"
         ></UButton>
       </template>
     </UEmpty>
@@ -51,15 +51,11 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const events = ref();
-
-const getEvents = async () => {
-  events.value = await pb.collection("events").getFullList({
+const { data: events, refresh } = await useAsyncData<any>(() =>
+  pb.collection("events").getFullList({
     requestKey: null,
-  });
-};
-
-await getEvents();
+  }),
+);
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
