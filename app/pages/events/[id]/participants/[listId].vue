@@ -15,8 +15,12 @@
 
     <UCard v-if="participants.length">
       <template #header>
-        <div>
+        <div class="flex items-center lg:flex-row flex-col justify-between">
           <h2 class="text-2xl">{{ list.name }}</h2>
+
+          <UButton icon="i-lucide-plus" @click=""
+            >Teilnehmer hinzufügen</UButton
+          >
         </div>
       </template>
       <template #default>
@@ -25,12 +29,21 @@
           loading-animation="carousel"
           :data="participants"
           :columns="columns"
-          :meta="meta"
+          ref="table"
+          @select="onSelect"
         >
           <template #paidLists-cell="{ row }">
-            <UCheckbox :modelValue="hasPaid(row.original.paidLists)" />
+            <UBadge color="success" v-if="hasPaid(row.original.paidLists)"
+              >Bezahlt</UBadge
+            >
+            <UBadge color="error" v-else>Nicht bezahlt</UBadge>
           </template>
         </UTable>
+        <div class="flex justify-end mt-4">
+          <UButton icon="i-lucide-save" @click="onListeUpdate()"
+            >Liste Aktualisieren</UButton
+          >
+        </div>
       </template>
     </UCard>
 
@@ -55,8 +68,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { TableColumn } from "@nuxt/ui";
-import type { TableMeta, Row } from "@tanstack/vue-table";
+import type { TableColumn, TableRow } from "@nuxt/ui";
 
 definePageMeta({
   middleware: ["auth"],
@@ -65,7 +77,7 @@ definePageMeta({
 const toast = useToast();
 const { pb } = usePocketbase();
 const route = useRoute();
-const router = useRouter();
+const table = useTemplateRef("table");
 
 const { data: list, refresh: refreshList } = await useAsyncData<any>(() =>
   pb.collection("participantlists").getOne(route.params.listId as string),
@@ -89,7 +101,7 @@ const hasPaid = (paidLists: any) => {
 };
 
 const columns: TableColumn<any>[] = [
-  { header: "Bezahlt", accessorKey: "paidLists" },
+  { header: "Zahlungsstatus", accessorKey: "paidLists" },
   { header: "Mitgliedsnummer", accessorKey: "memberNumber" },
   { header: "Vorname", accessorKey: "firstName" },
   { header: "Nachname", accessorKey: "lastName" },
@@ -106,17 +118,39 @@ const columns: TableColumn<any>[] = [
   { header: "Telefon3", accessorKey: "phone3" },
 ];
 
-const meta: TableMeta<any> = {
-  class: {
-    tr: (row: Row<any>) => {
-      if (hasPaid(row.original.paidLists)) {
-        return "bg-success/10";
-      }
+const onListeUpdate = async () => {
+  try {
+    const batch = pb.createBatch();
 
-      return "";
-    },
-  },
+    table.value?.tableApi.getFilteredSelectedRowModel().rows.forEach((row) => {
+      const m = participants.value[row.index];
+
+      if (!m) return;
+
+      batch.collection("members").update(m.id, {
+        ...m,
+        paidLists: toggleValue(
+          m.paidLists,
+          route.params.listId,
+          !hasPaid(row.original.paidLists),
+        ),
+      });
+    });
+
+    await batch.send();
+
+    table.value?.tableApi.reset();
+
+    refresh();
+  } catch (error: any) {}
 };
+
+function onSelect(e: Event, row: TableRow<any>) {
+  row.toggleSelected(!row.getIsSelected());
+}
+
+const toggleValue = (arr: any, value: any, add: any) =>
+  add ? [...arr, value] : arr.filter((v: any) => v !== value);
 </script>
 
 <style></style>
