@@ -7,7 +7,7 @@
     />
 
     <template #body>
-      <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl max-h-225 w-full">
+      <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl w-full">
         <div class="flex justify-between">
           <span class="text-2xl">Material hinzufügen</span>
           <UIcon
@@ -19,7 +19,6 @@
 
         <UForm class="mt-4 flex flex-col gap-4">
           <UTable
-            class="max-h-225"
             @select="onSelect"
             ref="table"
             :columns="columns"
