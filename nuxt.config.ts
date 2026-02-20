@@ -18,5 +18,11 @@ export default defineNuxtConfig({
     head: {
       title: "3Bein"
     }
-  }
+  },
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false,
+    },
+  ],
 });
