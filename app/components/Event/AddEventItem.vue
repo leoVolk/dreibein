@@ -19,15 +19,11 @@
           <UTable
             v-model:row-selection="rowSelection"
             ref="table"
-            :data="mappedItems"
+            :data="items"
             :columns="columns"
           >
-            <template #quantity-cell="{ row }">
-              <UInputNumber
-                :min="0"
-                v-model="mappedItems[row.index].quantity"
-              ></UInputNumber> </template
-          ></UTable>
+            ></UTable
+          >
 
           <div class="flex gap-4">
             <UButton
@@ -63,34 +59,26 @@ const { pb } = usePocketbase();
 const { user } = usePocketbaseAuth();
 
 const emit = defineEmits(["refresh"]);
-const props = defineProps(["listId", "itemsInList"]);
+const props = defineProps(["listId"]);
 
 const toast = useToast();
 const open = ref(false);
 const loading = ref(false);
 
 const table = useTemplateRef("table");
-const items = await pb.collection("items").getFullList({ requestKey: null });
 
-const mappedItems = ref();
-
-mappedItems.value = items
-  .filter((i) => {
-    return !!props.itemsInList
-      ? !props.itemsInList.find((item: any) => item.refItem === i.id)
-      : true;
-  })
-  .map((i) => {
-    return {
-      name: i.name,
-      list: props.listId,
-      quantity: i.quantity,
-      weight: i.weight,
-      status: i.status,
-      refItem: i.id,
-    };
-  });
-
+const {
+  data: items,
+  execute,
+  refresh,
+} = useAsyncData(
+  () =>
+    pb.collection("items").getFullList({
+      filter: `eventlists !~ "${props.listId}"`,
+      requestKey: null,
+    }),
+  { immediate: false },
+);
 const UCheckbox = resolveComponent("UCheckbox");
 
 const columns: TableColumn<any>[] = [
@@ -122,6 +110,16 @@ const columns: TableColumn<any>[] = [
   },
 ];
 
+watch(open, async (newOpen, oldOpen) => {
+  if (newOpen === true) {
+    execute();
+    rowSelection.value = {};
+  }
+});
+
+const toggleItem = (arr: any, value: any, add: any) =>
+  add ? [...arr, value] : arr.filter((v: any) => v !== value);
+
 const onSubmit = async () => {
   loading.value = true;
 
@@ -129,8 +127,15 @@ const onSubmit = async () => {
 
   table.value?.tableApi
     .getFilteredSelectedRowModel()
-    .rows.forEach((element) => {
-      batch.collection("eventitems").create(mappedItems.value[element.index]);
+    .rows.forEach((element: any) => {
+      batch.collection("items").update(element.original.id, {
+        ...element.original,
+        eventlists: toggleItem(
+          element.original.eventlists,
+          props.listId,
+          !element.original.eventlists.includes(props.listId),
+        ),
+      });
     });
 
   const result = await batch.send();

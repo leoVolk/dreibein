@@ -81,7 +81,7 @@ const onSubmit = async () => {
   loading.value = false;
   open.value = false;
 
-  router.push(`lists/${record.id}`);
+  router.push(`${props.eventId}/lists/${record.id}`);
 };
 
 const onAbort = async () => {

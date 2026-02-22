@@ -15,7 +15,6 @@
       <div class="flex gap-4">
         <AddEventItem
           :list-id="list.id"
-          :items-in-list="items"
           @refresh="refreshItems()"
         ></AddEventItem>
         <UModal title="Liste löschen">
@@ -189,8 +188,8 @@ const { data: list, refresh: refreshList } = await useAsyncData<any>(() =>
 );
 
 const { data: items, refresh: refreshItems } = await useAsyncData<any>(() =>
-  pb.collection("eventitems").getFullList({
-    filter: `list = "${route.params.listId}"`,
+  pb.collection("items").getFullList({
+    filter: `eventlists ~ "${route.params.listId}"`,
     requestKey: null,
   }),
 );
@@ -230,7 +229,10 @@ const meta: TableMeta<any> = {
 };
 
 const deleteItem = async (item: any, close: any) => {
-  await pb.collection("eventitems").delete(item.id);
+  await pb.collection("items").update(item.id, {
+    ...item,
+    eventlists: item.eventlists.filter((id: any) => id !== list.value.id),
+  });
 
   toast.add({
     title: "Eintrag gelöscht",
