@@ -23,8 +23,8 @@
           <UTable :data="users" :columns="userColumns">
             <template #admin-cell="{ row }">
               <UCheckbox
-                :disabled="true"
                 v-model="row.original.admin"
+                @click="onAdminToggle(row)"
               ></UCheckbox>
             </template>
           </UTable>
@@ -264,6 +264,26 @@ const onNamiFileImport = async () => {
     title: "Nami Liste importiert",
     icon: "i-lucide-import",
   });
+};
+
+const onAdminToggle = async (row: any) => {
+  try {
+    await pb.collection("users").update(row.original.id, {
+      admin: !row.original.admin,
+    });
+
+    toast.add({
+      title: "Admin Status aktualisiert",
+      icon: "i-lucide-shield-user",
+    });
+  } catch (error: any) {
+    toast.add({
+      title: "Error",
+      description: error,
+      icon: "i-lucide-shield-user",
+      color: "error",
+    });
+  }
 };
 </script>
 
