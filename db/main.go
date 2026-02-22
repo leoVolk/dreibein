@@ -124,8 +124,8 @@ func main() {
 // the default pb_public dir location is relative to the executable
 func defaultPublicDir() string {
 	if osutils.IsProbablyGoRun() {
-		return ".output/public"
+		return "pb_public"
 	}
 
-	return filepath.Join(os.Args[0], "../.output/public")
+	return filepath.Join(os.Args[0], "../pb_public")
 }

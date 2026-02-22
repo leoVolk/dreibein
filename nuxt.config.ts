@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     output: {
       //fix for nuxt dev deleting the generated output folder
       dir: process.env.NODE_ENV === "development" ? ".output-dev" : "./db/pb_public",
+      publicDir: process.env.NODE_ENV === "development" ? ".output-dev/public" : "./db/pb_public",
     }
   },
   app: {
