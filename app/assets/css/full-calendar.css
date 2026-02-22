@@ -49,3 +49,14 @@
   /* Indicators */
   --fc-now-indicator-color: var(--ui-primary);
 }
+
+.fc .fc-toolbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

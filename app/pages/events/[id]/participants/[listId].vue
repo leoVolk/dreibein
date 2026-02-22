@@ -13,24 +13,32 @@
       />
     </div>
 
-    <UCard v-if="participants.length">
+    <UCard v-if="participants.length" variant="subtle">
       <template #header>
         <div
           class="flex lg:items-center lg:flex-row flex-col justify-between gap-4"
         >
           <h2 class="text-2xl">{{ list.name }}</h2>
 
-          <AddParticipants></AddParticipants>
+          <AddParticipants @refresh="refresh()"></AddParticipants>
         </div>
       </template>
       <template #default>
+        <UInput
+          v-model="globalFilter"
+          class="w-full mb-4"
+          placeholder="Suche..."
+        />
         <UTable
+          class="max-h-[75vh]"
           loading-color="primary"
           loading-animation="carousel"
           :data="participants"
           :columns="columns"
           ref="table"
           @select="onSelect"
+          sticky
+          :global-filter="globalFilter"
         >
           <template #paidLists-cell="{ row }">
             <UBadge color="success" v-if="hasPaid(row.original.paidLists)"
@@ -71,7 +79,7 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <AddEventItem :list-id="list.id" @refresh="refresh()"></AddEventItem>
+        <AddParticipants @refresh="refresh()"></AddParticipants>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
@@ -120,6 +128,8 @@ const refresh = () => {
 const hasPaid = (paidLists: any) => {
   return paidLists.includes(route.params.listId as string);
 };
+
+const globalFilter = ref("");
 
 const onPaidStatusUpdate = async () => {
   try {
