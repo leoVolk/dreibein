@@ -16,6 +16,42 @@
       <template #default>
         <div class="flex flex-col gap-4">
           <UTable :data="events" :columns="columns" @select="onSelect">
+            <template #actions-cell="{ row }">
+              <div class="flex gap-2">
+                <UModal title="Liste löschen">
+                  <UButton
+                    size="sm"
+                    variant="ghost"
+                    color="error"
+                    icon="i-lucide-trash"
+                  />
+
+                  <template #body>
+                    <p>
+                      Willst du diesen Liste wirklich löschen? Diese Aktion kann
+                      nicht mehr rückgängig gemacht werden.
+                    </p>
+                  </template>
+
+                  <template #footer="{ close }">
+                    <div class="flex w-full justify-between gap-2">
+                      <UButton
+                        color="neutral"
+                        variant="outline"
+                        label="Abbrechen"
+                        @click="close"
+                      />
+                      <UButton
+                        color="error"
+                        variant="outline"
+                        label="Liste löschen"
+                        @click="deleteList(row, close)"
+                      />
+                    </div>
+                  </template>
+                </UModal>
+              </div>
+            </template>
           </UTable>
         </div>
       </template>
@@ -46,6 +82,7 @@ import type { TableColumn } from "@nuxt/ui";
 
 const { pb } = usePocketbase();
 const router = useRouter();
+const toast = useToast();
 
 definePageMeta({
   middleware: ["auth"],
@@ -86,6 +123,18 @@ const columns: TableColumn<any>[] = [
     accessorKey: "actions",
   },
 ];
+
+const deleteList = async (row: any, close: any) => {
+  await pb.collection("events").delete(row.original.id);
+
+  toast.add({
+    title: "Event gelöscht",
+    icon: "i-lucide-trash",
+  });
+
+  close();
+  refresh();
+};
 
 const onSelect = (e: Event, row: any) => {
   router.push(`/events/${events.value[row.id].id}`);
