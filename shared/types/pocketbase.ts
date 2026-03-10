@@ -12,11 +12,11 @@ export enum Collections {
 	Otps = "_otps",
 	Superusers = "_superusers",
 	Eventlists = "eventlists",
-	Eventnotes = "eventnotes",
 	Events = "events",
 	Items = "items",
 	Lists = "lists",
 	Members = "members",
+	Notes = "notes",
 	Participantlists = "participantlists",
 	Shoppinglists = "shoppinglists",
 	Users = "users",
@@ -111,15 +111,6 @@ export type EventlistsRecord = {
 	updatedBy?: RecordIdString
 }
 
-export type EventnotesRecord = {
-	content?: HTMLString
-	created: IsoAutoDateString
-	event?: RecordIdString
-	id: string
-	name?: string
-	updated: IsoAutoDateString
-}
-
 export type EventsRecord<TdaysOfWeek = unknown> = {
 	created: IsoAutoDateString
 	createdBy?: RecordIdString
@@ -189,6 +180,15 @@ export type MembersRecord = {
 	updated: IsoAutoDateString
 }
 
+export type NotesRecord = {
+	content?: HTMLString
+	created: IsoAutoDateString
+	event?: RecordIdString
+	id: string
+	name?: string
+	updated: IsoAutoDateString
+}
+
 export type ParticipantlistsRecord = {
 	created: IsoAutoDateString
 	event?: RecordIdString
@@ -227,11 +227,11 @@ export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemF
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
 export type EventlistsResponse<Texpand = unknown> = Required<EventlistsRecord> & BaseSystemFields<Texpand>
-export type EventnotesResponse<Texpand = unknown> = Required<EventnotesRecord> & BaseSystemFields<Texpand>
 export type EventsResponse<TdaysOfWeek = unknown, Texpand = unknown> = Required<EventsRecord<TdaysOfWeek>> & BaseSystemFields<Texpand>
 export type ItemsResponse<Texpand = unknown> = Required<ItemsRecord> & BaseSystemFields<Texpand>
 export type ListsResponse<Texpand = unknown> = Required<ListsRecord> & BaseSystemFields<Texpand>
 export type MembersResponse<Texpand = unknown> = Required<MembersRecord> & BaseSystemFields<Texpand>
+export type NotesResponse<Texpand = unknown> = Required<NotesRecord> & BaseSystemFields<Texpand>
 export type ParticipantlistsResponse<Texpand = unknown> = Required<ParticipantlistsRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsResponse<Texpand = unknown> = Required<ShoppinglistsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
@@ -245,11 +245,11 @@ export type CollectionRecords = {
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
 	eventlists: EventlistsRecord
-	eventnotes: EventnotesRecord
 	events: EventsRecord
 	items: ItemsRecord
 	lists: ListsRecord
 	members: MembersRecord
+	notes: NotesRecord
 	participantlists: ParticipantlistsRecord
 	shoppinglists: ShoppinglistsRecord
 	users: UsersRecord
@@ -262,11 +262,11 @@ export type CollectionResponses = {
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
 	eventlists: EventlistsResponse
-	eventnotes: EventnotesResponse
 	events: EventsResponse
 	items: ItemsResponse
 	lists: ListsResponse
 	members: MembersResponse
+	notes: NotesResponse
 	participantlists: ParticipantlistsResponse
 	shoppinglists: ShoppinglistsResponse
 	users: UsersResponse

@@ -87,7 +87,7 @@ const loading = ref(false);
 const isEditing = ref(false);
 
 const { data: note, refresh } = await useAsyncData<any>(() =>
-  pb.collection("eventnotes").getOne(route.params.noteId as string),
+  pb.collection("notes").getOne(route.params.noteId as string),
 );
 
 const customHandlers = {
@@ -169,7 +169,7 @@ const onSubmit = async () => {
   loading.value = true;
 
   note.value = await pb
-    .collection("eventnotes")
+    .collection("notes")
     .update(route.params.noteId as string, note.value);
 
   toast.add({

@@ -147,7 +147,7 @@ const { data: lists, refresh: refreshLists } = await useAsyncData<any>(
 const { data: notes, refresh: refreshNotes } = await useAsyncData<any>(
   () => `notes-${id.value}`,
   () =>
-    pb.collection("eventnotes").getFullList({
+    pb.collection("notes").getFullList({
       filter: `event = "${id.value}"`,
       requestKey: null,
     }),

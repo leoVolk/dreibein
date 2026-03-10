@@ -155,7 +155,7 @@ const items = [
 const onSubmit = async () => {
   loading.value = true;
 
-  await pb.collection("eventnotes").create(state);
+  await pb.collection("notes").create(state);
 
   toast.add({
     title: "Notiz aktualisiert",
