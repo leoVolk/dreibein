@@ -12,7 +12,7 @@
       />
 
       <div class="flex gap-4">
-        <CreateItem :list-id="list?.id" @refresh="refreshList()"></CreateItem>
+        <CreateItem :list="list!" @refresh="refreshList()"></CreateItem>
         <UModal title="Liste löschen">
           <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
 
@@ -131,7 +131,7 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <CreateItem :list-id="list?.id" @refresh="refreshList()"></CreateItem>
+        <CreateItem :list="list!" @refresh="refreshList()"></CreateItem>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"

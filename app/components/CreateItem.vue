@@ -99,7 +99,12 @@ const { pb } = usePocketbase();
 const { user } = usePocketbaseAuth();
 
 const emit = defineEmits(["refresh"]);
-const props = defineProps(["listId"]);
+const props = defineProps({
+  list: {
+    type: Object as () => ListsRecord,
+    required: true,
+  },
+});
 
 const toast = useToast();
 const open = ref(false);
@@ -133,16 +138,19 @@ const state = reactive({
   quantity: 0,
   status: "none",
   weight: 0,
-  list: props.listId,
 });
 
 const onSubmit = async () => {
   loading.value = true;
 
-  await pb.collection("items").create(state);
-  await pb
-    .collection("lists")
-    .update(props.listId, { updatedBy: user.value?.id });
+  const item = await pb
+    .collection<ItemsResponse>(Collections.Items)
+    .create(state);
+
+  await pb.collection(Collections.Lists).update(props.list.id, {
+    updatedBy: user.value?.id,
+    items: [...(props.list.items || []), item.id],
+  });
 
   toast.add({
     title: "Eintrag eingefügt",
@@ -160,7 +168,6 @@ const onSubmit = async () => {
     quantity: 0,
     status: "none",
     weight: 0,
-    list: props.listId,
   });
 
   loading.value = false;
