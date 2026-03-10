@@ -8,7 +8,7 @@
           name="i-simple-icons-nuxtdotjs"
           class="size-5 text-primary mx-auto"
         />
-        <UBadge class="hidden lg:block" color="neutral" variant="outline"
+        <UBadge class="hidden lg:block" color="primary" variant="soft"
           >v.0.1.0</UBadge
         >
       </template>
