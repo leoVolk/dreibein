@@ -19,7 +19,7 @@
           <UTable
             v-model:row-selection="rowSelection"
             ref="table"
-            :data="items"
+            :data="getFilterItems"
             :columns="columns"
           >
             ></UTable
@@ -78,14 +78,14 @@ const {
   refresh,
 } = useAsyncData(
   () =>
-    pb.collection(Collections.Items).getFullList<ItemsResponse[]>({
+    pb.collection(Collections.Items).getFullList<ItemsResponse>({
       requestKey: null,
     }),
   { immediate: false },
 );
 const UCheckbox = resolveComponent("UCheckbox");
 
-const columns: TableColumn<ItemsRecord[]>[] = [
+const columns: TableColumn<ItemsRecord>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -128,8 +128,6 @@ const onSubmit = async () => {
     .getFilteredSelectedRowModel()
     .rows.map((row: TableRow<any>) => row.original.id);
 
-  console.log(selectedRows);
-
   await pb.collection(Collections.Eventlists).update(props.list.id, {
     updatedBy: user.value?.id,
     items: [...(props.list.items || []), ...(selectedRows || [])],
@@ -151,4 +149,11 @@ const onAbort = async () => {
 };
 
 const rowSelection = ref<Record<string, boolean>>({});
+
+const getFilterItems = computed(
+  () =>
+    items.value?.filter(
+      (item) => !(props.list.items || []).includes(item.id),
+    ) || [],
+);
 </script>

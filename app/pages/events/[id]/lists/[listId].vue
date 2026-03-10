@@ -54,7 +54,7 @@
         <UTable
           loading-color="primary"
           loading-animation="carousel"
-          :data="list?.expand.items || []"
+          :data="list.expand.items || []"
           :columns="columns"
           :meta="meta"
         >
@@ -216,11 +216,12 @@ const meta: TableMeta<any> = {
 const deleteItem = async (index: number, close: any) => {
   if (!list.value?.items[index]) return;
 
-  await pb.collection("items").delete(list.value.items[index]);
+  const item = list.value.items[index];
 
-  await pb
-    .collection("lists")
-    .update(list.value.id, { updatedBy: user.value?.id });
+  await pb.collection(Collections.Eventlists).update(list.value.id, {
+    updatedBy: user.value?.id,
+    items: list.value.items.filter((i) => i !== item),
+  });
 
   toast.add({
     title: "Eintrag gelöscht",
