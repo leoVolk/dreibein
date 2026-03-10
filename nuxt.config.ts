@@ -11,8 +11,8 @@ export default defineNuxtConfig({
   nitro: {
     output: {
       //fix for nuxt dev deleting the generated output folder
-      dir: process.env.NODE_ENV === "development" ? ".output-dev" : "./db/pb_public",
-      publicDir: process.env.NODE_ENV === "development" ? ".output-dev/public" : "./db/pb_public",
+      dir: process.env.NODE_ENV === "development" ? ".output" : "./db/pb_public",
+      publicDir: process.env.NODE_ENV === "development" ? ".output/public" : "./db/pb_public",
     }
   },
   app: {
