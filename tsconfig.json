@@ -19,6 +19,6 @@
     }
   ],
   "include": [
-    "types/**/*.d.ts",
+    "app/types/**/*.d.ts",
   ],
 }
