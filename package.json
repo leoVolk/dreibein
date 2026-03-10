@@ -12,7 +12,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "build:local": "npm run generate && cd ./db && go build -o dreibein main.go",
-    "build:linux": "npm run generate && cd ./db && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build"
+    "build:linux": "npm run generate && cd ./db && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build",
+    "generate-types": "sh ./scripts/generate-types.sh"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.20",
