@@ -15,7 +15,7 @@
           ></UIcon>
         </div>
 
-        <UForm class="mt-4 flex flex-col gap-4">
+        <UForm v-if="items?.length" class="mt-4 flex flex-col gap-4">
           <UTable
             v-model:row-selection="rowSelection"
             ref="table"
@@ -59,7 +59,12 @@ const { pb } = usePocketbase();
 const { user } = usePocketbaseAuth();
 
 const emit = defineEmits(["refresh"]);
-const props = defineProps(["listId"]);
+const props = defineProps({
+  list: {
+    type: Object as () => EventlistsRecord,
+    required: true,
+  },
+});
 
 const toast = useToast();
 const open = ref(false);
@@ -73,15 +78,14 @@ const {
   refresh,
 } = useAsyncData(
   () =>
-    pb.collection("items").getFullList({
-      filter: `eventlists !~ "${props.listId}"`,
+    pb.collection(Collections.Items).getFullList<ItemsResponse[]>({
       requestKey: null,
     }),
   { immediate: false },
 );
 const UCheckbox = resolveComponent("UCheckbox");
 
-const columns: TableColumn<any>[] = [
+const columns: TableColumn<ItemsRecord[]>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -117,28 +121,19 @@ watch(open, async (newOpen, oldOpen) => {
   }
 });
 
-const toggleItem = (arr: any, value: any, add: any) =>
-  add ? [...arr, value] : arr.filter((v: any) => v !== value);
-
 const onSubmit = async () => {
   loading.value = true;
 
-  const batch = pb.createBatch();
-
-  table.value?.tableApi
+  const selectedRows = table.value?.tableApi
     .getFilteredSelectedRowModel()
-    .rows.forEach((element: any) => {
-      batch.collection("items").update(element.original.id, {
-        ...element.original,
-        eventlists: toggleItem(
-          element.original.eventlists,
-          props.listId,
-          !element.original.eventlists.includes(props.listId),
-        ),
-      });
-    });
+    .rows.map((row: TableRow<any>) => row.original.id);
 
-  const result = await batch.send();
+  console.log(selectedRows);
+
+  await pb.collection(Collections.Eventlists).update(props.list.id, {
+    updatedBy: user.value?.id,
+    items: [...(props.list.items || []), ...(selectedRows || [])],
+  });
 
   toast.add({
     title: "Eintrag eingefügt",

@@ -8,15 +8,12 @@
           { label: 'Home', to: '/' },
           { label: 'Läger & Aktionen', to: '/events' },
           { label: 'Listen', to: '/events' },
-          { label: list.name },
+          { label: list?.name },
         ]"
       />
 
       <div class="flex gap-4">
-        <AddEventItem
-          :list-id="list.id"
-          @refresh="refreshItems()"
-        ></AddEventItem>
+        <AddEventItem :list="list!" @refresh="refreshList()"></AddEventItem>
         <UModal title="Liste löschen">
           <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
 
@@ -47,47 +44,23 @@
       </div>
     </div>
 
-    <UCard v-if="items.length">
+    <UCard v-if="list?.items.length">
       <template #header>
         <div>
           <h2 class="text-2xl">{{ list.name }}</h2>
-
-          <div v-if="list.expand" class="flex lg:flex-row flex-col gap-4 mt-2">
-            <div>
-              Erstellt am:
-              <span class="font-semibold">{{
-                new Date(list.created).toLocaleString()
-              }}</span>
-              von
-              <span class="font-semibold">{{
-                list.expand.createdBy.name
-              }}</span>
-            </div>
-            <span class="hidden lg:block" v-if="list.expand.updatedBy">|</span>
-            <div v-if="list.expand.updatedBy">
-              Aktualisiert am:
-              <span class="font-semibold">{{
-                new Date(list.updated).toLocaleString()
-              }}</span>
-              von
-              <span class="font-semibold">{{
-                list.expand.updatedBy.name
-              }}</span>
-            </div>
-          </div>
         </div>
       </template>
       <template #default>
         <UTable
           loading-color="primary"
           loading-animation="carousel"
-          :data="items"
+          :data="list?.expand.items || []"
           :columns="columns"
           :meta="meta"
         >
           <template #description-cell="{ row }">
             <div class="">
-              {{ row.original.description.substring(0, 64) }}
+              {{ row.original.description.substring(0, 64) || "-" }}
             </div>
           </template>
 
@@ -112,6 +85,8 @@
 
           <template #actions-cell="{ row }">
             <div class="flex gap-1 items-center">
+              <EditItem @refresh="refreshList()" :list-id="list?.id"></EditItem>
+
               <UModal title="Eintrag löschen">
                 <UButton
                   variant="ghost"
@@ -139,7 +114,7 @@
                       color="error"
                       variant="outline"
                       label="Eintrag löschen"
-                      @click="deleteItem(items[row.index], close)"
+                      @click="deleteItem(row.index, close)"
                     />
                   </div>
                 </template>
@@ -157,12 +132,12 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <AddEventItem :list-id="list.id" @refresh="refresh()"></AddEventItem>
+        <AddEventItem :list="list!" @refresh="refreshList()"></AddEventItem>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
-          @click="refresh()"
+          @click="refreshList()"
         ></UButton>
       </template>
     </UEmpty>
@@ -181,26 +156,37 @@ const toast = useToast();
 const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
+const { user } = usePocketbaseAuth();
 
-const { data: list, refresh: refreshList } = await useAsyncData<any>(() =>
-  pb.collection("eventlists").getOne(route.params.listId as string),
-);
+const id = computed(() => route.params.id as string);
 
-const { data: items, refresh: refreshItems } = await useAsyncData<any>(() =>
-  pb.collection("items").getFullList({
-    filter: `eventlists ~ "${route.params.listId}"`,
-    requestKey: null,
-  }),
-);
-
-const refresh = () => {
-  refreshList();
-  refreshItems();
+type Expand = {
+  items: ItemsResponse[];
 };
 
-const columns: TableColumn<any>[] = [
+const { data: list, refresh: refreshList } = await useAsyncData(
+  () => `list-${id.value}`,
+  () =>
+    pb
+      .collection(Collections.Eventlists)
+      .getOne<EventlistsResponse<Expand>>(route.params.listId as string, {
+        expand: "items",
+      }),
+);
+
+const columns: TableColumn<ItemsRecord>[] = [
   { header: "Name", accessorKey: "name" },
+  {
+    header: "Beschreibung",
+    accessorKey: "description",
+    cell: ({ row }) => `${row.getValue("description") || "-"} `,
+  },
   { header: "Anzahl", accessorKey: "quantity" },
+  {
+    header: "Ausgegeben am",
+    accessorKey: "checkout",
+    cell: ({ row }) => `${row.getValue("checkout") || "-"} `,
+  },
   {
     header: "Gewicht (kg)",
     accessorKey: "weight",
@@ -227,11 +213,14 @@ const meta: TableMeta<any> = {
   },
 };
 
-const deleteItem = async (item: any, close: any) => {
-  await pb.collection("items").update(item.id, {
-    ...item,
-    eventlists: item.eventlists.filter((id: any) => id !== list.value.id),
-  });
+const deleteItem = async (index: number, close: any) => {
+  if (!list.value?.items[index]) return;
+
+  await pb.collection("items").delete(list.value.items[index]);
+
+  await pb
+    .collection("lists")
+    .update(list.value.id, { updatedBy: user.value?.id });
 
   toast.add({
     title: "Eintrag gelöscht",
@@ -240,11 +229,13 @@ const deleteItem = async (item: any, close: any) => {
 
   close();
 
-  await refreshItems();
+  await refreshList();
 };
 
 const deleteList = async (close: any) => {
-  await pb.collection("eventlists").delete(list.value.id);
+  if (!list.value) return;
+
+  await pb.collection("lists").delete(list.value.id);
 
   toast.add({
     title: "Liste gelöscht",
@@ -253,6 +244,6 @@ const deleteList = async (close: any) => {
 
   close();
 
-  router.push(`/events/${list.value.event}`);
+  router.push("/lists");
 };
 </script>

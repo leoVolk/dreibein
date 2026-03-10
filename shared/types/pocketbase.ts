@@ -105,6 +105,7 @@ export type EventlistsRecord = {
 	createdBy?: RecordIdString
 	event?: RecordIdString
 	id: string
+	items?: RecordIdString[]
 	name?: string
 	updated: IsoAutoDateString
 	updatedBy?: RecordIdString
@@ -200,6 +201,7 @@ export type ShoppinglistsRecord = {
 	created: IsoAutoDateString
 	event?: RecordIdString
 	id: string
+	items?: RecordIdString[]
 	name?: string
 	updated: IsoAutoDateString
 }
