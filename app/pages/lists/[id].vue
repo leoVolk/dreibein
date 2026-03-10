@@ -53,14 +53,14 @@
         <UTable
           loading-color="primary"
           loading-animation="carousel"
-          :data="list?.items"
+          :data="list?.expand.items || []"
           :columns="columns"
           :meta="meta"
         >
           <template #description-cell="{ row }">
-            <!--             <div class="">
-              {{ row.original.description.substring(0, 64) }}
-            </div> -->
+            <div class="">
+              {{ row.original.description.substring(0, 64) || "-" }}
+            </div>
           </template>
 
           <template #status-cell="{ row }">
@@ -113,7 +113,7 @@
                       color="error"
                       variant="outline"
                       label="Eintrag löschen"
-                      @click="deleteItem(list.items[row.index], close)"
+                      @click="deleteItem(row.index, close)"
                     />
                   </div>
                 </template>
@@ -159,12 +159,18 @@ const { user } = usePocketbaseAuth();
 
 const id = computed(() => route.params.id as string);
 
+type Expand = {
+  items: ItemsResponse[];
+  createdBy: UsersResponse;
+  updatedBy: UsersResponse;
+};
+
 const { data: list, refresh: refreshList } = await useAsyncData(
   () => `list-${id.value}`,
   () =>
     pb
       .collection(Collections.Lists)
-      .getOne<ListsRecord>(route.params.id as string, {
+      .getOne<ListsResponse<Expand>>(route.params.id as string, {
         expand: "createdBy,updatedBy,items",
       }),
 );
@@ -208,10 +214,10 @@ const meta: TableMeta<any> = {
   },
 };
 
-const deleteItem = async (item: any, close: any) => {
-  if (!list.value) return;
+const deleteItem = async (index: number, close: any) => {
+  if (!list.value?.items[index]) return;
 
-  await pb.collection("items").delete(item.id);
+  await pb.collection("items").delete(list.value.items[index]);
 
   await pb
     .collection("lists")
