@@ -7,12 +7,12 @@
         :items="[
           { label: 'Home', to: '/' },
           { label: 'Listen', to: '/lists' },
-          { label: list.name, to: `/lists/${list.id}` },
+          { label: list?.name, to: `/lists/${list?.id}` },
         ]"
       />
 
       <div class="flex gap-4">
-        <CreateItem :list-id="list.id" @refresh="refreshItems()"></CreateItem>
+        <CreateItem :list-id="list?.id" @refresh="refreshList()"></CreateItem>
         <UModal title="Liste löschen">
           <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
 
@@ -43,48 +43,24 @@
       </div>
     </div>
 
-    <UCard v-if="items.length">
+    <UCard v-if="list?.items">
       <template #header>
         <div>
           <h2 class="text-2xl">{{ list.name }}</h2>
-
-          <div v-if="list.expand" class="flex lg:flex-row flex-col gap-4 mt-2">
-            <div>
-              Erstellt am:
-              <span class="font-semibold">{{
-                new Date(list.created).toLocaleString()
-              }}</span>
-              von
-              <span class="font-semibold">{{
-                list.expand.createdBy.name
-              }}</span>
-            </div>
-            <span class="hidden lg:block" v-if="list.expand.updatedBy">|</span>
-            <div v-if="list.expand.updatedBy">
-              Aktualisiert am:
-              <span class="font-semibold">{{
-                new Date(list.updated).toLocaleString()
-              }}</span>
-              von
-              <span class="font-semibold">{{
-                list.expand.updatedBy.name
-              }}</span>
-            </div>
-          </div>
         </div>
       </template>
       <template #default>
         <UTable
           loading-color="primary"
           loading-animation="carousel"
-          :data="items"
+          :data="list?.items"
           :columns="columns"
           :meta="meta"
         >
           <template #description-cell="{ row }">
-            <div class="">
+            <!--             <div class="">
               {{ row.original.description.substring(0, 64) }}
-            </div>
+            </div> -->
           </template>
 
           <template #status-cell="{ row }">
@@ -108,11 +84,7 @@
 
           <template #actions-cell="{ row }">
             <div class="flex gap-1 items-center">
-              <EditItem
-                @refresh="refreshItems()"
-                :list-id="list.id"
-                :item="items[row.index]"
-              ></EditItem>
+              <EditItem @refresh="refreshList()" :list-id="list?.id"></EditItem>
 
               <UModal title="Eintrag löschen">
                 <UButton
@@ -141,7 +113,7 @@
                       color="error"
                       variant="outline"
                       label="Eintrag löschen"
-                      @click="deleteItem(items[row.index], close)"
+                      @click="deleteItem(list.items[row.index], close)"
                     />
                   </div>
                 </template>
@@ -159,12 +131,12 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <CreateItem :list-id="list.id" @refresh="refreshItems()"></CreateItem>
+        <CreateItem :list-id="list?.id" @refresh="refreshList()"></CreateItem>
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
-          @click="refreshItems()"
+          @click="refreshList()"
         ></UButton>
       </template>
     </UEmpty>
@@ -187,23 +159,17 @@ const { user } = usePocketbaseAuth();
 
 const id = computed(() => route.params.id as string);
 
-const { data: list, refresh: refreshList } = await useAsyncData<any>(
+const { data: list, refresh: refreshList } = await useAsyncData(
   () => `list-${id.value}`,
   () =>
-    pb.collection("lists").getOne(route.params.id as string, {
-      expand: "createdBy,updatedBy",
-    }),
+    pb
+      .collection(Collections.Lists)
+      .getOne<ListsRecord>(route.params.id as string, {
+        expand: "createdBy,updatedBy,items",
+      }),
 );
 
-const { data: items, refresh: refreshItems } = await useAsyncData<any>(
-  () => `items-${id.value}`,
-  () =>
-    pb.collection("items").getFullList({
-      filter: `list = "${route.params.id}"`,
-    }),
-);
-
-const columns: TableColumn<any>[] = [
+const columns: TableColumn<ItemsRecord>[] = [
   { header: "Name", accessorKey: "name" },
   {
     header: "Beschreibung",
@@ -243,6 +209,8 @@ const meta: TableMeta<any> = {
 };
 
 const deleteItem = async (item: any, close: any) => {
+  if (!list.value) return;
+
   await pb.collection("items").delete(item.id);
 
   await pb
@@ -256,10 +224,12 @@ const deleteItem = async (item: any, close: any) => {
 
   close();
 
-  await refreshItems();
+  await refreshList();
 };
 
 const deleteList = async (close: any) => {
+  if (!list.value) return;
+
   await pb.collection("lists").delete(list.value.id);
 
   toast.add({

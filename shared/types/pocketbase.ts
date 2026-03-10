@@ -142,9 +142,7 @@ export type ItemsRecord = {
 	checkout?: string
 	created: IsoAutoDateString
 	description?: HTMLString
-	eventlists?: RecordIdString[]
 	id: string
-	list: RecordIdString
 	name?: string
 	quantity?: number
 	status?: ItemsStatusOptions
@@ -156,6 +154,7 @@ export type ListsRecord = {
 	created: IsoAutoDateString
 	createdBy?: RecordIdString
 	id: string
+	items?: RecordIdString[]
 	name?: string
 	updated: IsoAutoDateString
 	updatedBy?: RecordIdString
@@ -179,7 +178,6 @@ export type MembersRecord = {
 	memberNumber?: number
 	membershipType?: string
 	nationality?: string
-	paidLists?: RecordIdString[]
 	parentEmail?: string
 	phone1?: string
 	phone2?: string
