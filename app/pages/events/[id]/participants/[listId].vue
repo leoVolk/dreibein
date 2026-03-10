@@ -13,7 +13,7 @@
       />
     </div>
 
-    <UCard v-if="participants.length" variant="subtle">
+    <UCard v-if="participants.length">
       <template #header>
         <div
           class="flex lg:items-center lg:flex-row flex-col justify-between gap-4"
@@ -84,7 +84,6 @@
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
-          variant="subtle"
           @click="refresh()"
         ></UButton>
       </template>

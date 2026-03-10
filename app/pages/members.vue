@@ -9,7 +9,7 @@
       />
     </div>
 
-    <UCard variant="subtle" v-if="members.length">
+    <UCard v-if="members.length">
       <template #header>
         <h2 class="text-2xl">Alle NaMi Mitglieder</h2>
         <p class="mt-4">

@@ -11,7 +11,7 @@
       />
     </div>
 
-    <UCard variant="subtle">
+    <UCard>
       <template #header>
         <div v-if="!isEditing" class="flex justify-between items-center">
           <h2 class="text-2xl">{{ note.name }}</h2>

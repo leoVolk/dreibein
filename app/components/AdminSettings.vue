@@ -1,5 +1,5 @@
 <template>
-  <UCard variant="subtle">
+  <UCard>
     <template #header>
       <div class="flex justify-between items-center">
         <h3 class="text-xl flex items-center gap-2">

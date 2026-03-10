@@ -11,7 +11,7 @@
       <AddEvent @refresh="refresh()"></AddEvent>
     </div>
 
-    <UCard variant="subtle" v-if="events.length">
+    <UCard v-if="events.length">
       <template #header> <h2 class="text-2xl">Läger & Aktionen</h2></template>
       <template #default>
         <div class="flex flex-col gap-4">
@@ -69,7 +69,6 @@
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
-          variant="subtle"
           @click="refresh()"
         ></UButton>
       </template>

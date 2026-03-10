@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <UCard variant="subtle" v-if="items.length">
+    <UCard v-if="items.length">
       <template #header>
         <div>
           <h2 class="text-2xl">{{ list.name }}</h2>
@@ -164,7 +164,6 @@
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
-          variant="subtle"
           @click="refreshItems()"
         ></UButton>
       </template>

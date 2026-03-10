@@ -1,6 +1,6 @@
 <template>
   <div class="pt-4">
-    <UCard variant="subtle">
+    <UCard>
       <template #header>
         <h3 class="text-xl flex items-center gap-2">
           <UIcon name="i-lucide-user" class="size-6" /> Benutzer Einstellungen
@@ -10,7 +10,6 @@
         <UForm class="flex flex-col gap-4" :state="userState">
           <UFormField label="Benutzername" class="w-1/2">
             <UInput
-              variant="subtle"
               v-model="userState.username"
               size="lg"
               class="w-full"

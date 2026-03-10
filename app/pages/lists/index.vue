@@ -11,7 +11,7 @@
       <CreateList @refresh="refresh()"></CreateList>
     </div>
 
-    <UCard variant="subtle" v-if="data">
+    <UCard v-if="data">
       <template #header> <h2 class="text-2xl">Alle Listen</h2></template>
       <template #default>
         <UTable @select="onSelect" :data="data" :columns="columns">
@@ -71,7 +71,6 @@
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
-          variant="subtle"
           @click="refresh()"
         ></UButton>
       </template>
