@@ -65,7 +65,7 @@
                   <UButton
                     :to="`/events/${event.id}/notes/create`"
                     icon="i-lucide-plus"
-                    color="success"
+                    color="primary"
                   ></UButton>
                 </div>
               </div>

@@ -42,12 +42,12 @@
 
           <UAlert
             v-if="namiFileData.length"
-            color="warning"
+            color="error"
             title="Bei Import werden aktuell alle vorherigen Mitglieder überschrieben bzw gelöscht."
             icon="i-lucide-triangle-alert"
           />
 
-          <UAlert color="info" icon="i-lucide-info">
+          <UAlert color="warning" icon="i-lucide-info">
             <template #title>
               Aktuell unterstützt 3Bein nur die NaMi Export Option:
               <ULink class="text-inverted" to="/help" target="_blank">
@@ -71,7 +71,7 @@
                 <UButton
                   v-if="!namiFile"
                   size="lg"
-                  color="neutral"
+                  color="primary"
                   label="NaMi Liste importieren"
                   @click="open()"
                   icon="i-lucide-import"
@@ -95,7 +95,7 @@
                 size="lg"
                 @click="onNamiFileImport()"
                 label="Hochladen"
-                color="success"
+                color="primary"
               ></UButton>
             </div>
           </div>

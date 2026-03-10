@@ -4,7 +4,7 @@
       label="Liste erstellen"
       @click="open = true"
       icon="i-lucide-plus"
-      color="success"
+      color="primary"
     />
 
     <template #body>
@@ -38,7 +38,7 @@
               @click="onSubmit"
               size="lg"
               class="w-full justify-center"
-              color="success"
+              color="primary"
               icon="i-lucide-save"
             >
               Speichern

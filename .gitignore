@@ -24,5 +24,6 @@ logs
 .env.*
 !.env.example
 
-db/pb_*
+db/pb_data
+db/pb_public
 db/dreibein

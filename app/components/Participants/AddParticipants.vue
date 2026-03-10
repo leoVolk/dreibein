@@ -46,7 +46,7 @@
               @click="onSubmit"
               size="lg"
               class="w-full justify-center"
-              color="success"
+              color="primary"
               icon="i-lucide-save"
             >
               Speichern

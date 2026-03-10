@@ -1,6 +1,6 @@
 <template>
   <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
-    <UButton color="success" @click="open = true" icon="i-lucide-plus" />
+    <UButton color="primary" @click="open = true" icon="i-lucide-plus" />
 
     <template #body>
       <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl w-full">
@@ -48,7 +48,7 @@
               @click="onSubmit"
               size="lg"
               class="w-full justify-center"
-              color="success"
+              color="primary"
               icon="i-lucide-save"
             >
               Speichern
