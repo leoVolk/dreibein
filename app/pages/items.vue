@@ -29,7 +29,7 @@
           </template>
 
           <template #status-cell="{ row }">
-            <UBadge v-if="row.original.status === 'none'" color="success">
+            <UBadge v-if="row.original.status === 'none'" color="primary">
               Intakt
             </UBadge>
             <UBadge

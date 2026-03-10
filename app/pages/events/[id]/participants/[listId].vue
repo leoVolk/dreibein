@@ -41,7 +41,7 @@
           :global-filter="globalFilter"
         >
           <template #paidLists-cell="{ row }">
-            <UBadge color="success" v-if="hasPaid(row.original.paidLists)"
+            <UBadge color="primary" v-if="hasPaid(row.original.paidLists)"
               >Bezahlt</UBadge
             >
             <UBadge color="error" v-else>Nicht bezahlt</UBadge>

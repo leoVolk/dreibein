@@ -57,7 +57,7 @@
               @click="onAbord"
             ></UButton>
             <UButton
-              color="success"
+              color="primary"
               label="Speichern"
               icon="i-lucide-save"
               @click="onSubmit"

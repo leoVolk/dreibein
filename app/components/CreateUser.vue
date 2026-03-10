@@ -4,7 +4,7 @@
       @click="open = true"
       icon="i-lucide-plus"
       label="Benutzer anlegen"
-      color="success"
+      color="primary"
     />
 
     <template #body>
@@ -72,7 +72,7 @@
               @click="onSubmit"
               size="lg"
               class="w-full justify-center"
-              color="success"
+              color="primary"
               icon="i-lucide-save"
             >
               Speichern
