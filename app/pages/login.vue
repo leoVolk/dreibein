@@ -1,5 +1,9 @@
 <template>
   <div class="h-screen flex flex-col p-4 justify-center items-center">
+    <img
+      src="https://wallpapercave.com/wp/wp6773888.jpg"
+      class="absolute w-screen h-screen"
+    />
     <UPageCard class="w-full max-w-md">
       <UIcon name="i-lucide-user" class="size-12 mx-auto mb-4"></UIcon>
       <h1 class="text-2xl text-center font-bold mb-4">
