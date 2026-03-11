@@ -43,11 +43,10 @@
       </div>
     </div>
 
-    <div v-if="list?.items.length">
-      <UPageHeader :title="list.name" />
+    <UPageHeader :title="list!.name" />
 
+    <div v-if="list?.items.length">
       <UTable
-        class="mt-8"
         loading-color="primary"
         loading-animation="carousel"
         :data="list?.expand.items || []"
