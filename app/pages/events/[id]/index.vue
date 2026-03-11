@@ -16,13 +16,17 @@
       <UTabs color="primary" variant="link" :items="tabs" size="lg">
         <template #content="{ item }">
           <div class="p-4">
-            <div v-if="item.key === 'eventLists'">
-              <EventLists
-                @refresh="refreshLists()"
-                :event-id="event!.id"
-                :lists="lists!"
-              ></EventLists>
-            </div>
+            <EventLists
+              v-if="item.key === 'eventLists'"
+              @refresh="refreshLists()"
+              :event-id="event!.id"
+              :lists="lists!"
+            ></EventLists>
+            <EventNotes
+              v-if="item.key === 'notes'"
+              :event-id="event!.id"
+              :notes="notes!"
+            ></EventNotes>
           </div>
         </template>
       </UTabs>

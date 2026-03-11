@@ -4,7 +4,7 @@
       color="primary"
       @click="open = true"
       icon="i-lucide-plus"
-      label="Neue Lagerliste erstellen"
+      label="Neue Liste erstellen"
     />
 
     <template #body>

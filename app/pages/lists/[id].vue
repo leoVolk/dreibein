@@ -74,7 +74,11 @@
 
         <template #actions-cell="{ row }">
           <div class="flex gap-1 items-center">
-            <EditItem @refresh="refreshList()" :list-id="list?.id"></EditItem>
+            <EditItem
+              @refresh="refreshList()"
+              :list-id="list?.id"
+              :item="list.expand.items[row.index]!"
+            ></EditItem>
 
             <UModal title="Eintrag löschen">
               <UButton

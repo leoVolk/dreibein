@@ -102,7 +102,16 @@
 const { pb } = usePocketbase();
 const { user } = usePocketbaseAuth();
 
-const props = defineProps(["item", "listId"]);
+const props = defineProps({
+  item: {
+    type: Object as () => ItemsRecord,
+    required: true,
+  },
+  listId: {
+    type: String,
+    required: true,
+  },
+});
 const emit = defineEmits(["refresh"]);
 
 const toast = useToast();
@@ -136,9 +145,6 @@ const onSubmit = async () => {
   loading.value = true;
 
   await pb.collection("items").update(props.item.id, state);
-  await pb
-    .collection("lists")
-    .update(props.listId, { updatedBy: user.value?.id });
 
   toast.add({
     title: "Eintrag aktualisiert",
