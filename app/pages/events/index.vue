@@ -11,49 +11,49 @@
       <AddEvent @refresh="refresh()"></AddEvent>
     </div>
 
-    <UCard v-if="events.length">
-      <template #header> <h2 class="text-2xl">Läger & Aktionen</h2></template>
-      <template #default>
-        <div class="flex flex-col gap-4">
-          <UTable :data="events" :columns="columns" @select="onSelect">
-            <template #actions-cell="{ row }">
-              <div class="flex gap-2">
-                <UModal title="Liste löschen">
-                  <UButton
-                    size="sm"
-                    variant="ghost"
-                    color="error"
-                    icon="i-lucide-trash"
-                  />
+    <div v-if="events.length">
+      <UPageHeader title="Läger & Aktionen" />
 
-                  <template #body>
-                    <p>
-                      Willst du diesen Liste wirklich löschen? Diese Aktion kann
-                      nicht mehr rückgängig gemacht werden.
-                    </p>
-                  </template>
+      <div class="mt-8">
+        <UTable :data="events" :columns="columns" @select="onSelect">
+          <template #actions-cell="{ row }">
+            <div class="flex gap-2">
+              <UModal title="Liste löschen">
+                <UButton
+                  size="sm"
+                  variant="ghost"
+                  color="error"
+                  icon="i-lucide-trash"
+                />
 
-                  <template #footer="{ close }">
-                    <div class="flex w-full justify-between gap-2">
-                      <UButton
-                        color="neutral"
-                        variant="outline"
-                        label="Abbrechen"
-                        @click="close"
-                      />
-                      <UButton
-                        color="error"
-                        variant="outline"
-                        label="Liste löschen"
-                        @click="deleteList(row, close)"
-                      />
-                    </div>
-                  </template>
-                </UModal>
-              </div>
-            </template>
-          </UTable>
-          <!--           <UBlogPosts class="justify-end">
+                <template #body>
+                  <p>
+                    Willst du diesen Liste wirklich löschen? Diese Aktion kann
+                    nicht mehr rückgängig gemacht werden.
+                  </p>
+                </template>
+
+                <template #footer="{ close }">
+                  <div class="flex w-full justify-between gap-2">
+                    <UButton
+                      color="neutral"
+                      variant="outline"
+                      label="Abbrechen"
+                      @click="close"
+                    />
+                    <UButton
+                      color="error"
+                      variant="outline"
+                      label="Liste löschen"
+                      @click="deleteList(row, close)"
+                    />
+                  </div>
+                </template>
+              </UModal>
+            </div>
+          </template>
+        </UTable>
+        <!--           <UBlogPosts class="justify-end">
             <UBlogPost
               v-for="(event, index) in events"
               class="max-w-xs"
@@ -64,9 +64,8 @@
               :title="event.name"
             />
           </UBlogPosts> -->
-        </div>
-      </template>
-    </UCard>
+      </div>
+    </div>
 
     <UEmpty
       v-else

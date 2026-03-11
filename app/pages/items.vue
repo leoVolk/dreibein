@@ -6,13 +6,14 @@
         { label: 'Alle Materialien', to: '/items' },
       ]"
     />
-    <UCard>
-      <template #header> <h2 class="text-2xl">Alle Materialien</h2> </template>
-      <template #default>
+    <div>
+      <UPageHeader title="Dashboard" />
+      <div class="mt-8">
         <UInput
           v-model="globalFilter"
           class="w-full mb-4"
           placeholder="Suche..."
+          size="xl"
         />
         <UTable
           loading-color="primary"
@@ -82,8 +83,8 @@
             </UModal>
           </template>
         </UTable>
-      </template>
-    </UCard>
+      </div>
+    </div>
   </div>
 </template>
 

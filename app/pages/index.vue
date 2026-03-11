@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-col gap-4">
     <UBreadcrumb :items="[{ label: 'Home', to: '/' }]" />
+
+    <UPageHeader title="Dashboard" />
+
     <h2 class="text-2xl">
       Hallo, <span class="text-primary underline">{{ user?.name }}</span
       >!

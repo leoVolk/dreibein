@@ -10,12 +10,11 @@
       />
     </div>
 
-    <UCard>
-      <template #header> <h2 class="text-2xl">Kalender</h2></template>
-      <template #default>
-        <FullCalendar :options="calendarOptions" />
-      </template>
-    </UCard>
+    <div>
+      <UPageHeader title="Kalender" />
+
+      <FullCalendar class="mt-8" :options="calendarOptions" />
+    </div>
   </div>
 </template>
 

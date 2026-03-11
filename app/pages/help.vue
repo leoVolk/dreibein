@@ -1,7 +1,19 @@
 <template>
   <div class="flex flex-col gap-4">
     <UBreadcrumb :items="[{ label: 'Hilfe & Info', to: '/' }]" />
-    <h2 class="text-2xl">Hilfe & Info</h2>
+    <UPageHeader title="Hilfe & Infos" />
+
+    <p class="text-muted my-4">
+      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+      eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+      voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+      clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
+      amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+      nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+      diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+      Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
+      sit amet.
+    </p>
 
     <UAccordion
       :items="items"

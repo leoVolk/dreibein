@@ -10,77 +10,10 @@
       />
     </div>
 
-    <!-- TODO: CHANGE TO DashboardToolbar -->
-    <UCard>
-      <template #header>
-        <div>
-          <h2 class="text-2xl">{{ event!.name }}</h2>
-        </div>
-      </template>
-      <template #default>
-        <div class="grid lg:grid-cols-3 grid-cols-1 gap-8">
-          <div class="flex flex-col gap-4">
-            <UPageFeature title="Material Listen" icon="i-lucide-list" />
-
-            <USeparator />
-
-            <UPageList>
-              <UPageCard
-                v-for="(list, index) in lists"
-                :key="index"
-                variant="soft"
-                :to="`/events/${id}/lists/${list.id}`"
-              >
-                <template #body>
-                  <div class="flex gap-4 flex-row items-center">
-                    <UIcon
-                      class="size-6 text-primary"
-                      name="i-lucide-list-ordered"
-                    ></UIcon>
-                    <h3 class="text-lg font-medium">{{ list.name }}</h3>
-                  </div>
-                </template>
-              </UPageCard>
-            </UPageList>
-          </div>
-
-          <div class="flex flex-col gap-4">
-            <UPageFeature title="Notizen" icon="i-lucide-sticky-note" />
-
-            <USeparator />
-
-            <UPageList>
-              <UPageCard
-                v-for="(note, index) in notes"
-                :key="index"
-                class="mb-4"
-                variant="soft"
-                :to="`/events/${id}/notes/${note.id}`"
-              >
-                <template #body>
-                  <div class="flex gap-4 flex-row items-center">
-                    <UIcon
-                      class="size-6 text-primary"
-                      name="i-lucide-notepad-text"
-                    ></UIcon>
-                    <h3 class="text-lg font-medium">{{ note.name }}</h3>
-                  </div>
-                </template>
-              </UPageCard>
-            </UPageList>
-          </div>
-
-          <div class="flex flex-col gap-4">
-            <UPageFeature
-              title="Einkaufslisten"
-              icon="i-lucide-shopping-cart"
-            />
-
-            <USeparator />
-          </div>
-        </div>
-      </template>
-    </UCard>
+    <!-- TODO: Rework -->
+    <div class="gap-4 flex flex-col">
+      <UPageHeader :title="event!.name" />
+    </div>
   </div>
 </template>
 
