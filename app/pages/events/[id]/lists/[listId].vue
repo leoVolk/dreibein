@@ -44,86 +44,75 @@
       </div>
     </div>
 
-    <UCard v-if="list?.items.length">
-      <template #header>
-        <div>
-          <h2 class="text-2xl">{{ list.name }}</h2>
-        </div>
-      </template>
-      <template #default>
-        <UTable
-          loading-color="primary"
-          loading-animation="carousel"
-          :data="list.expand.items || []"
-          :columns="columns"
-          :meta="meta"
-        >
-          <template #description-cell="{ row }">
-            <div class="">
-              {{ row.original.description.substring(0, 64) || "-" }}
-            </div>
-          </template>
+    <UPageHeader :title="list!.name" />
 
-          <template #status-cell="{ row }">
-            <UBadge v-if="row.original.status === 'none'" color="primary">
-              Intakt
-            </UBadge>
-            <UBadge
-              v-else-if="row.original.status === 'checkedOut'"
-              color="info"
-            >
-              In Benutzung
-            </UBadge>
-            <UBadge
-              v-else-if="row.original.status === 'repair'"
-              color="warning"
-            >
-              In Reparatur
-            </UBadge>
-            <UBadge v-else color="error"> Beschädigt </UBadge>
-          </template>
+    <div v-if="list?.items.length">
+      <UTable
+        loading-color="primary"
+        loading-animation="carousel"
+        :data="list.expand.items || []"
+        :columns="columns"
+        :meta="meta"
+      >
+        <template #description-cell="{ row }">
+          <div class="">
+            {{ row.original.description.substring(0, 64) || "-" }}
+          </div>
+        </template>
 
-          <template #actions-cell="{ row }">
-            <div class="flex gap-1 items-center">
-              <EditItem @refresh="refreshList()" :list-id="list?.id"></EditItem>
+        <template #status-cell="{ row }">
+          <UBadge v-if="row.original.status === 'none'" color="primary">
+            Intakt
+          </UBadge>
+          <UBadge v-else-if="row.original.status === 'checkedOut'" color="info">
+            In Benutzung
+          </UBadge>
+          <UBadge v-else-if="row.original.status === 'repair'" color="warning">
+            In Reparatur
+          </UBadge>
+          <UBadge v-else color="error"> Beschädigt </UBadge>
+        </template>
 
-              <UModal title="Eintrag löschen">
-                <UButton
-                  variant="ghost"
-                  size="sm"
-                  color="error"
-                  icon="i-lucide-trash"
-                />
+        <template #actions-cell="{ row }">
+          <div class="flex gap-1 items-center">
+            <EditItem @refresh="refreshList()" :list-id="list?.id"></EditItem>
 
-                <template #body>
-                  <p>
-                    Willst du diesen Eintrag wirklich löschen? Diese Aktion kann
-                    nicht mehr rückgängig gemacht werden.
-                  </p>
-                </template>
+            <UModal title="Eintrag löschen">
+              <UButton
+                variant="ghost"
+                size="sm"
+                color="error"
+                icon="i-lucide-trash"
+              />
 
-                <template #footer="{ close }">
-                  <div class="flex w-full justify-between gap-2">
-                    <UButton
-                      color="neutral"
-                      variant="outline"
-                      label="Abbrechen"
-                      @click="close"
-                    />
-                    <UButton
-                      color="error"
-                      variant="outline"
-                      label="Eintrag löschen"
-                      @click="deleteItem(row.index, close)"
-                    />
-                  </div>
-                </template>
-              </UModal>
-            </div>
-          </template>
-        </UTable>
-      </template>
-    </UCard>
+              <template #body>
+                <p>
+                  Willst du diesen Eintrag wirklich löschen? Diese Aktion kann
+                  nicht mehr rückgängig gemacht werden.
+                </p>
+              </template>
+
+              <template #footer="{ close }">
+                <div class="flex w-full justify-between gap-2">
+                  <UButton
+                    color="neutral"
+                    variant="outline"
+                    label="Abbrechen"
+                    @click="close"
+                  />
+                  <UButton
+                    color="error"
+                    variant="outline"
+                    label="Eintrag löschen"
+                    @click="deleteItem(row.index, close)"
+                  />
+                </div>
+              </template>
+            </UModal>
+          </div>
+        </template>
+      </UTable>
+    </div>
 
     <UEmpty
       v-else

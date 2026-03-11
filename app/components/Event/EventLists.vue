@@ -19,6 +19,7 @@
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
+          @click="emit('refresh')"
         ></UButton>
       </template>
     </UEmpty>
@@ -38,6 +39,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits(["refresh"]);
 
 const router = useRouter();
 
@@ -61,7 +64,7 @@ const columns: TableColumn<any>[] = [
 ];
 
 const onSelect = (e: Event, row: TableRow<any>) => {
-  router.push(`/events/${props.eventId}/lists/${props.lists[row.index]}`);
+  router.push(`/events/${props.eventId}/lists/${props.lists[row.index]?.id}`);
 };
 </script>
 

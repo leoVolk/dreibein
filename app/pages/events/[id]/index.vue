@@ -17,7 +17,11 @@
         <template #content="{ item }">
           <div class="p-4">
             <div v-if="item.key === 'eventLists'">
-              <EventLists :event-id="event!.id" :lists="lists!"></EventLists>
+              <EventLists
+                @refresh="refreshLists()"
+                :event-id="event!.id"
+                :lists="lists!"
+              ></EventLists>
             </div>
           </div>
         </template>
