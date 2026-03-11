@@ -1,6 +1,11 @@
 <template>
   <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
-    <UButton color="primary" @click="open = true" icon="i-lucide-plus" />
+    <UButton
+      color="primary"
+      @click="open = true"
+      icon="i-lucide-plus"
+      label="Neue Lagerliste erstellen"
+    />
 
     <template #body>
       <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl w-full">

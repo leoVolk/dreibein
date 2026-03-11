@@ -10,9 +10,18 @@
       />
     </div>
 
-    <!-- TODO: Rework -->
     <div class="gap-4 flex flex-col">
       <UPageHeader :title="event!.name" />
+
+      <UTabs color="primary" variant="link" :items="tabs" size="lg">
+        <template #content="{ item }">
+          <div class="p-4">
+            <div v-if="item.key === 'eventLists'">
+              <EventLists :event-id="event!.id" :lists="lists!"></EventLists>
+            </div>
+          </div>
+        </template>
+      </UTabs>
     </div>
   </div>
 </template>
@@ -70,6 +79,17 @@ const refreshEventInfos = async () => {
   refreshLists();
   refreshParticipantList();
 };
+
+const tabs = [
+  { label: "Material Listen", icon: "i-lucide-list-todo", key: "eventLists" },
+  { label: "Notizen", icon: "i-lucide-notebook-tabs", key: "notes" },
+  {
+    label: "Einkaufslisten Listen",
+    icon: "i-lucide-shopping-cart",
+    key: "shoppingLists",
+  },
+  { label: "Teilnehmer", icon: "i-lucide-users", key: "participants" },
+];
 </script>
 
 <style></style>
