@@ -53,6 +53,17 @@
               </div>
             </template>
           </UTable>
+          <!--           <UBlogPosts class="justify-end">
+            <UBlogPost
+              v-for="(event, index) in events"
+              class="max-w-xs"
+              :key="index"
+              v-bind="event"
+              :to="`/events/${event.id}`"
+              :date="event.startDate"
+              :title="event.name"
+            />
+          </UBlogPosts> -->
         </div>
       </template>
     </UCard>

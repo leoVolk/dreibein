@@ -10,6 +10,7 @@
       />
     </div>
 
+    <!-- TODO: CHANGE TO DashboardToolbar -->
     <UCard>
       <template #header>
         <div>
@@ -19,11 +20,7 @@
       <template #default>
         <div class="grid lg:grid-cols-3 grid-cols-1 gap-8">
           <div class="flex flex-col gap-4">
-            <UPageFeature
-              title="Material Listen"
-              description="Hier findest du alle Materaillisten für das Event. Klicke auf eine Liste, um die Details zu sehen und sie zu bearbeiten."
-              icon="i-lucide-list"
-            />
+            <UPageFeature title="Material Listen" icon="i-lucide-list" />
 
             <USeparator />
 
@@ -48,11 +45,7 @@
           </div>
 
           <div class="flex flex-col gap-4">
-            <UPageFeature
-              title="Notizen"
-              description="Hier findest du alle Notizen für das Event. Klicke auf eine Notiz, um die Details zu sehen und sie zu bearbeiten."
-              icon="i-lucide-sticky-note"
-            />
+            <UPageFeature title="Notizen" icon="i-lucide-sticky-note" />
 
             <USeparator />
 
@@ -80,15 +73,12 @@
           <div class="flex flex-col gap-4">
             <UPageFeature
               title="Einkaufslisten"
-              description="Hier findest du alle Einkaufslisten für das Event. Klicke auf eine Liste, um die Details zu sehen und sie zu bearbeiten."
               icon="i-lucide-shopping-cart"
             />
 
             <USeparator />
           </div>
         </div>
-
-        {{ participantList }}
       </template>
     </UCard>
   </div>
