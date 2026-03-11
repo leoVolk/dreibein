@@ -165,7 +165,6 @@ export type MembersRecord = {
 	id: string
 	joinDate?: string
 	lastName?: string
-	lists?: RecordIdString[]
 	magazineDelivery?: boolean
 	memberNumber?: number
 	membershipType?: string
@@ -194,6 +193,7 @@ export type ParticipantlistsRecord = {
 	event?: RecordIdString
 	id: string
 	name?: string
+	participants?: RecordIdString[]
 	updated: IsoAutoDateString
 }
 
