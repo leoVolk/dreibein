@@ -9,49 +9,36 @@
       />
     </div>
 
-    <UCard v-if="members.length">
-      <template #header>
-        <h2 class="text-2xl">Alle NaMi Mitglieder</h2>
-        <p class="mt-4">
-          Hier findest du alle NaMi Mitglieder die importiert wurden. <br />
-          Sollte die Liste leer sein, importiere eine NaMi Excel Datei in den
-          <ULink inactive-class="text-primary font-semibold" to="/settings">
-            Einstellungen
-          </ULink>
+    <div>
+      <UPageHeader class="mb-8" title="NaMi Mitglieder" />
 
-          (nur für Admins verfügbar)
-        </p></template
+      <p class="mb-8">
+        Hier findest du alle NaMi Mitglieder die importiert wurden. <br />
+        Sollte die Liste leer sein, importiere eine NaMi Excel Datei in den
+        <ULink inactive-class="text-primary font-semibold" to="/settings">
+          Einstellungen
+        </ULink>
+
+        (nur für Admins verfügbar)
+      </p>
+
+      <UTable
+        v-if="members.length"
+        ref="table"
+        v-model:global-filter="globalFilter"
+        sticky
+        class="max-h-225"
+        :data="members"
+        :columns="columns"
+      />
+      <UEmpty
+        v-else
+        icon="i-lucide-file"
+        title="Malheur!"
+        description="Diese Liste scheint noch keine Einträge zu haben."
       >
-      <template #default>
-        <div class="flex flex-col flex-1 w-full">
-          <div class="flex pb-4 border-b border-accented">
-            <UInput
-              size="xl"
-              v-model="globalFilter"
-              class="w-full"
-              placeholder="Suche..."
-            />
-          </div>
-
-          <UTable
-            ref="table"
-            v-model:global-filter="globalFilter"
-            sticky
-            class="max-h-225"
-            :data="members"
-            :columns="columns"
-          />
-        </div>
-      </template>
-    </UCard>
-
-    <UEmpty
-      v-else
-      icon="i-lucide-file"
-      title="Malheur!"
-      description="Diese Liste scheint noch keine Einträge zu haben."
-    >
-    </UEmpty>
+      </UEmpty>
+    </div>
   </div>
 </template>
 
