@@ -30,7 +30,7 @@
           </UTable>
         </div>
 
-        <USeparator class="h-4"></USeparator>
+        <!--         <USeparator class="h-4"></USeparator>
 
         <div class="flex flex-col gap-4">
           <div class="flex justify-between items-center">
@@ -107,7 +107,7 @@
             :columns="namiColumns"
             :data="namiFileData"
           ></UTable>
-        </div>
+        </div> -->
       </div>
     </template>
   </UCard>
