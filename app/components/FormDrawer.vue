@@ -34,6 +34,7 @@
 
           <div class="flex gap-4">
             <UButton
+              type="button"
               size="lg"
               class="w-full justify-center"
               color="error"
@@ -45,11 +46,11 @@
             </UButton>
             <UButton
               :loading="loading"
+              type="submit"
               size="lg"
               class="w-full justify-center"
               color="primary"
               icon="i-lucide-save"
-              @click="onSubmit"
             >
               {{ submitLabel }}
             </UButton>

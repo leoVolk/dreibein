@@ -88,7 +88,12 @@
               </div>
             </UFileUpload>
 
-            <div v-if="namiFile" class="flex justify-end">
+            <div v-if="namiFile" class="flex items-center gap-4 justify-end">
+              <USwitch
+                v-model="anonymize"
+                label="Daten anonymisieren"
+                description="Namen, Adressen und Kontaktdaten werden für Präsentationszwecke durch Platzhalter ersetzt."
+              />
               <UButton
                 :loading="importLoading"
                 icon="i-lucide-upload"
@@ -96,17 +101,24 @@
                 @click="onNamiFileImport()"
                 label="Hochladen"
                 color="primary"
-              ></UButton>
+              />
             </div>
           </div>
 
+          <UAlert
+            v-if="namiFile && anonymize"
+            color="info"
+            icon="i-lucide-eye-off"
+            title="Vorschau und Import werden anonymisiert"
+          />
+
           <UTable
+            v-if="namiFile && previewData.length"
             class="max-h-96"
             sticky
-            v-if="namiFile && namiFileData.length"
             :columns="namiColumns"
-            :data="namiFileData"
-          ></UTable>
+            :data="previewData"
+          />
         </div>
       </div>
     </template>
@@ -123,8 +135,47 @@ const toast = useToast();
 
 const namiFile = ref();
 const namiFileData = ref<any[]>([]);
+const anonymize = ref(false);
 const importLoading = ref(false);
 const users = ref();
+
+const anonymizeNamiRow = (row: any, index: number) => {
+  const n = index + 1;
+  const gender = String(row.Geschlecht ?? "").toLowerCase();
+  const firstName = gender.startsWith("w")
+    ? "Jane"
+    : gender.startsWith("m")
+      ? "John"
+      : "Alex";
+  const lastName = "Doe";
+
+  const yearMatch = String(row.GebDatum ?? "").match(/\b(\d{4})\b/);
+  const birthYear = yearMatch ? yearMatch[1] : null;
+
+  return {
+    ...row,
+    Mitgliedsnummer: 100000 + index,
+    Vorname: firstName,
+    Nachname: lastName,
+    Strasse: `Musterstraße ${n}`,
+    PLZ: "12345",
+    Ort: "Musterstadt",
+    EMail: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${n}@example.com`,
+    EMailErziehungsberechtigter: row.EMailErziehungsberechtigter
+      ? `erziehungsberechtigt${n}@example.com`
+      : row.EMailErziehungsberechtigter,
+    Telefon1: row.Telefon1 ? "+49 30 0000000" : row.Telefon1,
+    Telefon2: row.Telefon2 ? "" : row.Telefon2,
+    Telefon3: row.Telefon3 ? "" : row.Telefon3,
+    GebDatum: birthYear ? `01.01.${birthYear}` : row.GebDatum,
+  };
+};
+
+const previewData = computed(() =>
+  anonymize.value
+    ? namiFileData.value.map((row, index) => anonymizeNamiRow(row, index))
+    : namiFileData.value,
+);
 
 const getUsers = async () => {
   if (!user.value?.admin) return;
@@ -220,7 +271,7 @@ const onNamiFileImport = async () => {
   try {
     const importBatch = pb.createBatch();
 
-    namiFileData.value.forEach((m: any) => {
+    previewData.value.forEach((m: any) => {
       const member = {
         memberNumber: parseInt(m.Mitgliedsnummer),
         firstName: m.Vorname,
@@ -241,7 +292,7 @@ const onNamiFileImport = async () => {
         joinDate: m.Eintrittsdatum,
         dataUsageConsent: m.Datenweiterverwendung,
         magazineDelivery: m.Zeitschriftenversand,
-        groupName: m.Gruppierungsnamemember,
+        groupName: m.Gruppierungsname,
         groupNumber: parseInt(m.Gruppierungsnummer),
       };
 

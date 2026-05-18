@@ -55,24 +55,35 @@ function onSelect(_e: Event, row: TableRow<any>) {
 }
 
 const onSubmit = async () => {
+  const selectedRows =
+    table.value?.tableApi?.getSelectedRowModel().rows ?? [];
+
+  if (!selectedRows.length) {
+    toast.add({
+      color: "warning",
+      title: "Keine Teilnehmer ausgewählt",
+      icon: "i-lucide-triangle-alert",
+    });
+    return;
+  }
+
   loading.value = true;
 
   try {
     const batch = pb.createBatch();
 
-    table.value?.tableApi.getFilteredSelectedRowModel().rows.forEach((row) => {
-      const m = participants.value[row.index];
-
-      if (!m) return;
-      batch
-        .collection("members")
-        .update(m.id, { ...m, lists: [...m.lists, route.params.listId] });
+    selectedRows.forEach((row) => {
+      const m = row.original;
+      if (!m?.id) return;
+      batch.collection("members").update(m.id, {
+        lists: [...(m.lists ?? []), route.params.listId],
+      });
     });
 
     await batch.send();
 
     toast.add({
-      title: "Eintrag eingefügt",
+      title: `${selectedRows.length} Teilnehmer hinzugefügt`,
       icon: "i-lucide-save",
     });
 

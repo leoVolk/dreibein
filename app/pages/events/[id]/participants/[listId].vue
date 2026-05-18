@@ -13,7 +13,7 @@
       />
     </div>
 
-    <UCard v-if="participants.length">
+    <UCard v-if="participants?.length">
       <template #header>
         <div
           class="flex lg:items-center lg:flex-row flex-col justify-between gap-4"
@@ -104,19 +104,28 @@ const { pb } = usePocketbase();
 const route = useRoute();
 const table = useTemplateRef("table");
 
-const togglePayedStatus = (arr: any, value: any, add: any) =>
-  add ? [...arr, value] : arr.filter((v: any) => v !== value);
+console.log(route.params.listId);
 
-const { data: list, refresh: refreshList } = await useAsyncData<any>(() =>
-  pb.collection("participantlists").getOne(route.params.listId as string),
+const togglePayedStatus = (arr: any, value: any, add: any) => {
+  const list = arr ?? [];
+  return add ? [...list, value] : list.filter((v: any) => v !== value);
+};
+
+const { data: list, refresh: refreshList } = await useAsyncData<any>(
+  () => `participantlist-${route.params.listId}`,
+  () => pb.collection("participantlists").getOne(route.params.listId as string),
 );
 
 const { data: participants, refresh: refreshParticipants } =
-  await useAsyncData<any>(() =>
-    pb.collection("members").getFullList({
-      filter: `lists ~ "${route.params.listId}"`,
-      requestKey: null,
-    }),
+  await useAsyncData<any>(
+    () => `participants-${route.params.listId}`,
+    () =>
+      pb.collection("members").getFullList({
+        filter: pb.filter("lists.id ?= {:listId}", {
+          listId: route.params.listId,
+        }),
+        requestKey: null,
+      }),
   );
 
 const refresh = () => {
@@ -125,7 +134,7 @@ const refresh = () => {
 };
 
 const hasPaid = (paidLists: any) => {
-  return paidLists.includes(route.params.listId as string);
+  return (paidLists ?? []).includes(route.params.listId as string);
 };
 
 const globalFilter = ref("");
@@ -168,7 +177,7 @@ const onRemoveFromList = async () => {
 
       batch.collection("members").update(m.id, {
         ...m,
-        lists: m.lists.filter((v: any) => v !== route.params.listId),
+        lists: (m.lists ?? []).filter((v: any) => v !== route.params.listId),
       });
     });
 

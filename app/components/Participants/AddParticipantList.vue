@@ -92,6 +92,18 @@ const columns: TableColumn<any>[] = [
 ];
 
 const onSubmit = async () => {
+  const selectedRows =
+    table.value?.tableApi?.getSelectedRowModel().rows ?? [];
+
+  if (!selectedRows.length) {
+    toast.add({
+      color: "warning",
+      title: "Keine Teilnehmer ausgewählt",
+      icon: "i-lucide-triangle-alert",
+    });
+    return;
+  }
+
   loading.value = true;
 
   try {
@@ -99,19 +111,18 @@ const onSubmit = async () => {
 
     const batch = pb.createBatch();
 
-    table.value?.tableApi.getFilteredSelectedRowModel().rows.forEach((row) => {
-      const m = members.value[row.index];
-
-      if (!m) return;
-      batch
-        .collection("members")
-        .update(m.id, { ...m, lists: [...m.lists, record.id] });
+    selectedRows.forEach((row) => {
+      const m = row.original;
+      if (!m?.id) return;
+      batch.collection("members").update(m.id, {
+        lists: [...(m.lists ?? []), record.id],
+      });
     });
 
     await batch.send();
 
     toast.add({
-      title: "Eintrag eingefügt",
+      title: `Teilnehmerliste erstellt (${selectedRows.length} Mitglieder)`,
       icon: "i-lucide-save",
     });
 
