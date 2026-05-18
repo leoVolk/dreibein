@@ -30,7 +30,7 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-      <EventOverviewCard
+      <OverviewCard
         title="Material Listen"
         icon="i-lucide-clipboard-list"
         item-icon="i-lucide-clipboard-list"
@@ -42,9 +42,9 @@
         <template #action>
           <CreateEventList :event-id="id" @refresh="refreshLists()" />
         </template>
-      </EventOverviewCard>
+      </OverviewCard>
 
-      <EventOverviewCard
+      <OverviewCard
         title="Teilnehmerlisten"
         icon="i-lucide-users"
         item-icon="i-lucide-user"
@@ -59,9 +59,9 @@
             @refresh="refreshParticipantLists()"
           />
         </template>
-      </EventOverviewCard>
+      </OverviewCard>
 
-      <EventOverviewCard
+      <OverviewCard
         title="Notizen"
         icon="i-lucide-notebook-pen"
         item-icon="i-lucide-file-text"
@@ -77,9 +77,9 @@
             :to="`/events/${id}/notes/create`"
           />
         </template>
-      </EventOverviewCard>
+      </OverviewCard>
 
-      <EventOverviewCard
+      <OverviewCard
         title="Einkaufslisten"
         icon="i-lucide-shopping-cart"
         item-icon="i-lucide-shopping-bag"
@@ -93,7 +93,7 @@
             @refresh="refreshShoppingLists()"
           />
         </template>
-      </EventOverviewCard>
+      </OverviewCard>
     </div>
   </div>
 </template>
@@ -121,7 +121,13 @@ const DAY_NAMES = [
 const formatDate = (value?: string) =>
   value ? new Date(value).toLocaleDateString() : "";
 
-type OverviewItem = { id: string; items?: unknown[] };
+type OverviewItem = {
+  id: string;
+  name?: string;
+  items?: unknown[];
+  created?: string;
+  updated?: string;
+};
 
 const eventListTo = (item: OverviewItem) =>
   `/events/${id.value}/lists/${item.id}`;
@@ -131,8 +137,8 @@ const noteTo = (item: OverviewItem) => `/events/${id.value}/notes/${item.id}`;
 
 const itemsCount = (item: OverviewItem) =>
   `${(item.items ?? []).length} Einträge`;
-const createdMeta = (item: { created: string }) => formatDate(item.created);
-const updatedMeta = (item: { updated: string }) => formatDate(item.updated);
+const createdMeta = (item: OverviewItem) => formatDate(item.created);
+const updatedMeta = (item: OverviewItem) => formatDate(item.updated);
 
 const { data: event } = await useAsyncData(
   () => `event-${id.value}`,
