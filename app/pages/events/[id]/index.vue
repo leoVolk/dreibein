@@ -45,7 +45,7 @@ const { data: lists, refresh: refreshLists } = await useAsyncData<
 );
 
 const { data: notes, refresh: refreshNotes } = await useAsyncData<
-  EventnotesResponse[]
+  NotesResponse[]
 >(
   () => `notes-${id.value}`,
   () =>

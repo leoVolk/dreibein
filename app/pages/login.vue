@@ -1,16 +1,20 @@
 <template>
   <div class="h-screen flex flex-col p-4 justify-center items-center">
     <UPageCard class="w-full max-w-md">
-      <UIcon name="i-lucide-user" class="size-12 mx-auto mb-4"></UIcon>
+      <UIcon name="i-lucide-user" class="size-12 mx-auto mb-4" />
       <h1 class="text-2xl text-center font-bold mb-4">
         Bei <span class="underline">Dreibein</span> anmelden
       </h1>
-      <div class="flex flex-col gap-4">
+      <UForm
+        :state="form"
+        class="flex flex-col gap-4"
+        @submit.prevent="signIn"
+      >
         <UFormField label="Email" required>
           <UInput
+            v-model="form.email"
             type="email"
-            v-model="email"
-            placeholder="Enter your email"
+            placeholder="E-Mail"
             icon="i-lucide-at-sign"
             class="w-full"
             size="lg"
@@ -19,20 +23,28 @@
 
         <UFormField label="Passwort" required>
           <UInput
-            v-model="password"
+            v-model="form.password"
             type="password"
-            placeholder="Enter your password"
+            placeholder="Passwort"
             icon="i-lucide-asterisk"
             class="w-full"
             size="lg"
           />
         </UFormField>
 
-        <UButton @click="signIn()" class="justify-center">Anmelden</UButton>
-      </div>
+        <UButton
+          :loading="loading"
+          type="submit"
+          class="justify-center"
+          @click="signIn"
+        >
+          Anmelden
+        </UButton>
+      </UForm>
     </UPageCard>
   </div>
 </template>
+
 <script setup lang="ts">
 definePageMeta({
   middleware: "auth",
@@ -40,19 +52,28 @@ definePageMeta({
 });
 
 const { login } = usePocketbaseAuth();
+const toast = useToast();
 
-const email = ref("");
-const password = ref("");
+const loading = ref(false);
+const form = reactive({
+  email: "",
+  password: "",
+});
 
 const signIn = async () => {
+  loading.value = true;
   try {
-    await login({
-      email: email.value,
-      password: password.value,
+    await login({ email: form.email, password: form.password });
+    await navigateTo("/");
+  } catch (error: any) {
+    toast.add({
+      title: "Anmeldung fehlgeschlagen",
+      description: error?.message ?? "Bitte überprüfe deine Eingaben.",
+      icon: "i-lucide-triangle-alert",
+      color: "error",
     });
-    return navigateTo("/");
-  } catch (error) {
-    alert("Error logging in Check console for more details");
+  } finally {
+    loading.value = false;
   }
 };
 </script>

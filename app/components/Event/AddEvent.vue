@@ -1,77 +1,44 @@
 <template>
-  <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
-    <UButton color="primary" icon="i-lucide-plus" @click="open = true"
-      >Event hinzufügen</UButton
-    >
+  <FormDrawer
+    v-model:open="open"
+    title="Neues Event"
+    trigger-label="Event hinzufügen"
+    :loading="loading"
+    :state="state"
+    @submit="onSubmit"
+    @close="onAbort"
+  >
+    <UFormField class="w-full" label="Name" name="name">
+      <UInput v-model="state.name" size="lg" class="w-full" />
+    </UFormField>
 
-    <template #body>
-      <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl w-full">
-        <div class="flex justify-between">
-          <span class="text-2xl">Neues Event</span>
-          <UIcon
-            @click="open = false"
-            name="i-lucide-x"
-            class="size-8 cursor-pointer"
-          ></UIcon>
-        </div>
+    <div class="flex lg:flex-row flex-col gap-4">
+      <UFormField class="w-full" label="Start" name="start">
+        <UInput v-model="state.startDate" type="date" class="w-full" />
+      </UFormField>
+      <UFormField class="w-full" label="Ende" name="end">
+        <UInput v-model="state.endDate" type="date" class="w-full" />
+      </UFormField>
+    </div>
 
-        <UForm :state="state" class="mt-4 flex flex-col gap-4">
-          <UFormField class="w-full" label="Name" name="name">
-            <UInput size="lg" class="w-full" v-model="state.name" />
-          </UFormField>
+    <div class="flex flex-row gap-4 items-center">
+      <label for="recurring"> Wiederholung</label>
+      <UCheckbox
+        id="recurring"
+        v-model="isRecurring"
+        name="recurring"
+        size="lg"
+      />
+    </div>
 
-          <div class="flex lg:flex-row flex-col gap-4">
-            <UFormField class="w-full" label="Start" name="start">
-              <UInput type="date" class="w-full" v-model="state.startDate" />
-            </UFormField>
-            <UFormField class="w-full" label="Ende" name="end">
-              <UInput type="date" class="w-full" v-model="state.endDate" />
-            </UFormField>
-          </div>
-
-          <div class="flex flex-row gap-4 items-center">
-            <label for="recurring"> Wiederholung</label>
-            <UCheckbox
-              v-model="isRecurring"
-              name="recurring"
-              id="recurring"
-              size="lg"
-            ></UCheckbox>
-          </div>
-
-          <div v-if="isRecurring">
-            <UCheckboxGroup
-              :items="daysOfWeek"
-              variant="table"
-              v-model="state.daysOfWeek"
-            ></UCheckboxGroup>
-          </div>
-
-          <div class="flex gap-4">
-            <UButton
-              @click="onAbort"
-              size="lg"
-              class="w-full justify-center"
-              color="error"
-              icon="i-lucide-save"
-            >
-              Abbrechen
-            </UButton>
-            <UButton
-              :loading="loading"
-              @click="onSubmit"
-              size="lg"
-              class="w-full justify-center"
-              color="primary"
-              icon="i-lucide-save"
-            >
-              Speichern
-            </UButton>
-          </div>
-        </UForm>
-      </div>
-    </template>
-  </UDrawer>
+    <div v-if="isRecurring">
+      <UCheckboxGroup
+        v-model="state.daysOfWeek"
+        :items="daysOfWeek"
+        variant="table"
+      />
+    </div>
+  </FormDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -85,7 +52,7 @@ const open = ref(false);
 const loading = ref(false);
 
 const isRecurring = ref(false);
-const daysOfWeek = ref([
+const daysOfWeek = [
   "Montag",
   "Dienstag",
   "Mittwoch",
@@ -93,31 +60,29 @@ const daysOfWeek = ref([
   "Freitag",
   "Samstag",
   "Sonntag",
-]);
+];
 
-const state = reactive({
+const initialState = () => ({
   name: "",
-  createdBy: "",
-  updatedBy: "",
-  startDate: null,
-  endDate: null,
-  daysOfWeek: [],
+  startDate: "",
+  endDate: "",
+  daysOfWeek: [] as string[],
 });
+
+const state = reactive(initialState());
 
 const onSubmit = async () => {
   loading.value = true;
 
-  const daysOfWeekIndex = <any>[];
+  const daysOfWeekIndex = state.daysOfWeek
+    .map((d) => daysOfWeek.indexOf(d) + 1)
+    .filter((i) => i > 0);
 
-  state.daysOfWeek.forEach((d) =>
-    daysOfWeekIndex.push(daysOfWeek.value.indexOf(d) + 1),
-  );
-
-  state.daysOfWeek = daysOfWeekIndex;
-
-  const record = await pb
-    .collection("events")
-    .create({ ...state, createdBy: user.value?.id });
+  await pb.collection("events").create({
+    ...state,
+    daysOfWeek: daysOfWeekIndex,
+    createdBy: user.value?.id,
+  });
 
   toast.add({
     title: "Event eingefügt",
@@ -126,11 +91,15 @@ const onSubmit = async () => {
 
   emit("refresh");
 
+  Object.assign(state, initialState());
+  isRecurring.value = false;
+
   loading.value = false;
   open.value = false;
 };
 
-const onAbort = async () => {
-  open.value = false;
+const onAbort = () => {
+  Object.assign(state, initialState());
+  isRecurring.value = false;
 };
 </script>

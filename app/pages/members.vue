@@ -58,6 +58,10 @@
 <script lang="ts" setup>
 import type { TableColumn } from "@nuxt/ui";
 
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const { pb } = usePocketbase();
 
 const members = ref();

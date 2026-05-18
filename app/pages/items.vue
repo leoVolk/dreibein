@@ -7,7 +7,7 @@
       ]"
     />
     <div>
-      <UPageHeader title="Dashboard" />
+      <UPageHeader title="Alle Materialien" />
       <div class="mt-8">
         <UInput
           v-model="globalFilter"
@@ -18,69 +18,26 @@
         <UTable
           loading-color="primary"
           loading-animation="carousel"
-          :data="items"
+          :data="items ?? []"
           :global-filter="globalFilter"
           sticky
           :columns="columns"
+          :meta="meta"
         >
           <template #description-cell="{ row }">
-            <div class="">
-              {{ row.original.description.substring(0, 64) }}
-            </div>
+            <div>{{ row.original.description?.substring(0, 64) || "-" }}</div>
           </template>
 
           <template #status-cell="{ row }">
-            <UBadge v-if="row.original.status === 'none'" color="primary">
-              Intakt
-            </UBadge>
-            <UBadge
-              v-else-if="row.original.status === 'checkedOut'"
-              color="info"
-            >
-              In Benutzung
-            </UBadge>
-            <UBadge
-              v-else-if="row.original.status === 'repair'"
-              color="warning"
-            >
-              In Reparatur
-            </UBadge>
-            <UBadge v-else color="error"> Beschädigt </UBadge>
+            <ItemStatusBadge :status="row.original.status" />
           </template>
 
           <template #actions-cell="{ row }">
-            <UModal title="Eintrag löschen">
-              <UButton
-                variant="ghost"
-                size="sm"
-                color="error"
-                icon="i-lucide-trash"
-              />
-
-              <template #body>
-                <p>
-                  Willst du diesen Eintrag wirklich löschen? Diese Aktion kann
-                  nicht mehr rückgängig gemacht werden.
-                </p>
-              </template>
-
-              <template #footer="{ close }">
-                <div class="flex w-full justify-between gap-2">
-                  <UButton
-                    color="neutral"
-                    variant="outline"
-                    label="Abbrechen"
-                    @click="close"
-                  />
-                  <UButton
-                    color="error"
-                    variant="outline"
-                    label="Eintrag löschen"
-                    @click="deleteItem(items[row.index], close)"
-                  />
-                </div>
-              </template>
-            </UModal>
+            <DeleteConfirmModal
+              title="Eintrag löschen"
+              confirm-label="Eintrag löschen"
+              @confirm="(close) => deleteItem(items![row.index], close)"
+            />
           </template>
         </UTable>
       </div>
@@ -91,10 +48,14 @@
 <script lang="ts" setup>
 import type { TableColumn } from "@nuxt/ui";
 
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const toast = useToast();
 const { pb } = usePocketbase();
 
-const { data: items, refresh: refreshItems } = await useAsyncData<any>(() =>
+const { data: items, refresh: refreshItems } = await useAsyncData<any[]>(() =>
   pb.collection("items").getFullList({ requestKey: null }),
 );
 
@@ -103,13 +64,13 @@ const columns: TableColumn<any>[] = [
   {
     header: "Beschreibung",
     accessorKey: "description",
-    cell: ({ row }) => `${row.getValue("description") || "-"} `,
+    cell: ({ row }) => row.getValue("description") || "-",
   },
   { header: "Anzahl", accessorKey: "quantity" },
   {
     header: "Ausgegeben am",
     accessorKey: "checkout",
-    cell: ({ row }) => `${row.getValue("checkout") || "-"} `,
+    cell: ({ row }) => row.getValue("checkout") || "-",
   },
   {
     header: "Gewicht (kg)",
@@ -120,9 +81,10 @@ const columns: TableColumn<any>[] = [
   { header: "", accessorKey: "actions" },
 ];
 
+const meta = useItemStatusMeta();
 const globalFilter = ref("");
 
-const deleteItem = async (item: any, close: any) => {
+const deleteItem = async (item: any, close: () => void) => {
   await pb.collection("items").delete(item.id);
 
   toast.add({
@@ -131,9 +93,6 @@ const deleteItem = async (item: any, close: any) => {
   });
 
   close();
-
   await refreshItems();
 };
 </script>
-
-<style></style>

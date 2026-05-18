@@ -1,6 +1,11 @@
 <template>
   <div class="flex flex-col gap-4">
-    <UBreadcrumb :items="[{ label: 'Hilfe & Info', to: '/' }]" />
+    <UBreadcrumb
+      :items="[
+        { label: 'Home', to: '/' },
+        { label: 'Hilfe & Info', to: '/help' },
+      ]"
+    />
     <UPageHeader title="Hilfe & Infos" />
 
     <p class="text-muted my-4">
@@ -28,6 +33,10 @@
 
 <script lang="ts" setup>
 import type { AccordionItem } from "@nuxt/ui";
+
+definePageMeta({
+  middleware: ["auth"],
+});
 
 const items = ref<AccordionItem[]>([
   {

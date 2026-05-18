@@ -6,7 +6,7 @@
 
     <h2 class="text-2xl">
       Hallo, <span class="text-primary underline">{{ user?.name }}</span
-      >!
+      ><span>!</span>
     </h2>
   </div>
 </template>

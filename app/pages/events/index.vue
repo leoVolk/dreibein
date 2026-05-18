@@ -8,62 +8,23 @@
         ]"
       />
 
-      <AddEvent @refresh="refresh()"></AddEvent>
+      <AddEvent @refresh="refresh()" />
     </div>
 
-    <div v-if="events.length">
+    <div v-if="events?.length">
       <UPageHeader title="Läger & Aktionen" />
 
       <div class="mt-8">
         <UTable :data="events" :columns="columns" @select="onSelect">
           <template #actions-cell="{ row }">
-            <div class="flex gap-2">
-              <UModal title="Liste löschen">
-                <UButton
-                  size="sm"
-                  variant="ghost"
-                  color="error"
-                  icon="i-lucide-trash"
-                />
-
-                <template #body>
-                  <p>
-                    Willst du diesen Liste wirklich löschen? Diese Aktion kann
-                    nicht mehr rückgängig gemacht werden.
-                  </p>
-                </template>
-
-                <template #footer="{ close }">
-                  <div class="flex w-full justify-between gap-2">
-                    <UButton
-                      color="neutral"
-                      variant="outline"
-                      label="Abbrechen"
-                      @click="close"
-                    />
-                    <UButton
-                      color="error"
-                      variant="outline"
-                      label="Liste löschen"
-                      @click="deleteList(row, close)"
-                    />
-                  </div>
-                </template>
-              </UModal>
-            </div>
+            <DeleteConfirmModal
+              title="Event löschen"
+              description="Willst du dieses Event wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
+              confirm-label="Event löschen"
+              @confirm="(close) => deleteEvent(row, close)"
+            />
           </template>
         </UTable>
-        <!--           <UBlogPosts class="justify-end">
-            <UBlogPost
-              v-for="(event, index) in events"
-              class="max-w-xs"
-              :key="index"
-              v-bind="event"
-              :to="`/events/${event.id}`"
-              :date="event.startDate"
-              :title="event.name"
-            />
-          </UBlogPosts> -->
       </div>
     </div>
 
@@ -71,16 +32,16 @@
       v-else
       icon="i-lucide-file"
       title="Malheur!"
-      description="Diese Liste scheint noch keine Einträge zu haben."
+      description="Es wurden noch keine Läger oder Aktionen angelegt."
     >
       <template #actions>
-        <AddEvent @refresh="refresh()"></AddEvent>
+        <AddEvent @refresh="refresh()" />
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
           @click="refresh()"
-        ></UButton>
+        />
       </template>
     </UEmpty>
   </div>
@@ -103,37 +64,30 @@ const { data: events, refresh } = await useAsyncData<any>(() =>
   }),
 );
 
+const formatDate = (value: unknown) =>
+  value ? new Date(value as string).toLocaleDateString() : "-";
+
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
   {
     header: "Beginn",
     accessorKey: "startDate",
-    cell: ({ row }) =>
-      row.getValue("startDate")
-        ? new Date(row.getValue("startDate")).toLocaleDateString()
-        : "-",
+    cell: ({ row }) => formatDate(row.getValue("startDate")),
   },
   {
     header: "Ende",
     accessorKey: "endDate",
-    cell: ({ row }) =>
-      row.getValue("endDate")
-        ? new Date(row.getValue("endDate")).toLocaleDateString()
-        : "-",
+    cell: ({ row }) => formatDate(row.getValue("endDate")),
   },
-
   {
     header: "Erstellt am",
     accessorKey: "created",
-    cell: ({ row }) => new Date(row.getValue("created")).toLocaleDateString(),
+    cell: ({ row }) => formatDate(row.getValue("created")),
   },
-  {
-    header: "",
-    accessorKey: "actions",
-  },
+  { header: "", accessorKey: "actions" },
 ];
 
-const deleteList = async (row: any, close: any) => {
+const deleteEvent = async (row: any, close: () => void) => {
   await pb.collection("events").delete(row.original.id);
 
   toast.add({
@@ -145,9 +99,7 @@ const deleteList = async (row: any, close: any) => {
   refresh();
 };
 
-const onSelect = (e: Event, row: any) => {
+const onSelect = (_e: Event, row: any) => {
   router.push(`/events/${events.value[row.id].id}`);
 };
 </script>
-
-<style></style>

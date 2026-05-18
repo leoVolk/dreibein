@@ -1,55 +1,20 @@
 <template>
-  <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
-    <UButton color="primary" icon="i-lucide-plus" @click="open = true"
-      >Material hinzufügen</UButton
-    >
-
-    <template #body>
-      <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl w-full">
-        <div class="flex justify-between">
-          <span class="text-2xl">Material hinzufügen</span>
-          <UIcon
-            @click="open = false"
-            name="i-lucide-x"
-            class="size-8 cursor-pointer"
-          ></UIcon>
-        </div>
-
-        <UForm v-if="items?.length" class="mt-4 flex flex-col gap-4">
-          <UTable
-            v-model:row-selection="rowSelection"
-            ref="table"
-            :data="getFilterItems"
-            :columns="columns"
-          >
-            ></UTable
-          >
-
-          <div class="flex gap-4">
-            <UButton
-              @click="onAbort"
-              size="lg"
-              class="w-full justify-center"
-              color="error"
-              icon="i-lucide-save"
-            >
-              Abbrechen
-            </UButton>
-            <UButton
-              :loading="loading"
-              @click="onSubmit"
-              size="lg"
-              class="w-full justify-center"
-              color="primary"
-              icon="i-lucide-save"
-            >
-              Speichern
-            </UButton>
-          </div>
-        </UForm>
-      </div>
-    </template>
-  </UDrawer>
+  <FormDrawer
+    v-model:open="open"
+    title="Material hinzufügen"
+    trigger-label="Material hinzufügen"
+    :loading="loading"
+    @submit="onSubmit"
+  >
+    <UTable
+      v-if="items?.length"
+      ref="table"
+      v-model:row-selection="rowSelection"
+      :data="getFilterItems"
+      :columns="columns"
+    />
+    <p v-else class="text-muted text-sm">Keine Materialien verfügbar.</p>
+  </FormDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -72,11 +37,7 @@ const loading = ref(false);
 
 const table = useTemplateRef("table");
 
-const {
-  data: items,
-  execute,
-  refresh,
-} = useAsyncData(
+const { data: items, execute } = useAsyncData(
   () =>
     pb.collection(Collections.Items).getFullList<ItemsResponse>({
       requestKey: null,
@@ -114,8 +75,8 @@ const columns: TableColumn<ItemsRecord>[] = [
   },
 ];
 
-watch(open, async (newOpen, oldOpen) => {
-  if (newOpen === true) {
+watch(open, (newOpen) => {
+  if (newOpen) {
     execute();
     rowSelection.value = {};
   }
@@ -141,10 +102,6 @@ const onSubmit = async () => {
   emit("refresh");
 
   loading.value = false;
-  open.value = false;
-};
-
-const onAbort = async () => {
   open.value = false;
 };
 

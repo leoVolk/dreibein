@@ -12,103 +12,50 @@
       />
 
       <div class="flex gap-4">
-        <CreateItem :list="list!" @refresh="refreshList()"></CreateItem>
-        <UModal title="Liste löschen">
+        <CreateItem :list="list!" @refresh="refreshList()" />
+        <DeleteConfirmModal
+          title="Liste löschen"
+          description="Willst du diese Liste wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
+          confirm-label="Liste löschen"
+          @confirm="deleteList"
+        >
           <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
-
-          <template #body>
-            <p>
-              Willst du diesen Liste wirklich löschen? Diese Aktion kann nicht
-              mehr rückgängig gemacht werden.
-            </p>
-          </template>
-
-          <template #footer="{ close }">
-            <div class="flex w-full justify-between gap-2">
-              <UButton
-                color="neutral"
-                variant="outline"
-                label="Abbrechen"
-                @click="close"
-              />
-              <UButton
-                color="error"
-                variant="outline"
-                label="Liste löschen"
-                @click="deleteList(close)"
-              />
-            </div>
-          </template>
-        </UModal>
+        </DeleteConfirmModal>
       </div>
     </div>
 
-    <div v-if="list?.items.length">
+    <div v-if="list?.expand?.items?.length">
       <UPageHeader :title="list.name" />
 
       <UTable
         class="mt-8"
         loading-color="primary"
         loading-animation="carousel"
-        :data="list?.expand.items || []"
+        :data="list.expand.items"
         :columns="columns"
         :meta="meta"
       >
         <template #description-cell="{ row }">
-          <div class="">
-            {{ row.original.description.substring(0, 64) || "-" }}
-          </div>
+          <div>{{ row.original.description?.substring(0, 64) || "-" }}</div>
         </template>
 
         <template #status-cell="{ row }">
-          <UBadge v-if="row.original.status === 'none'" color="primary">
-            Intakt
-          </UBadge>
-          <UBadge v-else-if="row.original.status === 'checkedOut'" color="info">
-            In Benutzung
-          </UBadge>
-          <UBadge v-else-if="row.original.status === 'repair'" color="warning">
-            In Reparatur
-          </UBadge>
-          <UBadge v-else color="error"> Beschädigt </UBadge>
+          <ItemStatusBadge :status="row.original.status" />
         </template>
 
         <template #actions-cell="{ row }">
           <div class="flex gap-1 items-center">
-            <EditItem @refresh="refreshList()" :list-id="list?.id"></EditItem>
+            <EditItem
+              :item="list?.expand?.items?.[row.index]"
+              :list-id="list?.id"
+              @refresh="refreshList()"
+            />
 
-            <UModal title="Eintrag löschen">
-              <UButton
-                variant="ghost"
-                size="sm"
-                color="error"
-                icon="i-lucide-trash"
-              />
-
-              <template #body>
-                <p>
-                  Willst du diesen Eintrag wirklich löschen? Diese Aktion kann
-                  nicht mehr rückgängig gemacht werden.
-                </p>
-              </template>
-
-              <template #footer="{ close }">
-                <div class="flex w-full justify-between gap-2">
-                  <UButton
-                    color="neutral"
-                    variant="outline"
-                    label="Abbrechen"
-                    @click="close"
-                  />
-                  <UButton
-                    color="error"
-                    variant="outline"
-                    label="Eintrag löschen"
-                    @click="deleteItem(row.index, close)"
-                  />
-                </div>
-              </template>
-            </UModal>
+            <DeleteConfirmModal
+              title="Eintrag löschen"
+              confirm-label="Eintrag löschen"
+              @confirm="(close) => deleteItem(row.index, close)"
+            />
           </div>
         </template>
       </UTable>
@@ -121,13 +68,13 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <CreateItem :list="list!" @refresh="refreshList()"></CreateItem>
+        <CreateItem :list="list!" @refresh="refreshList()" />
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
           @click="refreshList()"
-        ></UButton>
+        />
       </template>
     </UEmpty>
   </div>
@@ -135,7 +82,6 @@
 
 <script lang="ts" setup>
 import type { TableColumn } from "@nuxt/ui";
-import type { TableMeta, Row } from "@tanstack/vue-table";
 
 definePageMeta({
   middleware: ["auth"],
@@ -160,7 +106,7 @@ const { data: list, refresh: refreshList } = await useAsyncData(
   () =>
     pb
       .collection(Collections.Lists)
-      .getOne<ListsResponse<Expand>>(route.params.id as string, {
+      .getOne<ListsResponse<Expand>>(id.value, {
         expand: "createdBy,updatedBy,items",
       }),
 );
@@ -170,13 +116,13 @@ const columns: TableColumn<ItemsRecord>[] = [
   {
     header: "Beschreibung",
     accessorKey: "description",
-    cell: ({ row }) => `${row.getValue("description") || "-"} `,
+    cell: ({ row }) => row.getValue("description") || "-",
   },
   { header: "Anzahl", accessorKey: "quantity" },
   {
     header: "Ausgegeben am",
     accessorKey: "checkout",
-    cell: ({ row }) => `${row.getValue("checkout") || "-"} `,
+    cell: ({ row }) => row.getValue("checkout") || "-",
   },
   {
     header: "Gewicht (kg)",
@@ -187,28 +133,13 @@ const columns: TableColumn<ItemsRecord>[] = [
   { header: "", accessorKey: "actions" },
 ];
 
-const meta: TableMeta<any> = {
-  class: {
-    tr: (row: Row<any>) => {
-      if (row.original.status === "checkedOut") {
-        return "bg-info/10";
-      }
-      if (row.original.status === "repair") {
-        return "bg-warning/10";
-      }
-      if (row.original.status === "damaged") {
-        return "bg-error/10";
-      }
-      return "";
-    },
-  },
-};
+const meta = useItemStatusMeta();
 
-const deleteItem = async (index: number, close: any) => {
-  if (!list.value?.items[index]) return;
+const deleteItem = async (index: number, close: () => void) => {
+  const item = list.value?.expand?.items?.[index];
+  if (!item || !list.value) return;
 
-  await pb.collection("items").delete(list.value.items[index]);
-
+  await pb.collection("items").delete(item.id);
   await pb
     .collection("lists")
     .update(list.value.id, { updatedBy: user.value?.id });
@@ -219,11 +150,10 @@ const deleteItem = async (index: number, close: any) => {
   });
 
   close();
-
   await refreshList();
 };
 
-const deleteList = async (close: any) => {
+const deleteList = async (close: () => void) => {
   if (!list.value) return;
 
   await pb.collection("lists").delete(list.value.id);
@@ -234,7 +164,6 @@ const deleteList = async (close: any) => {
   });
 
   close();
-
   router.push("/lists");
 };
 </script>

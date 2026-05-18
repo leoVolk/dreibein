@@ -1,63 +1,29 @@
 <template>
-  <UDrawer :open="open" direction="right" :handle="false" :dismissible="false">
-    <UButton color="primary" @click="open = true" icon="i-lucide-plus" />
-
-    <template #body>
-      <div class="flex flex-col p-4 lg:min-w-2xl max-w-2xl w-full">
-        <div class="flex justify-between">
-          <span class="text-2xl">Neue Teilnehmerliste</span>
-          <UIcon
-            @click="open = false"
-            name="i-lucide-x"
-            class="size-8 cursor-pointer"
-          ></UIcon>
-        </div>
-
-        <UForm :state="state" class="mt-4 flex flex-col gap-4">
-          <UInput size="lg" v-model="state.name" placeholder="Listen Name...">
-          </UInput>
-          <USeparator class="h-4"></USeparator>
-          <UInput
-            v-model="globalFilter"
-            class="w-full"
-            placeholder="Suche..."
-          />
-          <UTable
-            class="max-h-120"
-            @select="onSelect"
-            v-model:row-selection="rowSelection"
-            ref="table"
-            :data="members"
-            :columns="columns"
-            v-model:global-filter="globalFilter"
-          >
-          </UTable>
-
-          <div class="flex gap-4">
-            <UButton
-              @click="onAbort"
-              size="lg"
-              class="w-full justify-center"
-              color="error"
-              icon="i-lucide-save"
-            >
-              Abbrechen
-            </UButton>
-            <UButton
-              :loading="loading"
-              @click="onSubmit"
-              size="lg"
-              class="w-full justify-center"
-              color="primary"
-              icon="i-lucide-save"
-            >
-              Speichern
-            </UButton>
-          </div>
-        </UForm>
-      </div>
+  <FormDrawer
+    v-model:open="open"
+    title="Neue Teilnehmerliste"
+    :loading="loading"
+    :state="state"
+    @submit="onSubmit"
+    @close="onAbort"
+  >
+    <template #trigger="{ open: openDrawer }">
+      <UButton color="primary" icon="i-lucide-plus" @click="openDrawer" />
     </template>
-  </UDrawer>
+
+    <UInput v-model="state.name" size="lg" placeholder="Listen Name..." />
+    <USeparator class="h-4" />
+    <UInput v-model="globalFilter" class="w-full" placeholder="Suche..." />
+    <UTable
+      ref="table"
+      v-model:row-selection="rowSelection"
+      v-model:global-filter="globalFilter"
+      class="max-h-120"
+      :data="members ?? []"
+      :columns="columns"
+      @select="onSelect"
+    />
+  </FormDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -81,19 +47,15 @@ const state = reactive({
 
 const table = useTemplateRef("table");
 
-const {
-  data: members,
-  refresh,
-  execute,
-} = await useAsyncData<any>(
+const { data: members, execute } = await useAsyncData<any>(
   () => pb.collection("members").getFullList({ requestKey: null }),
   { immediate: false },
 );
 
 const globalFilter = ref("");
 
-watch(open, async (newOpen, oldOpen) => {
-  if (newOpen === true) execute();
+watch(open, (newOpen) => {
+  if (newOpen) execute();
 });
 
 const columns: TableColumn<any>[] = [
@@ -123,10 +85,7 @@ const columns: TableColumn<any>[] = [
   { header: "PLZ", accessorKey: "postalCode" },
   { header: "Ort", accessorKey: "city" },
   { header: "EMail", accessorKey: "email" },
-  {
-    header: "EMailErziehungsberechtigter",
-    accessorKey: "guardianEmail",
-  },
+  { header: "EMailErziehungsberechtigter", accessorKey: "guardianEmail" },
   { header: "Telefon1", accessorKey: "phone1" },
   { header: "Telefon2", accessorKey: "phone2" },
   { header: "Telefon3", accessorKey: "phone3" },
@@ -135,9 +94,9 @@ const columns: TableColumn<any>[] = [
 const onSubmit = async () => {
   loading.value = true;
 
-  const record = await pb.collection("participantlists").create(state);
-
   try {
+    const record = await pb.collection("participantlists").create(state);
+
     const batch = pb.createBatch();
 
     table.value?.tableApi.getFilteredSelectedRowModel().rows.forEach((row) => {
@@ -149,37 +108,34 @@ const onSubmit = async () => {
         .update(m.id, { ...m, lists: [...m.lists, record.id] });
     });
 
-    const result = await batch.send();
+    await batch.send();
+
+    toast.add({
+      title: "Eintrag eingefügt",
+      icon: "i-lucide-save",
+    });
+
+    emit("refresh");
+    members.value = null;
+    open.value = false;
   } catch (error: any) {
     toast.add({
       color: "error",
-      title: error,
-      icon: "i-lucide-error",
+      title: error?.message ?? "Fehler",
+      icon: "i-lucide-triangle-alert",
     });
+  } finally {
+    loading.value = false;
   }
-
-  toast.add({
-    title: "Eintrag eingefügt",
-    icon: "i-lucide-save",
-  });
-
-  emit("refresh");
-
-  members.value = null;
-
-  loading.value = false;
-  open.value = false;
 };
 
-const onAbort = async () => {
+const onAbort = () => {
   members.value = null;
-  open.value = false;
 };
 
 const rowSelection = ref<Record<string, boolean>>({});
 
-function onSelect(e: Event, row: TableRow<any>) {
-  /* If you decide to also select the column you can do this  */
+function onSelect(_e: Event, row: TableRow<any>) {
   row.toggleSelected(!row.getIsSelected());
 }
 </script>

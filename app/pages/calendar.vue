@@ -4,8 +4,7 @@
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
-          { label: 'Läger & Aktionen', to: '/events' },
-          { label: 'Kalender', to: '/events/calendar' },
+          { label: 'Kalender', to: '/calendar' },
         ]"
       />
     </div>
@@ -24,6 +23,10 @@ import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/vue3";
 import type { CalendarOptions } from "@fullcalendar/core";
 import deLocale from "@fullcalendar/core/locales/de";
+
+definePageMeta({
+  middleware: ["auth"],
+});
 
 const { pb } = usePocketbase();
 

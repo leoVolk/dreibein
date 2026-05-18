@@ -1,10 +1,13 @@
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware((to) => {
   const { pb } = usePocketbase();
 
-  if (!pb.authStore.isValid) {
-    if (to.path !== "/login")
-      return navigateTo("/login");
+  const isAuthed = pb.authStore.isValid;
+
+  if (!isAuthed && to.path !== "/login") {
+    return navigateTo("/login");
   }
 
-  return;
+  if (isAuthed && to.path === "/login") {
+    return navigateTo("/");
+  }
 });

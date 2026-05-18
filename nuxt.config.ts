@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css', '~/assets/css/full-calendar.css'],
-  modules: ['pocketbase-nuxt', '@nuxt/ui', '@nuxtjs/mdc'],
+  modules: ['pocketbase-nuxt', '@nuxt/ui', '@nuxtjs/mdc', '@nuxt/fonts'],
   pocketbase: {
     url: process.env.POCKETBASE_URL,  // Your PocketBase URL
   },

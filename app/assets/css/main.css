@@ -2,7 +2,8 @@
 @import "@nuxt/ui";
 
 @theme {
-  --font-sans: "Poppins", sans-serif;
+  --font-sans: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 :root {
