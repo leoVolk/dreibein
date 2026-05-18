@@ -50,12 +50,7 @@
         </li>
       </ul>
 
-      <UEmpty
-        v-else
-        :icon="icon"
-        size="sm"
-        :description="emptyDescription"
-      />
+      <UEmpty v-else :icon="icon" size="sm" :description="emptyDescription" />
     </template>
   </UCard>
 </template>
