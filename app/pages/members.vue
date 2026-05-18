@@ -4,14 +4,14 @@
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
-          { label: 'NaMi Mitglieder', to: '/members' },
+          { label: 'Mitglieder', to: '/members' },
         ]"
       />
     </div>
 
     <UCard v-if="members.length">
       <template #header>
-        <h2 class="text-2xl">Alle NaMi Mitglieder</h2>
+        <h2 class="text-2xl">Orga-Mitglieder</h2>
         <p class="mt-4">
           Hier findest du alle NaMi Mitglieder die importiert wurden. <br />
           Sollte die Liste leer sein, importiere eine NaMi Excel Datei in den
