@@ -53,6 +53,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const toastError = useToastError();
 const { pb } = usePocketbase();
 
 const { data: items, refresh: refreshItems } = await useAsyncData<any[]>(() =>
@@ -85,14 +86,13 @@ const meta = useItemStatusMeta();
 const globalFilter = ref("");
 
 const deleteItem = async (item: any, close: () => void) => {
-  await pb.collection("items").delete(item.id);
-
-  toast.add({
-    title: "Eintrag gelöscht",
-    icon: "i-lucide-trash",
-  });
-
-  close();
-  await refreshItems();
+  try {
+    await pb.collection("items").delete(item.id);
+    toast.add({ title: "Eintrag gelöscht", icon: "i-lucide-trash" });
+    close();
+    await refreshItems();
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 </script>

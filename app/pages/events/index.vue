@@ -53,6 +53,7 @@ import type { TableColumn } from "@nuxt/ui";
 const { pb } = usePocketbase();
 const router = useRouter();
 const toast = useToast();
+const toastError = useToastError();
 
 definePageMeta({
   middleware: ["auth"],
@@ -88,15 +89,14 @@ const columns: TableColumn<any>[] = [
 ];
 
 const deleteEvent = async (row: any, close: () => void) => {
-  await pb.collection("events").delete(row.original.id);
-
-  toast.add({
-    title: "Event gelöscht",
-    icon: "i-lucide-trash",
-  });
-
-  close();
-  refresh();
+  try {
+    await pb.collection("events").delete(row.original.id);
+    toast.add({ title: "Event gelöscht", icon: "i-lucide-trash" });
+    close();
+    refresh();
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 
 const onSelect = (_e: Event, row: any) => {

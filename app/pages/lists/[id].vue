@@ -88,6 +88,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const toastError = useToastError();
 const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
@@ -139,31 +140,29 @@ const deleteItem = async (index: number, close: () => void) => {
   const item = list.value?.expand?.items?.[index];
   if (!item || !list.value) return;
 
-  await pb.collection("items").delete(item.id);
-  await pb
-    .collection("lists")
-    .update(list.value.id, { updatedBy: user.value?.id });
-
-  toast.add({
-    title: "Eintrag gelöscht",
-    icon: "i-lucide-trash",
-  });
-
-  close();
-  await refreshList();
+  try {
+    await pb.collection("items").delete(item.id);
+    await pb
+      .collection("lists")
+      .update(list.value.id, { updatedBy: user.value?.id });
+    toast.add({ title: "Eintrag gelöscht", icon: "i-lucide-trash" });
+    close();
+    await refreshList();
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 
 const deleteList = async (close: () => void) => {
   if (!list.value) return;
 
-  await pb.collection("lists").delete(list.value.id);
-
-  toast.add({
-    title: "Liste gelöscht",
-    icon: "i-lucide-trash",
-  });
-
-  close();
-  router.push("/lists");
+  try {
+    await pb.collection("lists").delete(list.value.id);
+    toast.add({ title: "Liste gelöscht", icon: "i-lucide-trash" });
+    close();
+    router.push("/lists");
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 </script>

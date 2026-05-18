@@ -100,6 +100,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const toastError = useToastError();
 const { pb } = usePocketbase();
 const route = useRoute();
 const table = useTemplateRef("table");

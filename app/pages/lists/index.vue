@@ -58,6 +58,7 @@ definePageMeta({
 const router = useRouter();
 const { pb } = usePocketbase();
 const toast = useToast();
+const toastError = useToastError();
 
 const { data, refresh } = await useAsyncData<any>(() =>
   pb.collection("lists").getFullList({
@@ -88,14 +89,13 @@ const onSelect = (_e: Event, row: any) => {
 };
 
 const deleteList = async (row: any, close: () => void) => {
-  await pb.collection("lists").delete(row.original.id);
-
-  toast.add({
-    title: "Liste gelöscht",
-    icon: "i-lucide-trash",
-  });
-
-  close();
-  refresh();
+  try {
+    await pb.collection("lists").delete(row.original.id);
+    toast.add({ title: "Liste gelöscht", icon: "i-lucide-trash" });
+    close();
+    refresh();
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 </script>

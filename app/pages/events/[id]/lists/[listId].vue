@@ -94,6 +94,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const toastError = useToastError();
 const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
@@ -141,31 +142,29 @@ const removeItem = async (index: number, close: () => void) => {
   const item = list.value?.expand?.items?.[index];
   if (!item || !list.value) return;
 
-  await pb.collection(Collections.Eventlists).update(list.value.id, {
-    updatedBy: user.value?.id,
-    items: (list.value.items ?? []).filter((i) => i !== item.id),
-  });
-
-  toast.add({
-    title: "Eintrag entfernt",
-    icon: "i-lucide-trash",
-  });
-
-  close();
-  await refreshList();
+  try {
+    await pb.collection(Collections.Eventlists).update(list.value.id, {
+      updatedBy: user.value?.id,
+      items: (list.value.items ?? []).filter((i) => i !== item.id),
+    });
+    toast.add({ title: "Eintrag entfernt", icon: "i-lucide-trash" });
+    close();
+    await refreshList();
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 
 const deleteList = async (close: () => void) => {
   if (!list.value) return;
 
-  await pb.collection(Collections.Eventlists).delete(list.value.id);
-
-  toast.add({
-    title: "Liste gelöscht",
-    icon: "i-lucide-trash",
-  });
-
-  close();
-  router.push(`/events/${route.params.id}`);
+  try {
+    await pb.collection(Collections.Eventlists).delete(list.value.id);
+    toast.add({ title: "Liste gelöscht", icon: "i-lucide-trash" });
+    close();
+    router.push(`/events/${route.params.id}`);
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 </script>
