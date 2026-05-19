@@ -48,6 +48,7 @@ const { user } = usePocketbaseAuth();
 const emit = defineEmits(["refresh"]);
 
 const toast = useToast();
+const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
@@ -78,24 +79,25 @@ const onSubmit = async () => {
     .map((d) => daysOfWeek.indexOf(d) + 1)
     .filter((i) => i > 0);
 
-  await pb.collection("events").create({
-    ...state,
-    daysOfWeek: daysOfWeekIndex,
-    createdBy: user.value?.id,
-  });
+  try {
+    await pb.collection("events").create({
+      ...state,
+      daysOfWeek: daysOfWeekIndex,
+      createdBy: user.value?.id,
+    });
 
-  toast.add({
-    title: "Event eingefügt",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Event eingefügt", icon: "i-lucide-save" });
 
-  emit("refresh");
+    emit("refresh");
 
-  Object.assign(state, initialState());
-  isRecurring.value = false;
-
-  loading.value = false;
-  open.value = false;
+    Object.assign(state, initialState());
+    isRecurring.value = false;
+    open.value = false;
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const onAbort = () => {

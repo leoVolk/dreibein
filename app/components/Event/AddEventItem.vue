@@ -32,6 +32,7 @@ const props = defineProps({
 });
 
 const toast = useToast();
+const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
@@ -83,26 +84,39 @@ watch(open, (newOpen) => {
 });
 
 const onSubmit = async () => {
+  const selectedRows = table.value?.tableApi
+    ?.getSelectedRowModel()
+    .rows.map((row: TableRow<any>) => row.original.id) ?? [];
+
+  if (!selectedRows.length) {
+    toast.add({
+      color: "warning",
+      title: "Keine Materialien ausgewählt",
+      icon: "i-lucide-triangle-alert",
+    });
+    return;
+  }
+
   loading.value = true;
 
-  const selectedRows = table.value?.tableApi
-    .getFilteredSelectedRowModel()
-    .rows.map((row: TableRow<any>) => row.original.id);
+  try {
+    await pb.collection(Collections.Eventlists).update(props.list.id, {
+      updatedBy: user.value?.id,
+      items: [...(props.list.items || []), ...selectedRows],
+    });
 
-  await pb.collection(Collections.Eventlists).update(props.list.id, {
-    updatedBy: user.value?.id,
-    items: [...(props.list.items || []), ...(selectedRows || [])],
-  });
+    toast.add({
+      title: `${selectedRows.length} Material(ien) hinzugefügt`,
+      icon: "i-lucide-save",
+    });
 
-  toast.add({
-    title: "Eintrag eingefügt",
-    icon: "i-lucide-save",
-  });
-
-  emit("refresh");
-
-  loading.value = false;
-  open.value = false;
+    emit("refresh");
+    open.value = false;
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const rowSelection = ref<Record<string, boolean>>({});

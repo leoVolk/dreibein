@@ -163,8 +163,15 @@ const onPaidStatusUpdate = async () => {
 
     table.value?.tableApi.reset();
 
+    toast.add({
+      title: "Bezahlstatus aktualisiert",
+      icon: "i-lucide-save",
+    });
+
     refresh();
-  } catch (error: any) {}
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 
 const onRemoveFromList = async () => {
@@ -186,8 +193,15 @@ const onRemoveFromList = async () => {
 
     table.value?.tableApi.reset();
 
+    toast.add({
+      title: "Auswahl entfernt",
+      icon: "i-lucide-trash",
+    });
+
     refresh();
-  } catch (error: any) {}
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 
 function onSelect(e: Event, row: TableRow<any>) {

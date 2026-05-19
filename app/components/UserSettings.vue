@@ -38,6 +38,7 @@ definePageMeta({
 });
 
 const toast = useToast();
+const toastError = useToastError();
 
 const userState = reactive({
   username: user.value?.name,
@@ -46,14 +47,15 @@ const userState = reactive({
 const onUserNameChange = async () => {
   if (!user.value?.id) return;
 
-  await pb
-    .collection("users")
-    .update(user.value?.id, { name: userState.username });
+  try {
+    await pb
+      .collection("users")
+      .update(user.value?.id, { name: userState.username });
 
-  toast.add({
-    title: "Benutzername geändert",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Benutzername geändert", icon: "i-lucide-save" });
+  } catch (error: any) {
+    toastError(error);
+  }
 };
 
 onMounted(async () => {

@@ -31,6 +31,7 @@ const props = defineProps(["list"]);
 const emit = defineEmits(["refresh"]);
 
 const toast = useToast();
+const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
@@ -41,19 +42,20 @@ const state = reactive({
 const onSubmit = async () => {
   loading.value = true;
 
-  await pb
-    .collection("lists")
-    .update(props.list.id, { ...state, updatedBy: user.value?.id });
+  try {
+    await pb
+      .collection("lists")
+      .update(props.list.id, { ...state, updatedBy: user.value?.id });
 
-  toast.add({
-    title: "Liste aktualisiert",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Liste aktualisiert", icon: "i-lucide-save" });
 
-  emit("refresh");
-
-  loading.value = false;
-  open.value = false;
+    emit("refresh");
+    open.value = false;
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const onAbort = () => {

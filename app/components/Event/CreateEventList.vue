@@ -26,6 +26,7 @@ const emit = defineEmits(["refresh"]);
 const props = defineProps(["eventId"]);
 
 const toast = useToast();
+const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
@@ -37,21 +38,22 @@ const state = reactive({
 const onSubmit = async () => {
   loading.value = true;
 
-  const record = await pb
-    .collection("eventlists")
-    .create({ ...state, createdBy: user.value?.id });
+  try {
+    const record = await pb
+      .collection("eventlists")
+      .create({ ...state, createdBy: user.value?.id });
 
-  toast.add({
-    title: "Liste erstellt",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Liste erstellt", icon: "i-lucide-save" });
 
-  emit("refresh");
+    emit("refresh");
+    open.value = false;
 
-  loading.value = false;
-  open.value = false;
-
-  router.push(`/events/${props.eventId}/lists/${record.id}`);
+    router.push(`/events/${props.eventId}/lists/${record.id}`);
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const onAbort = () => {

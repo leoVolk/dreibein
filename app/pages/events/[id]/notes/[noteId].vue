@@ -82,6 +82,7 @@ const { pb } = usePocketbase();
 const route = useRoute();
 
 const toast = useToast();
+const toastError = useToastError();
 const loading = ref(false);
 
 const isEditing = ref(false);
@@ -168,19 +169,20 @@ const items = [
 const onSubmit = async () => {
   loading.value = true;
 
-  note.value = await pb
-    .collection("notes")
-    .update(route.params.noteId as string, note.value);
+  try {
+    note.value = await pb
+      .collection("notes")
+      .update(route.params.noteId as string, note.value);
 
-  toast.add({
-    title: "Notiz aktualisiert",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Notiz aktualisiert", icon: "i-lucide-save" });
 
-  loading.value = false;
-  isEditing.value = false;
-
-  refresh();
+    isEditing.value = false;
+    refresh();
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const onAbord = async () => {

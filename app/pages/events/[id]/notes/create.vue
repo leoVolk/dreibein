@@ -69,6 +69,7 @@ const route = useRoute();
 const router = useRouter();
 
 const toast = useToast();
+const toastError = useToastError();
 const loading = ref(false);
 
 const state = reactive({
@@ -155,16 +156,17 @@ const items = [
 const onSubmit = async () => {
   loading.value = true;
 
-  await pb.collection("notes").create(state);
+  try {
+    await pb.collection("notes").create(state);
 
-  toast.add({
-    title: "Notiz aktualisiert",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Notiz erstellt", icon: "i-lucide-save" });
 
-  loading.value = false;
-
-  router.push(`/events/${route.query.event}`);
+    router.push(`/events/${route.params.id}`);
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
 

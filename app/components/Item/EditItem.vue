@@ -74,6 +74,7 @@ const props = defineProps(["item", "listId"]);
 const emit = defineEmits(["refresh"]);
 
 const toast = useToast();
+const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
@@ -95,20 +96,21 @@ watch(
 const onSubmit = async () => {
   loading.value = true;
 
-  await pb.collection("items").update(props.item.id, state);
-  await pb
-    .collection("lists")
-    .update(props.listId, { updatedBy: user.value?.id });
+  try {
+    await pb.collection("items").update(props.item.id, state);
+    await pb
+      .collection("lists")
+      .update(props.listId, { updatedBy: user.value?.id });
 
-  toast.add({
-    title: "Eintrag aktualisiert",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Eintrag aktualisiert", icon: "i-lucide-save" });
 
-  emit("refresh");
-
-  loading.value = false;
-  open.value = false;
+    emit("refresh");
+    open.value = false;
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const onAbort = () => {

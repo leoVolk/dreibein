@@ -70,6 +70,7 @@ const props = defineProps({
 });
 
 const toast = useToast();
+const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
@@ -94,26 +95,26 @@ const state = reactive(initialState());
 const onSubmit = async () => {
   loading.value = true;
 
-  const item = await pb
-    .collection<ItemsResponse>(Collections.Items)
-    .create(state);
+  try {
+    const item = await pb
+      .collection<ItemsResponse>(Collections.Items)
+      .create(state);
 
-  await pb.collection(Collections.Lists).update(props.list.id, {
-    updatedBy: user.value?.id,
-    items: [...(props.list.items || []), item.id],
-  });
+    await pb.collection(Collections.Lists).update(props.list.id, {
+      updatedBy: user.value?.id,
+      items: [...(props.list.items || []), item.id],
+    });
 
-  toast.add({
-    title: "Eintrag eingefügt",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Eintrag eingefügt", icon: "i-lucide-save" });
 
-  emit("refresh");
-
-  Object.assign(state, initialState());
-
-  loading.value = false;
-  open.value = false;
+    emit("refresh");
+    Object.assign(state, initialState());
+    open.value = false;
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const onAbort = () => {

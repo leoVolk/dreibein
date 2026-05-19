@@ -24,6 +24,7 @@ const emit = defineEmits(["refresh"]);
 const props = defineProps(["eventId"]);
 
 const toast = useToast();
+const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
@@ -35,18 +36,19 @@ const state = reactive({
 const onSubmit = async () => {
   loading.value = true;
 
-  await pb.collection(Collections.Shoppinglists).create({ ...state });
+  try {
+    await pb.collection(Collections.Shoppinglists).create({ ...state });
 
-  toast.add({
-    title: "Einkaufsliste erstellt",
-    icon: "i-lucide-save",
-  });
+    toast.add({ title: "Einkaufsliste erstellt", icon: "i-lucide-save" });
 
-  emit("refresh");
-
-  state.name = "";
-  loading.value = false;
-  open.value = false;
+    emit("refresh");
+    state.name = "";
+    open.value = false;
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const onAbort = () => {

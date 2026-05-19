@@ -54,6 +54,7 @@ const { pb } = usePocketbase();
 const emit = defineEmits(["refresh"]);
 
 const toast = useToast();
+const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
@@ -76,10 +77,7 @@ const onSubmit = async () => {
       .collection("users")
       .create({ ...state, passwordConfirm: state.password });
 
-    toast.add({
-      title: "Benutzer erstellt",
-      icon: "i-lucide-save",
-    });
+    toast.add({ title: "Benutzer erstellt", icon: "i-lucide-save" });
 
     await pb.collection("users").requestPasswordReset(record.email);
 
@@ -91,6 +89,8 @@ const onSubmit = async () => {
     emit("refresh");
     Object.assign(state, initialState());
     open.value = false;
+  } catch (error: any) {
+    toastError(error);
   } finally {
     loading.value = false;
   }
