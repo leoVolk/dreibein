@@ -1,18 +1,24 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex justify-between items-center gap-4">
-      <UBreadcrumb
-        :items="[
-          { label: 'Home', to: '/' },
-          { label: 'Mitglieder', to: '/members' },
-        ]"
-      />
-
-      <CreateMember @refresh="getNamiMembers()" />
-    </div>
+    <UBreadcrumb
+      :items="[
+        { label: 'Home', to: '/' },
+        { label: 'Mitglieder', to: '/members' },
+      ]"
+    />
 
     <div v-if="members?.length">
-      <UPageHeader title="Mitglieder">
+      <UPageHeader>
+        <template #headline>
+          <div class="flex justify-between w-full items-center gap-4">
+            <h1
+              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+            >
+              Mitglieder
+            </h1>
+            <CreateMember @refresh="getNamiMembers()" />
+          </div>
+        </template>
         <template #description>
           <p class="mt-4">
             Hier findest du alle NaMi Mitglieder die importiert wurden. <br />

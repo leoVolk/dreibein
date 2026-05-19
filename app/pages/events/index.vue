@@ -7,12 +7,21 @@
           { label: 'Läger & Aktionen', to: '/events' },
         ]"
       />
-
-      <AddEvent @refresh="refresh()" />
     </div>
 
     <div v-if="events?.length">
-      <UPageHeader title="Läger & Aktionen" />
+      <UPageHeader>
+        <template #headline>
+          <div class="flex justify-between w-full items-center gap-4">
+            <h1
+              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+            >
+              Läger & Aktionen
+            </h1>
+            <AddEvent @refresh="refresh()" />
+          </div>
+        </template>
+      </UPageHeader>
 
       <div class="mt-8">
         <UTable :data="events" :columns="columns" @select="onSelect">

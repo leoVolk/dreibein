@@ -7,12 +7,21 @@
           { label: 'Listen', to: '/lists' },
         ]"
       />
-
-      <CreateList @refresh="refresh()" />
     </div>
 
     <div v-if="data?.length">
-      <UPageHeader title="Material Listen" />
+      <UPageHeader>
+        <template #headline>
+          <div class="flex justify-between w-full items-center gap-4">
+            <h1
+              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+            >
+              Material Listen
+            </h1>
+            <CreateList @refresh="refresh()" />
+          </div>
+        </template>
+      </UPageHeader>
 
       <UTable class="mt-8" :data="data" :columns="columns" @select="onSelect">
         <template #actions-cell="{ row }">

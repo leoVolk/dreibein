@@ -1,31 +1,39 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div
-      class="flex lg:justify-between lg:items-center flex-col lg:flex-row gap-4"
-    >
-      <UBreadcrumb
-        :items="[
-          { label: 'Home', to: '/' },
-          { label: 'Listen', to: '/lists' },
-          { label: list?.name, to: `/lists/${list?.id}` },
-        ]"
-      />
-
-      <div class="flex gap-4">
-        <CreateItem :list="list!" @refresh="refreshList()" />
-        <DeleteConfirmModal
-          title="Liste löschen"
-          description="Willst du diese Liste wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
-          confirm-label="Liste löschen"
-          @confirm="deleteList"
-        >
-          <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
-        </DeleteConfirmModal>
-      </div>
-    </div>
+    <UBreadcrumb
+      :items="[
+        { label: 'Home', to: '/' },
+        { label: 'Listen', to: '/lists' },
+        { label: list?.name, to: `/lists/${list?.id}` },
+      ]"
+    />
 
     <div v-if="list?.expand?.items?.length">
-      <UPageHeader :title="list.name" />
+      <UPageHeader>
+        <template #headline>
+          <div class="flex justify-between w-full items-center gap-4">
+            <h1
+              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+            >
+              {{ list.name }}
+            </h1>
+            <div class="flex gap-4">
+              <CreateItem :list="list!" @refresh="refreshList()" />
+              <DeleteConfirmModal
+                title="Liste löschen"
+                description="Willst du diese Liste wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
+                confirm-label="Liste löschen"
+                @confirm="deleteList"
+              >
+                <UButton
+                  label="Liste löschen"
+                  color="error"
+                  icon="i-lucide-trash"
+                />
+              </DeleteConfirmModal>
+            </div>
+          </div> </template
+      ></UPageHeader>
 
       <UTable
         class="mt-8"
@@ -105,11 +113,9 @@ type Expand = {
 const { data: list, refresh: refreshList } = await useAsyncData(
   () => `list-${id.value}`,
   () =>
-    pb
-      .collection(Collections.Lists)
-      .getOne<ListsResponse<Expand>>(id.value, {
-        expand: "createdBy,updatedBy,items",
-      }),
+    pb.collection(Collections.Lists).getOne<ListsResponse<Expand>>(id.value, {
+      expand: "createdBy,updatedBy,items",
+    }),
 );
 
 useRealtimeRefresh(["lists", "items"], refreshList);
