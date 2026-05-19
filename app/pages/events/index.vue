@@ -67,25 +67,34 @@ const { data: events, refresh } = await useAsyncData<any>(() =>
 
 useRealtimeRefresh("events", refresh);
 
-const formatDate = (value: unknown) =>
-  value ? new Date(value as string).toLocaleDateString() : "-";
+const isRecurring = (row: any) =>
+  Array.isArray(row.original.daysOfWeek) && row.original.daysOfWeek.length > 0;
+
+const recurringCell = (row: any, dateKey: "startDate" | "endDate") => {
+  if (isRecurring(row)) {
+    const days = formatRecurringDays(row.original.daysOfWeek);
+    const time = extractTime(row.original[dateKey]);
+    return [days, time].filter(Boolean).join(" · ") || "-";
+  }
+  return formatEventDate(row.getValue(dateKey)) || "-";
+};
 
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
   {
     header: "Beginn",
     accessorKey: "startDate",
-    cell: ({ row }) => formatDate(row.getValue("startDate")),
+    cell: ({ row }) => recurringCell(row, "startDate"),
   },
   {
     header: "Ende",
     accessorKey: "endDate",
-    cell: ({ row }) => formatDate(row.getValue("endDate")),
+    cell: ({ row }) => recurringCell(row, "endDate"),
   },
   {
     header: "Erstellt am",
     accessorKey: "created",
-    cell: ({ row }) => formatDate(row.getValue("created")),
+    cell: ({ row }) => formatEventDate(row.getValue("created")) || "-",
   },
   { header: "", accessorKey: "actions" },
 ];

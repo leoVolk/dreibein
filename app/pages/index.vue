@@ -144,17 +144,14 @@ const today = new Date().toISOString().slice(0, 10);
 const eventTo = (item: Bare) => `/events/${item.id}`;
 const listTo = (item: Bare) => `/lists/${item.id}`;
 
-const formatDate = (value?: string) =>
-  value ? new Date(value).toLocaleDateString() : "";
-
 const eventDateMeta = (item: Bare) => {
-  const start = formatDate(item.startDate);
-  const end = formatDate(item.endDate);
+  const start = formatEventDate(item.startDate);
+  const end = formatEventDate(item.endDate);
   if (start && end && start !== end) return `${start} – ${end}`;
   return start || end || "";
 };
 
-const updatedMeta = (item: Bare) => formatDate(item.updated);
+const updatedMeta = (item: Bare) => formatEventDate(item.updated);
 
 const { data: stats, refresh: refreshStats } = await useAsyncData(
   "dashboard-stats",

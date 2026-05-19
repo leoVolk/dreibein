@@ -1,15 +1,17 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center gap-4">
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
           { label: 'Mitglieder', to: '/members' },
         ]"
       />
+
+      <CreateMember @refresh="getNamiMembers()" />
     </div>
 
-    <UCard v-if="members.length">
+    <UCard v-if="members?.length">
       <template #header>
         <h2 class="text-2xl">Orga-Mitglieder</h2>
         <p class="mt-4">
@@ -18,16 +20,17 @@
           <ULink inactive-class="text-primary font-semibold" to="/settings">
             Einstellungen
           </ULink>
-
           (nur für Admins verfügbar)
-        </p></template
-      >
+          – oder lege Mitglieder manuell über
+          <span class="font-semibold">„Mitglied anlegen"</span> an.
+        </p>
+      </template>
       <template #default>
         <div class="flex flex-col flex-1 w-full">
           <div class="flex pb-4 border-b border-accented">
             <UInput
-              size="xl"
               v-model="globalFilter"
+              size="xl"
               class="w-full"
               placeholder="Suche..."
             />
@@ -40,7 +43,37 @@
             class="max-h-225"
             :data="members"
             :columns="columns"
-          />
+          >
+            <template #ranks-cell="{ row }">
+              <div
+                v-if="row.original.expand?.ranks?.length"
+                class="flex flex-wrap gap-1"
+              >
+                <RankBadge
+                  v-for="rank in row.original.expand.ranks"
+                  :key="rank.id"
+                  :name="rank.name"
+                  :colour="rank.colour"
+                />
+              </div>
+              <span v-else class="text-muted text-sm">—</span>
+            </template>
+
+            <template #actions-cell="{ row }">
+              <div class="flex gap-1 items-center">
+                <EditMember
+                  :member="row.original"
+                  @refresh="getNamiMembers()"
+                />
+                <DeleteConfirmModal
+                  title="Mitglied löschen"
+                  :description="`Soll ${row.original.firstName ?? ''} ${row.original.lastName ?? ''} wirklich gelöscht werden?`"
+                  confirm-label="Mitglied löschen"
+                  @confirm="(close: () => void) => onDeleteMember(row, close)"
+                />
+              </div>
+            </template>
+          </UTable>
         </div>
       </template>
     </UCard>
@@ -51,6 +84,15 @@
       title="Malheur!"
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
+      <template #actions>
+        <CreateMember @refresh="getNamiMembers()" />
+        <UButton
+          icon="i-lucide-refresh-cw"
+          label="Aktualisieren"
+          color="neutral"
+          @click="getNamiMembers()"
+        />
+      </template>
     </UEmpty>
   </div>
 </template>
@@ -63,34 +105,36 @@ definePageMeta({
 });
 
 const { pb } = usePocketbase();
+const toast = useToast();
+const toastError = useToastError();
 
-const members = ref();
+const members = ref<any[]>([]);
 const globalFilter = ref("");
 
 const getNamiMembers = async () => {
-  members.value = await pb.collection("members").getFullList();
+  members.value = await pb.collection("members").getFullList({
+    expand: "ranks",
+  });
 };
 
-useRealtimeRefresh("members", getNamiMembers);
+useRealtimeRefresh(["members", "ranks"], getNamiMembers);
 
 const columns: TableColumn<any>[] = [
   { header: "Mitgliedsnummer", accessorKey: "memberNumber" },
   { header: "Vorname", accessorKey: "firstName" },
   { header: "Nachname", accessorKey: "lastName" },
+  { header: "Stufen", accessorKey: "ranks" },
   { header: "Geschlecht", accessorKey: "gender" },
-  { header: "Staatsangehoerigkeit", accessorKey: "nationality" },
-  { header: "Strasse", accessorKey: "street" },
+  { header: "Staatsangehörigkeit", accessorKey: "nationality" },
+  { header: "Straße", accessorKey: "street" },
   { header: "PLZ", accessorKey: "postalCode" },
   { header: "Ort", accessorKey: "city" },
-  { header: "EMail", accessorKey: "email" },
-  {
-    header: "EMailErziehungsberechtigter",
-    accessorKey: "guardianEmail",
-  },
-  { header: "Telefon1", accessorKey: "phone1" },
-  { header: "Telefon2", accessorKey: "phone2" },
-  { header: "Telefon3", accessorKey: "phone3" },
-  { header: "GebDatum", accessorKey: "birthDate" },
+  { header: "E-Mail", accessorKey: "email" },
+  { header: "E-Mail (Erziehungsber.)", accessorKey: "parentEmail" },
+  { header: "Telefon 1", accessorKey: "phone1" },
+  { header: "Telefon 2", accessorKey: "phone2" },
+  { header: "Telefon 3", accessorKey: "phone3" },
+  { header: "Geburtsdatum", accessorKey: "birthdate" },
   { header: "Mitgliedstyp", accessorKey: "membershipType" },
   { header: "Status", accessorKey: "status" },
   { header: "Eintrittsdatum", accessorKey: "joinDate" },
@@ -98,8 +142,19 @@ const columns: TableColumn<any>[] = [
   { header: "Zeitschriftenversand", accessorKey: "magazineDelivery" },
   { header: "Gruppierungsname", accessorKey: "groupName" },
   { header: "Gruppierungsnummer", accessorKey: "groupNumber" },
+  { header: "", accessorKey: "actions" },
 ];
+
+const onDeleteMember = async (row: any, close: () => void) => {
+  try {
+    await pb.collection("members").delete(row.original.id);
+    toast.add({ title: "Mitglied gelöscht", icon: "i-lucide-trash" });
+    close();
+    await getNamiMembers();
+  } catch (error: any) {
+    toastError(error);
+  }
+};
+
 await getNamiMembers();
 </script>
-
-<style></style>

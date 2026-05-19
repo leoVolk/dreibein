@@ -14,10 +14,18 @@
 
     <div class="flex lg:flex-row flex-col gap-4">
       <UFormField class="w-full" label="Start" name="start">
-        <UInput v-model="state.startDate" type="date" class="w-full" />
+        <UInput
+          v-model="state.startDate"
+          type="datetime-local"
+          class="w-full"
+        />
       </UFormField>
       <UFormField class="w-full" label="Ende" name="end">
-        <UInput v-model="state.endDate" type="date" class="w-full" />
+        <UInput
+          v-model="state.endDate"
+          type="datetime-local"
+          class="w-full"
+        />
       </UFormField>
     </div>
 
@@ -63,6 +71,17 @@ const daysOfWeek = [
   "Sonntag",
 ];
 
+// Storage convention: 0 = Sunday … 6 = Saturday (matches FullCalendar / Date.getDay()).
+const DAY_TO_INDEX: Record<string, number> = {
+  Sonntag: 0,
+  Montag: 1,
+  Dienstag: 2,
+  Mittwoch: 3,
+  Donnerstag: 4,
+  Freitag: 5,
+  Samstag: 6,
+};
+
 const initialState = () => ({
   name: "",
   startDate: "",
@@ -76,12 +95,14 @@ const onSubmit = async () => {
   loading.value = true;
 
   const daysOfWeekIndex = state.daysOfWeek
-    .map((d) => daysOfWeek.indexOf(d) + 1)
-    .filter((i) => i > 0);
+    .map((d) => DAY_TO_INDEX[d])
+    .filter((i): i is number => i !== undefined);
 
   try {
     await pb.collection("events").create({
       ...state,
+      startDate: toPbDateTime(state.startDate),
+      endDate: toPbDateTime(state.endDate),
       daysOfWeek: daysOfWeekIndex,
       createdBy: user.value?.id,
     });
