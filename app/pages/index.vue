@@ -94,6 +94,11 @@
       </UCard>
     </div>
 
+    <!--     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <MaterialStatusChart />
+      <MembersByGroupChart />
+    </div> -->
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <OverviewCard
         title="Zuletzt bearbeitete Listen"
@@ -151,7 +156,7 @@ const eventDateMeta = (item: Bare) => {
 
 const updatedMeta = (item: Bare) => formatDate(item.updated);
 
-const { data: stats } = await useAsyncData(
+const { data: stats, refresh: refreshStats } = await useAsyncData(
   "dashboard-stats",
   async () => {
     const [events, lists, items, members] = await Promise.all([
@@ -170,7 +175,7 @@ const { data: stats } = await useAsyncData(
   { default: () => ({ events: 0, lists: 0, items: 0, members: 0 }) },
 );
 
-const { data: upcomingEvents } = await useAsyncData(
+const { data: upcomingEvents, refresh: refreshUpcoming } = await useAsyncData(
   "dashboard-upcoming-events",
   () =>
     pb.collection(Collections.Events).getList<EventsResponse>(1, 5, {
@@ -181,7 +186,7 @@ const { data: upcomingEvents } = await useAsyncData(
   { transform: (res) => res.items, default: () => [] as EventsResponse[] },
 );
 
-const { data: attentionItems } = await useAsyncData(
+const { data: attentionItems, refresh: refreshAttention } = await useAsyncData(
   "dashboard-attention-items",
   () =>
     pb.collection(Collections.Items).getList<ItemsResponse>(1, 6, {
@@ -192,7 +197,7 @@ const { data: attentionItems } = await useAsyncData(
   { transform: (res) => res.items, default: () => [] as ItemsResponse[] },
 );
 
-const { data: recentLists } = await useAsyncData(
+const { data: recentLists, refresh: refreshRecentLists } = await useAsyncData(
   "dashboard-recent-lists",
   () =>
     pb.collection(Collections.Lists).getList<ListsResponse>(1, 5, {
@@ -202,7 +207,7 @@ const { data: recentLists } = await useAsyncData(
   { transform: (res) => res.items, default: () => [] as ListsResponse[] },
 );
 
-const { data: recentEvents } = await useAsyncData(
+const { data: recentEvents, refresh: refreshRecentEvents } = await useAsyncData(
   "dashboard-recent-events",
   () =>
     pb.collection(Collections.Events).getList<EventsResponse>(1, 5, {
@@ -211,4 +216,24 @@ const { data: recentEvents } = await useAsyncData(
     }),
   { transform: (res) => res.items, default: () => [] as EventsResponse[] },
 );
+
+useRealtimeRefresh("events", () => {
+  refreshStats();
+  refreshUpcoming();
+  refreshRecentEvents();
+});
+
+useRealtimeRefresh("lists", () => {
+  refreshStats();
+  refreshRecentLists();
+});
+
+useRealtimeRefresh("items", () => {
+  refreshStats();
+  refreshAttention();
+});
+
+useRealtimeRefresh("members", () => {
+  refreshStats();
+});
 </script>

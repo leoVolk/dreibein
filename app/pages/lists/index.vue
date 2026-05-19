@@ -67,6 +67,8 @@ const { data, refresh } = await useAsyncData<any>(() =>
   }),
 );
 
+useRealtimeRefresh("lists", refresh);
+
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
   { header: "Autor", accessorKey: "expand.createdBy.name" },

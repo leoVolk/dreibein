@@ -16,6 +16,8 @@
       <UInput v-model="state.email" size="lg" class="w-full" />
     </UFormField>
 
+    <RankSelectField v-model="state.ranks" />
+
     <UFormField class="w-full" label="Passwort" name="password">
       <UInput
         v-model="state.password"
@@ -65,6 +67,7 @@ const initialState = () => ({
   email: "",
   password: "",
   emailVisibility: true,
+  ranks: [] as string[],
 });
 
 const state = reactive(initialState());

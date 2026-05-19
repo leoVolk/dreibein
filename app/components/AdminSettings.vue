@@ -21,13 +21,96 @@
             <CreateUser @refresh="getUsers()"></CreateUser>
           </div>
           <UTable :data="users" :columns="userColumns">
+            <template #ranks-cell="{ row }">
+              <div
+                v-if="row.original.expand?.ranks?.length"
+                class="flex flex-wrap gap-1"
+              >
+                <RankBadge
+                  v-for="rank in row.original.expand.ranks"
+                  :key="rank.id"
+                  :name="rank.name"
+                  :colour="rank.colour"
+                />
+              </div>
+              <span v-else class="text-muted text-sm">—</span>
+            </template>
+
             <template #admin-cell="{ row }">
               <UCheckbox
                 v-model="row.original.admin"
                 @click="onAdminToggle(row)"
               ></UCheckbox>
             </template>
+
+            <template #actions-cell="{ row }">
+              <div class="flex gap-1 items-center">
+                <EditUser :user="row.original" @refresh="getUsers()" />
+
+                <DeleteConfirmModal
+                  title="Passwort zurücksetzen"
+                  :description="`Soll wirklich eine Passwort-Reset E-Mail an ${row.original.email} versandt werden?`"
+                  confirm-label="E-Mail senden"
+                  @confirm="(close: () => void) => onSendPasswordReset(row, close)"
+                >
+                  <UTooltip text="Passwort-Reset E-Mail senden">
+                    <UButton
+                      size="sm"
+                      variant="ghost"
+                      color="primary"
+                      icon="i-lucide-mail"
+                      :loading="resetLoading === row.original.id"
+                    />
+                  </UTooltip>
+                </DeleteConfirmModal>
+              </div>
+            </template>
           </UTable>
+        </div>
+
+        <USeparator class="h-4"></USeparator>
+
+        <div class="flex flex-col gap-4">
+          <div class="flex justify-between items-center">
+            <h4 class="text-lg flex items-center gap-2">
+              <UIcon name="i-lucide-tag" class="size-6" />
+              <span>Stufen</span>
+            </h4>
+
+            <CreateRank @refresh="getRanks()" />
+          </div>
+
+          <UTable v-if="ranks.length" :data="ranks" :columns="rankColumns">
+            <template #colour-cell="{ row }">
+              <div class="flex items-center gap-2">
+                <span
+                  class="inline-block size-4 rounded border border-default"
+                  :style="{ backgroundColor: row.original.colour }"
+                />
+                <span class="text-muted text-sm">{{ row.original.colour }}</span>
+              </div>
+            </template>
+
+            <template #actions-cell="{ row }">
+              <div class="flex gap-1 items-center">
+                <EditRank :rank="row.original" @refresh="getRanks()" />
+
+                <DeleteConfirmModal
+                  title="Stufe löschen"
+                  :description="`Soll die Stufe ${row.original.name} wirklich gelöscht werden?`"
+                  confirm-label="Stufe löschen"
+                  @confirm="(close: () => void) => onDeleteRank(row, close)"
+                />
+              </div>
+            </template>
+          </UTable>
+
+          <UEmpty
+            v-else
+            icon="i-lucide-tag"
+            size="sm"
+            description="Noch keine Stufen angelegt."
+          />
         </div>
 
         <USeparator class="h-4"></USeparator>
@@ -180,17 +263,17 @@ const previewData = computed(() =>
 const getUsers = async () => {
   if (!user.value?.admin) return;
 
-  users.value = await pb.collection("users").getFullList();
+  users.value = await pb.collection("users").getFullList({
+    expand: "ranks",
+  });
 };
 
 await getUsers();
 
 const userColumns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
-  {
-    header: "E-Mail",
-    accessorKey: "email",
-  },
+  { header: "E-Mail", accessorKey: "email" },
+  { header: "Stufen", accessorKey: "ranks" },
   { header: "Admin", accessorKey: "admin" },
   {
     header: "Erstellt am",
@@ -202,7 +285,63 @@ const userColumns: TableColumn<any>[] = [
     accessorKey: "updated",
     cell: ({ row }) => new Date(row.getValue("updated")).toLocaleDateString(),
   },
+  { header: "", accessorKey: "actions" },
 ];
+
+const resetLoading = ref<string | null>(null);
+const toastError = useToastError();
+
+type Rank = { id: string; name: string; colour: string };
+const ranks = ref<Rank[]>([]);
+
+const getRanks = async () => {
+  if (!user.value?.admin) return;
+  ranks.value = await pb.collection("ranks").getFullList<Rank>({
+    sort: "name",
+  });
+};
+
+await getRanks();
+
+const rankColumns: TableColumn<Rank>[] = [
+  { header: "Name", accessorKey: "name" },
+  { header: "Farbe", accessorKey: "colour" },
+  { header: "", accessorKey: "actions" },
+];
+
+useRealtimeRefresh("users", getUsers);
+useRealtimeRefresh("ranks", () => {
+  getRanks();
+  getUsers();
+});
+
+const onDeleteRank = async (row: any, close: () => void) => {
+  try {
+    await pb.collection("ranks").delete(row.original.id);
+    toast.add({ title: "Stufe gelöscht", icon: "i-lucide-trash" });
+    close();
+    await getRanks();
+  } catch (error: any) {
+    toastError(error);
+  }
+};
+
+const onSendPasswordReset = async (row: any, close: () => void) => {
+  resetLoading.value = row.original.id;
+  try {
+    await pb.collection("users").requestPasswordReset(row.original.email);
+    toast.add({
+      title: "Passwort-Reset E-Mail versandt",
+      description: row.original.email,
+      icon: "i-lucide-mail-check",
+    });
+    close();
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    resetLoading.value = null;
+  }
+};
 
 const handleFileUpload = (file: any) => {
   if (!file) return;

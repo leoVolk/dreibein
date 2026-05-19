@@ -194,6 +194,11 @@ const { data: shoppingLists, refresh: refreshShoppingLists } =
         }),
   );
 
+useRealtimeRefresh("eventlists", refreshLists);
+useRealtimeRefresh("notes", refreshNotes);
+useRealtimeRefresh("participantlists", refreshParticipantLists);
+useRealtimeRefresh("shoppinglists", refreshShoppingLists);
+
 const dateRange = computed(() => {
   const start = formatDate(event.value?.startDate);
   const end = formatDate(event.value?.endDate);

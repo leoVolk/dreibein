@@ -88,13 +88,8 @@ const { data: events, refresh: refreshEvents } = await useAsyncData<any>(() =>
   pb.collection("events").getFullList(),
 );
 
-pb.collection("lists").subscribe("*", (e) => {
-  refreshLists();
-});
-
-pb.collection("events").subscribe("*", (e) => {
-  refreshEvents();
-});
+useRealtimeRefresh("lists", refreshLists);
+useRealtimeRefresh("events", refreshEvents);
 
 const listLinks = computed(() =>
   lists.value.map((list: any) => ({

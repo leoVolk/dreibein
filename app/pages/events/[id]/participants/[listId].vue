@@ -134,6 +134,8 @@ const refresh = () => {
   refreshParticipants();
 };
 
+useRealtimeRefresh(["participantlists", "members"], refresh);
+
 const hasPaid = (paidLists: any) => {
   return (paidLists ?? []).includes(route.params.listId as string);
 };

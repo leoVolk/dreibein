@@ -60,6 +60,8 @@ const { data: items, refresh: refreshItems } = await useAsyncData<any[]>(() =>
   pb.collection("items").getFullList({ requestKey: null }),
 );
 
+useRealtimeRefresh("items", refreshItems);
+
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
   {

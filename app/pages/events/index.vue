@@ -65,6 +65,8 @@ const { data: events, refresh } = await useAsyncData<any>(() =>
   }),
 );
 
+useRealtimeRefresh("events", refresh);
+
 const formatDate = (value: unknown) =>
   value ? new Date(value as string).toLocaleDateString() : "-";
 

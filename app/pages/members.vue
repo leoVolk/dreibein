@@ -71,6 +71,8 @@ const getNamiMembers = async () => {
   members.value = await pb.collection("members").getFullList();
 };
 
+useRealtimeRefresh("members", getNamiMembers);
+
 const columns: TableColumn<any>[] = [
   { header: "Mitgliedsnummer", accessorKey: "memberNumber" },
   { header: "Vorname", accessorKey: "firstName" },

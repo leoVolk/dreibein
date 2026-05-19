@@ -112,6 +112,8 @@ const { data: list, refresh: refreshList } = await useAsyncData(
       }),
 );
 
+useRealtimeRefresh(["lists", "items"], refreshList);
+
 const columns: TableColumn<ItemsRecord>[] = [
   { header: "Name", accessorKey: "name" },
   {
