@@ -139,7 +139,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
       to: "/calendar",
     },
     {
-      label: "NaMi Mitglieder",
+      label: "Mitglieder",
       icon: "i-lucide-users",
       to: "/members",
     },
