@@ -49,16 +49,18 @@
           />
           <UButton
             label="Abmelden"
+            variant="outline"
             color="error"
             class="justify-center"
             :block="collapsed"
             @click="onSignOut"
+            icon="i-lucide-log-out"
           />
         </div>
       </template>
     </UDashboardSidebar>
 
-    <UDashboardPanel>
+    <UDashboardPanel :ui="{ body: 'bg-elevated/40 dark:bg-elevated/20' }">
       <template #header>
         <UDashboardNavbar class="lg:hidden" />
       </template>

@@ -11,21 +11,22 @@
       <CreateMember @refresh="getNamiMembers()" />
     </div>
 
-    <UCard v-if="members?.length">
-      <template #header>
-        <h2 class="text-2xl">Orga-Mitglieder</h2>
-        <p class="mt-4">
-          Hier findest du alle NaMi Mitglieder die importiert wurden. <br />
-          Sollte die Liste leer sein, importiere eine NaMi Excel Datei in den
-          <ULink inactive-class="text-primary font-semibold" to="/settings">
-            Einstellungen
-          </ULink>
-          (nur für Admins verfügbar)
-          – oder lege Mitglieder manuell über
-          <span class="font-semibold">„Mitglied anlegen"</span> an.
-        </p>
-      </template>
-      <template #default>
+    <div v-if="members?.length">
+      <UPageHeader title="Mitglieder">
+        <template #description>
+          <p class="mt-4">
+            Hier findest du alle NaMi Mitglieder die importiert wurden. <br />
+            Sollte die Liste leer sein, importiere eine NaMi Excel Datei in den
+            <ULink inactive-class="text-primary font-semibold" to="/settings">
+              Einstellungen
+            </ULink>
+            (nur für Admins verfügbar) – oder lege Mitglieder manuell über
+            <span class="font-semibold">„Mitglied anlegen"</span> an.
+          </p>
+        </template>
+      </UPageHeader>
+
+      <div class="mt-8">
         <div class="flex flex-col flex-1 w-full">
           <div class="flex pb-4 border-b border-accented">
             <UInput
@@ -75,8 +76,8 @@
             </template>
           </UTable>
         </div>
-      </template>
-    </UCard>
+      </div>
+    </div>
 
     <UEmpty
       v-else
