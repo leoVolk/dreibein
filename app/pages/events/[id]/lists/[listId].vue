@@ -34,6 +34,7 @@
       <template #default>
         <UTable
           v-model:expanded="expanded"
+          v-model:column-pinning="columnPinning"
           :get-row-id="(row) => row.id"
           loading-color="primary"
           loading-animation="carousel"
@@ -82,6 +83,7 @@
               :columns="childColumns"
               :meta="meta"
               :ui="{ thead: 'hidden' }"
+              :column-pinning="{ right: ['actions'] }"
             >
               <template #description-cell="{ row: child }">
                 <div>{{ child.original.description?.substring(0, 64) || "-" }}</div>
@@ -187,6 +189,7 @@ const childColumns: TableColumn<ItemsRecord>[] = itemColumns;
 const meta = useItemStatusMeta();
 
 const expanded = ref<Record<string, boolean>>({});
+const columnPinning = ref({ right: ["actions"] });
 
 const listItemIds = computed(
   () => new Set((list.value?.expand?.items ?? []).map((i) => i.id)),

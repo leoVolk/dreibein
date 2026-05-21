@@ -45,6 +45,7 @@
 
           <UTable
             ref="table"
+            v-model:column-pinning="columnPinning"
             v-model:global-filter="globalFilter"
             sticky
             class="max-h-225"
@@ -117,6 +118,7 @@ const toastError = useToastError();
 
 const members = ref<any[]>([]);
 const globalFilter = ref("");
+const columnPinning = ref({ right: ["actions"] });
 
 const getNamiMembers = async () => {
   members.value = await pb.collection(Collections.Members).getFullList({

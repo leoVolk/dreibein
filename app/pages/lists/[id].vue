@@ -40,6 +40,7 @@
       v-if="list?.expand?.items?.length"
       class="mt-8"
       v-model:expanded="expanded"
+      v-model:column-pinning="columnPinning"
       :get-row-id="(row) => row.id"
       loading-color="primary"
       loading-animation="carousel"
@@ -91,6 +92,7 @@
           :columns="childColumns"
           :meta="meta"
           :ui="{ thead: 'hidden' }"
+          :column-pinning="{ right: ['actions'] }"
         >
           <template #description-cell="{ row: child }">
             <div>
@@ -201,6 +203,7 @@ const childColumns: TableColumn<ItemsRecord>[] = itemColumns;
 const meta = useItemStatusMeta();
 
 const expanded = ref<Record<string, boolean>>({});
+const columnPinning = ref({ right: ["actions"] });
 
 const listItemIds = computed(
   () => new Set((list.value?.expand?.items ?? []).map((i) => i.id)),

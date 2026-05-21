@@ -24,7 +24,7 @@
       </UPageHeader>
 
       <div class="mt-8">
-        <UTable :data="events" :columns="columns" @select="onSelect">
+        <UTable v-model:column-pinning="columnPinning" :data="events" :columns="columns" @select="onSelect">
           <template #actions-cell="{ row }">
             <DeleteConfirmModal
               title="Event löschen"
@@ -67,6 +67,8 @@ const toastError = useToastError();
 definePageMeta({
   middleware: ["auth"],
 });
+
+const columnPinning = ref({ right: ["actions"] });
 
 const { data: events, refresh } = await useAsyncData<any>(() =>
   pb.collection("events").getFullList({

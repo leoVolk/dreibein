@@ -16,6 +16,7 @@
           size="xl"
         />
         <UTable
+          v-model:column-pinning="columnPinning"
           v-model:expanded="expanded"
           :get-row-id="(row) => row.id"
           loading-color="primary"
@@ -61,31 +62,36 @@
           </template>
 
           <template #expanded="{ row }">
-            <UTable
-              :data="childrenOf(row.original.id)"
-              :columns="childColumns"
-              :meta="meta"
-              :ui="{ thead: 'hidden' }"
-            >
-              <template #description-cell="{ row: child }">
-                <div>
-                  {{ child.original.description?.substring(0, 64) || "-" }}
-                </div>
-              </template>
-              <template #status-cell="{ row: child }">
-                <ItemStatusBadge :status="child.original.status" />
-              </template>
-              <template #actions-cell="{ row: child }">
-                <div class="flex gap-1 items-center">
-                  <EditItem :item="child.original" @refresh="refreshItems()" />
-                  <DeleteConfirmModal
-                    title="Eintrag löschen"
-                    confirm-label="Eintrag löschen"
-                    @confirm="(close) => deleteItem(child.original, close)"
-                  />
-                </div>
-              </template>
-            </UTable>
+            <div class="bg-neutral-950/20 ml-32">
+              <UTable
+                :data="childrenOf(row.original.id)"
+                :columns="childColumns"
+                :meta="meta"
+                :ui="{ thead: 'hidden' }"
+              >
+                <template #description-cell="{ row: child }">
+                  <div>
+                    {{ child.original.description?.substring(0, 64) || "-" }}
+                  </div>
+                </template>
+                <template #status-cell="{ row: child }">
+                  <ItemStatusBadge :status="child.original.status" />
+                </template>
+                <template #actions-cell="{ row: child }">
+                  <div class="flex gap-1 items-center">
+                    <EditItem
+                      :item="child.original"
+                      @refresh="refreshItems()"
+                    />
+                    <DeleteConfirmModal
+                      title="Eintrag löschen"
+                      confirm-label="Eintrag löschen"
+                      @confirm="(close) => deleteItem(child.original, close)"
+                    />
+                  </div>
+                </template>
+              </UTable>
+            </div>
           </template>
         </UTable>
       </div>
@@ -109,6 +115,10 @@ const { data: items, refresh: refreshItems } = await useAsyncData<any[]>(() =>
 );
 
 useRealtimeRefresh("items", refreshItems);
+
+const columnPinning = ref({
+  right: ["actions"],
+});
 
 const itemColumns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },

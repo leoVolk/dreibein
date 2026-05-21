@@ -20,7 +20,7 @@
 
             <CreateUser @refresh="getUsers()"></CreateUser>
           </div>
-          <UTable :data="users" :columns="userColumns">
+          <UTable v-model:column-pinning="columnPinning" :data="users" :columns="userColumns">
             <template #ranks-cell="{ row }">
               <div
                 v-if="row.original.expand?.ranks?.length"
@@ -80,7 +80,7 @@
             <CreateRank @refresh="getRanks()" />
           </div>
 
-          <UTable v-if="ranks.length" :data="ranks" :columns="rankColumns">
+          <UTable v-if="ranks.length" v-model:column-pinning="columnPinning" :data="ranks" :columns="rankColumns">
             <template #colour-cell="{ row }">
               <div class="flex items-center gap-2">
                 <span
@@ -213,6 +213,7 @@ import type { TableColumn } from "@nuxt/ui";
 import * as XLSX from "xlsx";
 
 const { user } = usePocketbaseAuth();
+const columnPinning = ref({ right: ["actions"] });
 const { pb } = usePocketbase();
 const toast = useToast();
 
