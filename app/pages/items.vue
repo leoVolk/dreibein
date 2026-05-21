@@ -121,12 +121,12 @@ const columnPinning = ref({
 });
 
 const itemColumns: TableColumn<any>[] = [
-  { header: "Name", accessorKey: "name" },
   {
     header: "Kategorie",
     accessorKey: "category",
     cell: ({ row }) => row.original.expand?.category?.name || "-",
   },
+  { header: "Name", accessorKey: "name" },
   {
     header: "Beschreibung",
     accessorKey: "description",

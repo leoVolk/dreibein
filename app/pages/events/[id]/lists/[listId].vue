@@ -176,12 +176,12 @@ const { data: list, refresh: refreshList } = await useAsyncData(
 useRealtimeRefresh(["eventlists", "items"], refreshList);
 
 const itemColumns: TableColumn<ItemsRecord>[] = [
-  { header: "Name", accessorKey: "name" },
   {
     header: "Kategorie",
     accessorKey: "category",
     cell: ({ row }) => (row.original as any).expand?.category?.name || "-",
   },
+  { header: "Name", accessorKey: "name" },
   {
     header: "Beschreibung",
     accessorKey: "description",
