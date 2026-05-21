@@ -15,7 +15,15 @@ export default defineAppConfig({
     table: {
       slots: {
         root: 'max-h-[65vh]',
-        th: 'text-base'
+        th: 'text-base',
+      },
+      variants: {
+        pinned: {
+          true: {
+            th: 'sticky bg-default z-1',
+            td: 'sticky bg-default z-1'
+          }
+        },
       }
     }
   }
