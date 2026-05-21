@@ -11,6 +11,12 @@ export default defineAppConfig({
       slots: {
         base: 'cursor-pointer'
       }
+    },
+    table: {
+      slots: {
+        td: 'text-base',
+        th: 'text-base'
+      }
     }
   }
 });
