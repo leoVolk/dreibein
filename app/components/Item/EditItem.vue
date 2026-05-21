@@ -129,9 +129,11 @@ const onSubmit = async () => {
 
   try {
     await pb.collection(Collections.Items).update(props.item.id, state);
-    await pb
-      .collection(Collections.Lists)
-      .update(props.listId, { updatedBy: user.value?.id });
+    if (props.listId) {
+      await pb
+        .collection(Collections.Lists)
+        .update(props.listId, { updatedBy: user.value?.id });
+    }
 
     toast.add({ title: "Eintrag aktualisiert", icon: "i-lucide-save" });
 

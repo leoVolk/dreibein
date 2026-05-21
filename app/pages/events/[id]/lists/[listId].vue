@@ -81,6 +81,7 @@
               :data="childrenOf(row.original.id)"
               :columns="childColumns"
               :meta="meta"
+              :ui="{ thead: 'hidden' }"
             >
               <template #description-cell="{ row: child }">
                 <div>{{ child.original.description?.substring(0, 64) || "-" }}</div>

@@ -50,11 +50,14 @@
           </template>
 
           <template #actions-cell="{ row }">
-            <DeleteConfirmModal
-              title="Eintrag löschen"
-              confirm-label="Eintrag löschen"
-              @confirm="(close) => deleteItem(row.original, close)"
-            />
+            <div class="flex gap-1 items-center">
+              <EditItem :item="row.original" @refresh="refreshItems()" />
+              <DeleteConfirmModal
+                title="Eintrag löschen"
+                confirm-label="Eintrag löschen"
+                @confirm="(close) => deleteItem(row.original, close)"
+              />
+            </div>
           </template>
 
           <template #expanded="{ row }">
@@ -62,6 +65,7 @@
               :data="childrenOf(row.original.id)"
               :columns="childColumns"
               :meta="meta"
+              :ui="{ thead: 'hidden' }"
             >
               <template #description-cell="{ row: child }">
                 <div>
@@ -72,11 +76,14 @@
                 <ItemStatusBadge :status="child.original.status" />
               </template>
               <template #actions-cell="{ row: child }">
-                <DeleteConfirmModal
-                  title="Eintrag löschen"
-                  confirm-label="Eintrag löschen"
-                  @confirm="(close) => deleteItem(child.original, close)"
-                />
+                <div class="flex gap-1 items-center">
+                  <EditItem :item="child.original" @refresh="refreshItems()" />
+                  <DeleteConfirmModal
+                    title="Eintrag löschen"
+                    confirm-label="Eintrag löschen"
+                    @confirm="(close) => deleteItem(child.original, close)"
+                  />
+                </div>
               </template>
             </UTable>
           </template>

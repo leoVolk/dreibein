@@ -8,7 +8,7 @@
       ]"
     />
 
-    <div v-if="list?.expand?.items?.length">
+    <div v-if="list">
       <UPageHeader>
         <template #headline>
           <div class="flex justify-between w-full items-center gap-4">
@@ -34,81 +34,89 @@
             </div>
           </div> </template
       ></UPageHeader>
-
-      <UTable
-        class="mt-8"
-        v-model:expanded="expanded"
-        :get-row-id="(row) => row.id"
-        loading-color="primary"
-        loading-animation="carousel"
-        :data="topLevelItems"
-        :columns="columns"
-        :meta="meta"
-      >
-        <template #expand-cell="{ row }">
-          <UButton
-            v-if="childrenOf(row.original.id).length"
-            :icon="row.getIsExpanded() ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
-            color="neutral"
-            variant="ghost"
-            size="xs"
-            @click="row.toggleExpanded()"
-          />
-        </template>
-
-        <template #description-cell="{ row }">
-          <div>{{ row.original.description?.substring(0, 64) || "-" }}</div>
-        </template>
-
-        <template #status-cell="{ row }">
-          <ItemStatusBadge :status="row.original.status" />
-        </template>
-
-        <template #actions-cell="{ row }">
-          <div class="flex gap-1 items-center">
-            <EditItem
-              :item="row.original"
-              :list-id="list?.id"
-              @refresh="refreshList()"
-            />
-            <DeleteConfirmModal
-              title="Eintrag löschen"
-              confirm-label="Eintrag löschen"
-              @confirm="(close) => deleteItem(row.original, close)"
-            />
-          </div>
-        </template>
-
-        <template #expanded="{ row }">
-          <UTable
-            :data="childrenOf(row.original.id)"
-            :columns="childColumns"
-            :meta="meta"
-          >
-            <template #description-cell="{ row: child }">
-              <div>{{ child.original.description?.substring(0, 64) || "-" }}</div>
-            </template>
-            <template #status-cell="{ row: child }">
-              <ItemStatusBadge :status="child.original.status" />
-            </template>
-            <template #actions-cell="{ row: child }">
-              <div class="flex gap-1 items-center">
-                <EditItem
-                  :item="child.original"
-                  :list-id="list?.id"
-                  @refresh="refreshList()"
-                />
-                <DeleteConfirmModal
-                  title="Eintrag löschen"
-                  confirm-label="Eintrag löschen"
-                  @confirm="(close) => deleteItem(child.original, close)"
-                />
-              </div>
-            </template>
-          </UTable>
-        </template>
-      </UTable>
     </div>
+
+    <UTable
+      v-if="list?.expand?.items?.length"
+      class="mt-8"
+      v-model:expanded="expanded"
+      :get-row-id="(row) => row.id"
+      loading-color="primary"
+      loading-animation="carousel"
+      :data="topLevelItems"
+      :columns="columns"
+      :meta="meta"
+    >
+      <template #expand-cell="{ row }">
+        <UButton
+          v-if="childrenOf(row.original.id).length"
+          :icon="
+            row.getIsExpanded()
+              ? 'i-lucide-chevron-down'
+              : 'i-lucide-chevron-right'
+          "
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          @click="row.toggleExpanded()"
+        />
+      </template>
+
+      <template #description-cell="{ row }">
+        <div>{{ row.original.description?.substring(0, 64) || "-" }}</div>
+      </template>
+
+      <template #status-cell="{ row }">
+        <ItemStatusBadge :status="row.original.status" />
+      </template>
+
+      <template #actions-cell="{ row }">
+        <div class="flex gap-1 items-center">
+          <EditItem
+            :item="row.original"
+            :list-id="list?.id"
+            @refresh="refreshList()"
+          />
+          <DeleteConfirmModal
+            title="Eintrag löschen"
+            confirm-label="Eintrag löschen"
+            @confirm="(close) => deleteItem(row.original, close)"
+          />
+        </div>
+      </template>
+
+      <template #expanded="{ row }">
+        <UTable
+          :data="childrenOf(row.original.id)"
+          :columns="childColumns"
+          :meta="meta"
+          :ui="{ thead: 'hidden' }"
+        >
+          <template #description-cell="{ row: child }">
+            <div>
+              {{ child.original.description?.substring(0, 64) || "-" }}
+            </div>
+          </template>
+          <template #status-cell="{ row: child }">
+            <ItemStatusBadge :status="child.original.status" />
+          </template>
+          <template #actions-cell="{ row: child }">
+            <div class="flex gap-1 items-center">
+              <EditItem
+                :item="child.original"
+                :list-id="list?.id"
+                @refresh="refreshList()"
+              />
+              <DeleteConfirmModal
+                title="Eintrag löschen"
+                confirm-label="Eintrag löschen"
+                @confirm="(close) => deleteItem(child.original, close)"
+              />
+            </div>
+          </template>
+        </UTable>
+      </template>
+    </UTable>
 
     <UEmpty
       v-else
