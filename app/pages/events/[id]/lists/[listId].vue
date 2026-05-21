@@ -146,8 +146,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { TableColumn } from "@nuxt/ui";
-
 definePageMeta({
   middleware: ["auth"],
 });
@@ -175,56 +173,14 @@ const { data: list, refresh: refreshList } = await useAsyncData(
 
 useRealtimeRefresh(["eventlists", "items"], refreshList);
 
-const itemColumns: TableColumn<ItemsRecord>[] = [
-  {
-    header: "Kategorie",
-    accessorKey: "category",
-    cell: ({ row }) => (row.original as any).expand?.category?.name || "-",
-  },
-  { header: "Name", accessorKey: "name" },
-  {
-    header: "Beschreibung",
-    accessorKey: "description",
-    cell: ({ row }) => row.getValue("description") || "-",
-  },
-  { header: "Anzahl", accessorKey: "quantity" },
-  {
-    header: "Ausgegeben am",
-    accessorKey: "checkout",
-    cell: ({ row }) => row.getValue("checkout") || "-",
-  },
-  {
-    header: "Gewicht (kg)",
-    accessorKey: "weight",
-    cell: ({ row }) => `${row.getValue("weight")} kg`,
-  },
-  { header: "Status", accessorKey: "status" },
-  { header: "", accessorKey: "actions" },
-];
-
-const columns: TableColumn<ItemsRecord>[] = [
-  { id: "expand", header: "" },
-  ...itemColumns,
-];
-const childColumns: TableColumn<ItemsRecord>[] = itemColumns;
-
+const { columns, childColumns } = useItemColumns();
 const meta = useItemStatusMeta();
-
 const expanded = ref<Record<string, boolean>>({});
 const columnPinning = ref({ right: ["actions"] });
 
-const listItemIds = computed(
-  () => new Set((list.value?.expand?.items ?? []).map((i) => i.id)),
+const { topLevelItems, childrenOf } = useHierarchicalItems(
+  computed(() => list.value?.expand?.items ?? []),
 );
-
-const topLevelItems = computed(() =>
-  (list.value?.expand?.items ?? []).filter(
-    (i) => !i.parent || !listItemIds.value.has(i.parent),
-  ),
-);
-
-const childrenOf = (parentId: string): ItemsResponse[] =>
-  (list.value?.expand?.items ?? []).filter((i) => i.parent === parentId);
 
 const removeItem = async (item: ItemsResponse, close: () => void) => {
   if (!list.value) return;

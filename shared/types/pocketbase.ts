@@ -139,6 +139,7 @@ export const ItemsStatusOptions = {
 	"damaged": "damaged",
 	"repair": "repair",
 	"checkedOut": "checkedOut",
+	"mildDamage": "mildDamage",
 } as const
 export type ItemsStatusOptions = typeof ItemsStatusOptions[keyof typeof ItemsStatusOptions]
 export type ItemsRecord = {

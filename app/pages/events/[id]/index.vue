@@ -108,15 +108,6 @@ const route = useRoute();
 
 const id = computed(() => route.params.id as string);
 
-const DAY_NAMES = [
-  "Sonntag",
-  "Montag",
-  "Dienstag",
-  "Mittwoch",
-  "Donnerstag",
-  "Freitag",
-  "Samstag",
-];
 
 const formatDate = (value?: string) =>
   value ? new Date(value).toLocaleDateString() : "";

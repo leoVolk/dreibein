@@ -11,6 +11,8 @@ export function useItemStatusMeta(): TableMeta<any> {
             return "bg-warning/35";
           case "damaged":
             return "bg-error/35";
+          case "mildDamage":
+            return "bg-warning/35";
           default:
             return "";
         }

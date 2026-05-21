@@ -100,8 +100,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { TableColumn } from "@nuxt/ui";
-
 definePageMeta({
   middleware: ["auth"],
 });
@@ -116,59 +114,15 @@ const { data: items, refresh: refreshItems } = await useAsyncData<any[]>(() =>
 
 useRealtimeRefresh("items", refreshItems);
 
-const columnPinning = ref({
-  right: ["actions"],
-});
-
-const itemColumns: TableColumn<any>[] = [
-  {
-    header: "Kategorie",
-    accessorKey: "category",
-    cell: ({ row }) => row.original.expand?.category?.name || "-",
-  },
-  { header: "Name", accessorKey: "name" },
-  {
-    header: "Beschreibung",
-    accessorKey: "description",
-    cell: ({ row }) => row.getValue("description") || "-",
-  },
-  { header: "Anzahl", accessorKey: "quantity" },
-  {
-    header: "Ausgegeben am",
-    accessorKey: "checkout",
-    cell: ({ row }) => row.getValue("checkout") || "-",
-  },
-  {
-    header: "Gewicht (kg)",
-    accessorKey: "weight",
-    cell: ({ row }) => `${row.getValue("weight")} kg`,
-  },
-  { header: "Status", accessorKey: "status" },
-  { header: "", accessorKey: "actions" },
-];
-
-const columns: TableColumn<any>[] = [
-  { id: "expand", header: "" },
-  ...itemColumns,
-];
-const childColumns: TableColumn<any>[] = itemColumns;
-
+const columnPinning = ref({ right: ["actions"] });
+const { columns, childColumns } = useItemColumns();
 const meta = useItemStatusMeta();
 const globalFilter = ref("");
 const expanded = ref<Record<string, boolean>>({});
 
-const allItemIds = computed(
-  () => new Set((items.value ?? []).map((i: any) => i.id)),
+const { topLevelItems, childrenOf } = useHierarchicalItems(
+  computed(() => items.value ?? []),
 );
-
-const topLevelItems = computed(() =>
-  (items.value ?? []).filter(
-    (i: any) => !i.parent || !allItemIds.value.has(i.parent),
-  ),
-);
-
-const childrenOf = (parentId: string): any[] =>
-  (items.value ?? []).filter((i: any) => i.parent === parentId);
 
 const deleteItem = async (item: any, close: () => void) => {
   try {

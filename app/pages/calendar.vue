@@ -64,8 +64,6 @@ await getEvents();
 
 useRealtimeRefresh("events", getEvents);
 
-const stripTz = (value?: string) =>
-  value ? value.replace(" ", "T").replace(/Z$/, "").replace(/\.\d+$/, "") : "";
 
 const openCreate = (dateStr?: string) => {
   selectedEvent.value = null;

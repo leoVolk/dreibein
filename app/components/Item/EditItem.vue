@@ -31,15 +31,6 @@
       </UFormField>
     </div>
 
-    <UFormField class="w-full" label="Beschreibung" name="description">
-      <UTextarea
-        v-model="state.description"
-        size="lg"
-        class="w-full"
-        :rows="8"
-      />
-    </UFormField>
-
     <UFormField class="w-full" label="Kategorie" name="category">
       <div class="flex gap-2">
         <USelectMenu
@@ -82,6 +73,15 @@
       </div>
     </UFormField>
 
+    <UFormField class="w-full" label="Beschreibung" name="description">
+      <UTextarea
+        v-model="state.description"
+        size="lg"
+        class="w-full"
+        :rows="8"
+      />
+    </UFormField>
+
     <div class="flex gap-4 lg:row flex-col">
       <UFormField class="w-full" label="Menge" name="quantity">
         <UInput
@@ -93,12 +93,7 @@
       </UFormField>
 
       <UFormField class="w-full" label="Gewicht (kg)" name="weight">
-        <UInput
-          v-model="state.weight"
-          size="lg"
-          type="number"
-          class="w-full"
-        />
+        <UInput v-model="state.weight" size="lg" type="number" class="w-full" />
       </UFormField>
 
       <UFormField class="w-full" label="In Benutzung seit:" name="checkout">
@@ -120,15 +115,14 @@ const toastError = useToastError();
 const open = ref(false);
 const loading = ref(false);
 
-const statusOptions = [
-  { label: "Intakt", value: "none" },
-  { label: "Beschädigt", value: "damaged" },
-  { label: "In Reparatur", value: "repair" },
-  { label: "In Benutzung", value: "checkedOut" },
-];
+const statusOptions = ITEM_STATUS_OPTIONS;
 
-const { data: allItems, refresh: refreshParentItems } = await useAsyncData("items-for-parent", () =>
-  pb.collection(Collections.Items).getFullList<ItemsResponse>({ sort: "name", requestKey: null }),
+const { data: allItems, refresh: refreshParentItems } = await useAsyncData(
+  "items-for-parent",
+  () =>
+    pb
+      .collection(Collections.Items)
+      .getFullList<ItemsResponse>({ sort: "name", requestKey: null }),
 );
 
 const parentOptions = computed(() =>
@@ -138,11 +132,16 @@ const parentOptions = computed(() =>
 );
 
 const { data: allCategories } = await useAsyncData("itemcategories-all", () =>
-  pb.collection(Collections.Itemcategories).getFullList<ItemcategoriesResponse>({ sort: "name", requestKey: null }),
+  pb
+    .collection(Collections.Itemcategories)
+    .getFullList<ItemcategoriesResponse>({ sort: "name", requestKey: null }),
 );
 
 const categoryOptions = computed(() =>
-  (allCategories.value ?? []).map((c) => ({ label: c.name || c.id, value: c.id })),
+  (allCategories.value ?? []).map((c) => ({
+    label: c.name || c.id,
+    value: c.id,
+  })),
 );
 
 const state = reactive({ ...props.item });

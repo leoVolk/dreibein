@@ -88,29 +88,7 @@ const toast = useToast();
 const toastError = useToastError();
 const loading = ref(false);
 
-const DAY_NAMES = [
-  "Montag",
-  "Dienstag",
-  "Mittwoch",
-  "Donnerstag",
-  "Freitag",
-  "Samstag",
-  "Sonntag",
-];
-
-// Storage convention: 0 = Sunday … 6 = Saturday (matches FullCalendar / Date.getDay()).
-const DAY_TO_INDEX: Record<string, number> = {
-  Sonntag: 0,
-  Montag: 1,
-  Dienstag: 2,
-  Mittwoch: 3,
-  Donnerstag: 4,
-  Freitag: 5,
-  Samstag: 6,
-};
-const INDEX_TO_DAY: Record<number, string> = Object.fromEntries(
-  Object.entries(DAY_TO_INDEX).map(([k, v]) => [v, k]),
-);
+const DAY_NAMES = WEEK_DAYS;
 
 const isEdit = computed(() => !!props.event?.id);
 const isRecurring = ref(false);

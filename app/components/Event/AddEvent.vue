@@ -61,26 +61,7 @@ const open = ref(false);
 const loading = ref(false);
 
 const isRecurring = ref(false);
-const daysOfWeek = [
-  "Montag",
-  "Dienstag",
-  "Mittwoch",
-  "Donnerstag",
-  "Freitag",
-  "Samstag",
-  "Sonntag",
-];
-
-// Storage convention: 0 = Sunday … 6 = Saturday (matches FullCalendar / Date.getDay()).
-const DAY_TO_INDEX: Record<string, number> = {
-  Sonntag: 0,
-  Montag: 1,
-  Dienstag: 2,
-  Mittwoch: 3,
-  Donnerstag: 4,
-  Freitag: 5,
-  Samstag: 6,
-};
+const daysOfWeek = WEEK_DAYS;
 
 const initialState = () => ({
   name: "",

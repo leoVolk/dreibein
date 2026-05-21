@@ -8,8 +8,8 @@
  * are also naive).
  */
 
-const stripTz = (value: string) =>
-  value.replace(" ", "T").replace(/Z$/, "").replace(/\.\d+$/, "");
+export const stripTz = (value?: string | null): string =>
+  value ? value.replace(" ", "T").replace(/Z$/, "").replace(/\.\d+$/, "") : "";
 
 /**
  * Returns a `YYYY-MM-DDTHH:mm` string suitable for `<input type="datetime-local">`.
