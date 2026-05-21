@@ -1,4 +1,4 @@
-import type { TableMeta, Row } from "@tanstack/vue-table";
+import type { Row, TableMeta } from "@tanstack/vue-table";
 
 export function useItemStatusMeta(): TableMeta<any> {
   return {
@@ -6,11 +6,11 @@ export function useItemStatusMeta(): TableMeta<any> {
       tr: (row: Row<any>) => {
         switch (row.original.status) {
           case "checkedOut":
-            return "bg-info/10";
+            return "bg-info/35";
           case "repair":
-            return "bg-warning/10";
+            return "bg-warning/35";
           case "damaged":
-            return "bg-error/10";
+            return "bg-error/35";
           default:
             return "";
         }
