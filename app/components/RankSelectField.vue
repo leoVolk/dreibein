@@ -37,12 +37,10 @@
 <script lang="ts" setup>
 const { pb } = usePocketbase();
 
-type Rank = { id: string; name: string; colour: string };
-
 const selected = defineModel<string[]>({ default: () => [] });
 
 const { data: ranks } = await useAsyncData("ranks-select", () =>
-  pb.collection("ranks").getFullList<Rank>({ sort: "name" }),
+  pb.collection(Collections.Ranks).getFullList<RanksResponse>({ sort: "name" }),
 );
 
 const items = computed(() =>

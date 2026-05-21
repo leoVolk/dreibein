@@ -52,7 +52,7 @@ const onSubmit = async () => {
   loading.value = true;
 
   try {
-    await pb.collection("ranks").create({ ...state });
+    await pb.collection(Collections.Ranks).create({ ...state });
 
     toast.add({ title: "Stufe angelegt", icon: "i-lucide-save" });
 

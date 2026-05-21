@@ -39,7 +39,7 @@ const onSubmit = async () => {
   loading.value = true;
 
   try {
-    await pb.collection("members").create({ ...state });
+    await pb.collection(Collections.Members).create({ ...state });
 
     toast.add({ title: "Mitglied angelegt", icon: "i-lucide-save" });
 

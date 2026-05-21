@@ -119,12 +119,12 @@ const members = ref<any[]>([]);
 const globalFilter = ref("");
 
 const getNamiMembers = async () => {
-  members.value = await pb.collection("members").getFullList({
+  members.value = await pb.collection(Collections.Members).getFullList({
     expand: "ranks",
   });
 };
 
-useRealtimeRefresh(["members", "ranks"], getNamiMembers);
+useRealtimeRefresh([Collections.Members, Collections.Ranks], getNamiMembers);
 
 const columns: TableColumn<any>[] = [
   { header: "Mitgliedsnummer", accessorKey: "memberNumber" },
@@ -154,7 +154,7 @@ const columns: TableColumn<any>[] = [
 
 const onDeleteMember = async (row: any, close: () => void) => {
   try {
-    await pb.collection("members").delete(row.original.id);
+    await pb.collection(Collections.Members).delete(row.original.id);
     toast.add({ title: "Mitglied gelöscht", icon: "i-lucide-trash" });
     close();
     await getNamiMembers();

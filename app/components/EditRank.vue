@@ -46,7 +46,7 @@
 const { pb } = usePocketbase();
 
 const props = defineProps<{
-  rank: { id: string; name: string; colour: string };
+  rank: RanksResponse;
 }>();
 const emit = defineEmits(["refresh"]);
 
@@ -73,7 +73,7 @@ const onSubmit = async () => {
   loading.value = true;
 
   try {
-    await pb.collection("ranks").update(props.rank.id, {
+    await pb.collection(Collections.Ranks).update(props.rank.id, {
       name: state.name,
       colour: state.colour,
     });

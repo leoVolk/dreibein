@@ -263,7 +263,7 @@ const previewData = computed(() =>
 const getUsers = async () => {
   if (!user.value?.admin) return;
 
-  users.value = await pb.collection("users").getFullList({
+  users.value = await pb.collection(Collections.Users).getFullList({
     expand: "ranks",
   });
 };
@@ -291,33 +291,32 @@ const userColumns: TableColumn<any>[] = [
 const resetLoading = ref<string | null>(null);
 const toastError = useToastError();
 
-type Rank = { id: string; name: string; colour: string };
-const ranks = ref<Rank[]>([]);
+const ranks = ref<RanksResponse[]>([]);
 
 const getRanks = async () => {
   if (!user.value?.admin) return;
-  ranks.value = await pb.collection("ranks").getFullList<Rank>({
+  ranks.value = await pb.collection(Collections.Ranks).getFullList<RanksResponse>({
     sort: "name",
   });
 };
 
 await getRanks();
 
-const rankColumns: TableColumn<Rank>[] = [
+const rankColumns: TableColumn<RanksResponse>[] = [
   { header: "Name", accessorKey: "name" },
   { header: "Farbe", accessorKey: "colour" },
   { header: "", accessorKey: "actions" },
 ];
 
-useRealtimeRefresh("users", getUsers);
-useRealtimeRefresh("ranks", () => {
+useRealtimeRefresh(Collections.Users, getUsers);
+useRealtimeRefresh(Collections.Ranks, () => {
   getRanks();
   getUsers();
 });
 
 const onDeleteRank = async (row: any, close: () => void) => {
   try {
-    await pb.collection("ranks").delete(row.original.id);
+    await pb.collection(Collections.Ranks).delete(row.original.id);
     toast.add({ title: "Stufe gelöscht", icon: "i-lucide-trash" });
     close();
     await getRanks();
@@ -329,7 +328,7 @@ const onDeleteRank = async (row: any, close: () => void) => {
 const onSendPasswordReset = async (row: any, close: () => void) => {
   resetLoading.value = row.original.id;
   try {
-    await pb.collection("users").requestPasswordReset(row.original.email);
+    await pb.collection(Collections.Users).requestPasswordReset(row.original.email);
     toast.add({
       title: "Passwort-Reset E-Mail versandt",
       description: row.original.email,
@@ -378,7 +377,7 @@ const createTableHeaders = () => {
 const deleteNaMiMembers = async () => {
   importLoading.value = true;
 
-  const members = await pb.collection("members").getFullList();
+  const members = await pb.collection(Collections.Members).getFullList();
 
   if (!members.length) return;
 
@@ -386,7 +385,7 @@ const deleteNaMiMembers = async () => {
     const deleteBatch = pb.createBatch();
 
     members.forEach((m) => {
-      deleteBatch.collection("members").delete(m.id);
+      deleteBatch.collection(Collections.Members).delete(m.id);
     });
 
     await deleteBatch.send();
@@ -435,7 +434,7 @@ const onNamiFileImport = async () => {
         groupNumber: parseInt(m.Gruppierungsnummer),
       };
 
-      importBatch.collection("members").create(member);
+      importBatch.collection(Collections.Members).create(member);
     });
 
     const result = await importBatch.send();
@@ -458,7 +457,7 @@ const onNamiFileImport = async () => {
 
 const onAdminToggle = async (row: any) => {
   try {
-    await pb.collection("users").update(row.original.id, {
+    await pb.collection(Collections.Users).update(row.original.id, {
       admin: !row.original.admin,
     });
 

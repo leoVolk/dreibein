@@ -59,7 +59,7 @@ const onSubmit = async () => {
   loading.value = true;
 
   try {
-    await pb.collection("members").update(props.member.id, { ...state });
+    await pb.collection(Collections.Members).update(props.member.id, { ...state });
 
     toast.add({ title: "Mitglied aktualisiert", icon: "i-lucide-save" });
 
