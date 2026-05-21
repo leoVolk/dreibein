@@ -11,60 +11,106 @@
           { label: list?.name },
         ]"
       />
-
-      <div class="flex gap-4">
-        <AddEventItem :list="list!" @refresh="refreshList()" />
-        <DeleteConfirmModal
-          title="Liste löschen"
-          description="Willst du diese Liste wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
-          confirm-label="Liste löschen"
-          @confirm="deleteList"
-        >
-          <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
-        </DeleteConfirmModal>
-      </div>
     </div>
 
-    <UCard v-if="list?.expand?.items?.length">
-      <template #header>
-        <div>
-          <h2 class="text-2xl">{{ list.name }}</h2>
+    <div v-if="list">
+      <UPageHeader>
+        <template #headline>
+          <div class="flex justify-between w-full items-center gap-4">
+            <h1
+              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+            >
+              {{ list.name }}
+            </h1>
+            <div class="flex gap-4">
+              <AddEventItem :list="list!" @refresh="refreshList()" />
+              <DeleteConfirmModal
+                title="Liste löschen"
+                description="Willst du diese Liste wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
+                confirm-label="Liste löschen"
+                @confirm="deleteList"
+              >
+                <UButton
+                  label="Liste löschen"
+                  color="error"
+                  icon="i-lucide-trash"
+                />
+              </DeleteConfirmModal>
+            </div>
+          </div> </template
+      ></UPageHeader>
+    </div>
+
+    <UTable
+      v-if="list?.expand?.items?.length"
+      v-model:expanded="expanded"
+      v-model:column-pinning="columnPinning"
+      :get-row-id="(row) => row.id"
+      loading-color="primary"
+      loading-animation="carousel"
+      :data="topLevelItems"
+      :columns="columns"
+      :meta="meta"
+    >
+      <template #expand-cell="{ row }">
+        <UButton
+          v-if="childrenOf(row.original.id).length"
+          :icon="
+            row.getIsExpanded()
+              ? 'i-lucide-chevron-down'
+              : 'i-lucide-chevron-right'
+          "
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          @click="row.toggleExpanded()"
+        />
+      </template>
+
+      <template #description-cell="{ row }">
+        <div>{{ row.original.description?.substring(0, 64) || "-" }}</div>
+      </template>
+
+      <template #status-cell="{ row }">
+        <ItemStatusBadge :status="row.original.status" />
+      </template>
+
+      <template #actions-cell="{ row }">
+        <div class="flex gap-1 items-center">
+          <EditItem
+            :item="row.original"
+            :list-id="list?.id"
+            @refresh="refreshList()"
+          />
+          <DeleteConfirmModal
+            title="Eintrag entfernen"
+            description="Willst du diesen Eintrag wirklich aus der Liste entfernen?"
+            confirm-label="Entfernen"
+            @confirm="(close) => removeItem(row.original, close)"
+          />
         </div>
       </template>
-      <template #default>
+
+      <template #expanded="{ row }">
         <UTable
-          v-model:expanded="expanded"
-          v-model:column-pinning="columnPinning"
-          :get-row-id="(row) => row.id"
-          loading-color="primary"
-          loading-animation="carousel"
-          :data="topLevelItems"
-          :columns="columns"
+          :data="childrenOf(row.original.id)"
+          :columns="childColumns"
           :meta="meta"
+          :ui="{ thead: 'hidden' }"
+          :column-pinning="{ right: ['actions'] }"
         >
-          <template #expand-cell="{ row }">
-            <UButton
-              v-if="childrenOf(row.original.id).length"
-              :icon="row.getIsExpanded() ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              @click="row.toggleExpanded()"
-            />
+          <template #description-cell="{ row: child }">
+            <div>
+              {{ child.original.description?.substring(0, 64) || "-" }}
+            </div>
           </template>
-
-          <template #description-cell="{ row }">
-            <div>{{ row.original.description?.substring(0, 64) || "-" }}</div>
+          <template #status-cell="{ row: child }">
+            <ItemStatusBadge :status="child.original.status" />
           </template>
-
-          <template #status-cell="{ row }">
-            <ItemStatusBadge :status="row.original.status" />
-          </template>
-
-          <template #actions-cell="{ row }">
+          <template #actions-cell="{ row: child }">
             <div class="flex gap-1 items-center">
               <EditItem
-                :item="row.original"
+                :item="child.original"
                 :list-id="list?.id"
                 @refresh="refreshList()"
               />
@@ -72,45 +118,13 @@
                 title="Eintrag entfernen"
                 description="Willst du diesen Eintrag wirklich aus der Liste entfernen?"
                 confirm-label="Entfernen"
-                @confirm="(close) => removeItem(row.original, close)"
+                @confirm="(close) => removeItem(child.original, close)"
               />
             </div>
           </template>
-
-          <template #expanded="{ row }">
-            <UTable
-              :data="childrenOf(row.original.id)"
-              :columns="childColumns"
-              :meta="meta"
-              :ui="{ thead: 'hidden' }"
-              :column-pinning="{ right: ['actions'] }"
-            >
-              <template #description-cell="{ row: child }">
-                <div>{{ child.original.description?.substring(0, 64) || "-" }}</div>
-              </template>
-              <template #status-cell="{ row: child }">
-                <ItemStatusBadge :status="child.original.status" />
-              </template>
-              <template #actions-cell="{ row: child }">
-                <div class="flex gap-1 items-center">
-                  <EditItem
-                    :item="child.original"
-                    :list-id="list?.id"
-                    @refresh="refreshList()"
-                  />
-                  <DeleteConfirmModal
-                    title="Eintrag entfernen"
-                    description="Willst du diesen Eintrag wirklich aus der Liste entfernen?"
-                    confirm-label="Entfernen"
-                    @confirm="(close) => removeItem(child.original, close)"
-                  />
-                </div>
-              </template>
-            </UTable>
-          </template>
         </UTable>
       </template>
-    </UCard>
+    </UTable>
 
     <UEmpty
       v-else
@@ -183,7 +197,10 @@ const itemColumns: TableColumn<ItemsRecord>[] = [
   { header: "", accessorKey: "actions" },
 ];
 
-const columns: TableColumn<ItemsRecord>[] = [{ id: "expand", header: "" }, ...itemColumns];
+const columns: TableColumn<ItemsRecord>[] = [
+  { id: "expand", header: "" },
+  ...itemColumns,
+];
 const childColumns: TableColumn<ItemsRecord>[] = itemColumns;
 
 const meta = useItemStatusMeta();
