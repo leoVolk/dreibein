@@ -20,7 +20,7 @@
 
             <CreateUser @refresh="getUsers()"></CreateUser>
           </div>
-          <UTable v-model:column-pinning="columnPinning" :data="users" :columns="userColumns">
+          <UTable v-model:column-pinning="columnPinning" :data="users" :columns="userColumns" sticky>
             <template #ranks-cell="{ row }">
               <div
                 v-if="row.original.expand?.ranks?.length"
@@ -80,7 +80,7 @@
             <CreateRank @refresh="getRanks()" />
           </div>
 
-          <UTable v-if="ranks.length" v-model:column-pinning="columnPinning" :data="ranks" :columns="rankColumns">
+          <UTable v-if="ranks.length" v-model:column-pinning="columnPinning" :data="ranks" :columns="rankColumns" sticky>
             <template #colour-cell="{ row }">
               <div class="flex items-center gap-2">
                 <span
@@ -125,7 +125,7 @@
             <CreateItemCategory @refresh="getItemCategories()" />
           </div>
 
-          <UTable v-if="itemCategories.length" v-model:column-pinning="columnPinning" :data="itemCategories" :columns="itemCategoryColumns">
+          <UTable v-if="itemCategories.length" v-model:column-pinning="columnPinning" :data="itemCategories" :columns="itemCategoryColumns" sticky>
             <template #actions-cell="{ row }">
               <div class="flex gap-1 items-center">
                 <EditItemCategory :category="row.original" @refresh="getItemCategories()" />

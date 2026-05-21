@@ -9,6 +9,7 @@
     <UTable
       v-if="items?.length"
       ref="table"
+      sticky
       v-model:row-selection="rowSelection"
       :data="getFilterItems"
       :columns="columns"

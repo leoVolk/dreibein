@@ -19,6 +19,7 @@
       v-model:row-selection="rowSelection"
       v-model:global-filter="globalFilter"
       class="max-h-120"
+      sticky
       :data="members ?? []"
       :columns="columns"
       @select="onSelect"

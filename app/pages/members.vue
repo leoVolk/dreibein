@@ -48,7 +48,7 @@
             v-model:column-pinning="columnPinning"
             v-model:global-filter="globalFilter"
             sticky
-            class="max-h-225"
+            class=""
             :data="members"
             :columns="columns"
           >

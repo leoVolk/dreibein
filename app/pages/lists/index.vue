@@ -23,7 +23,7 @@
         </template>
       </UPageHeader>
 
-      <UTable class="mt-8" v-model:column-pinning="columnPinning" :data="data" :columns="columns" @select="onSelect">
+      <UTable class="mt-8" sticky v-model:column-pinning="columnPinning" :data="data" :columns="columns" @select="onSelect">
         <template #actions-cell="{ row }">
           <div class="flex gap-1 items-center">
             <EditList :list="data[row.id as any]" @refresh="refresh()" />

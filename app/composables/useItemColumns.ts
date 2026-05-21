@@ -8,6 +8,7 @@ export function useItemColumns() {
       cell: ({ row }) => (row.original as any).expand?.category?.name || "-",
     },
     { header: "Name", accessorKey: "name" },
+    { header: "Status", accessorKey: "status" },
     {
       header: "Beschreibung",
       accessorKey: "description",
@@ -15,16 +16,16 @@ export function useItemColumns() {
     },
     { header: "Anzahl", accessorKey: "quantity" },
     {
-      header: "Ausgegeben am",
-      accessorKey: "checkout",
-      cell: ({ row }) => row.getValue("checkout") || "-",
-    },
-    {
       header: "Gewicht (kg)",
       accessorKey: "weight",
       cell: ({ row }) => `${row.getValue("weight")} kg`,
     },
-    { header: "Status", accessorKey: "status" },
+    {
+      header: "Ausgegeben am",
+      accessorKey: "checkout",
+      cell: ({ row }) => row.getValue("checkout") || "-",
+    },
+
     { header: "", accessorKey: "actions" },
   ];
 

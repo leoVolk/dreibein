@@ -14,7 +14,7 @@ export default defineAppConfig({
     },
     table: {
       slots: {
-        td: 'text-base',
+        root: 'max-h-[65vh]',
         th: 'text-base'
       }
     }

@@ -24,7 +24,7 @@
       </UPageHeader>
 
       <div class="mt-8">
-        <UTable v-model:column-pinning="columnPinning" :data="events" :columns="columns" @select="onSelect">
+        <UTable sticky v-model:column-pinning="columnPinning" :data="events" :columns="columns" @select="onSelect">
           <template #actions-cell="{ row }">
             <DeleteConfirmModal
               title="Event löschen"

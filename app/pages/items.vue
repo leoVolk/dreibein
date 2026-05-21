@@ -67,6 +67,7 @@
                 :data="childrenOf(row.original.id)"
                 :columns="childColumns"
                 :meta="meta"
+                sticky
                 :ui="{ thead: 'hidden' }"
               >
                 <template #description-cell="{ row: child }">

@@ -2,8 +2,9 @@
 @import "@nuxt/ui";
 
 @theme {
-  --font-sans: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /*   --font-sans: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; */
+  --font-sans: "Poppins", sans-serif;
 }
 
 :root {
@@ -15,3 +16,5 @@
   --ui-text-toned: var(--color-gray-200);
   --ui-text-muted: var(--color-gray-300);
 }
+@import "tailwindcss";
+@import "@nuxt/ui";

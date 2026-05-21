@@ -43,6 +43,7 @@
 
     <UTable
       v-if="list?.expand?.items?.length"
+      sticky
       v-model:expanded="expanded"
       v-model:column-pinning="columnPinning"
       :get-row-id="(row) => row.id"
@@ -96,6 +97,7 @@
           :data="childrenOf(row.original.id)"
           :columns="childColumns"
           :meta="meta"
+          sticky
           :ui="{ thead: 'hidden' }"
           :column-pinning="{ right: ['actions'] }"
         >
