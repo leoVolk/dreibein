@@ -40,6 +40,27 @@
       />
     </UFormField>
 
+    <UFormField class="w-full" label="Kategorie" name="category">
+      <div class="flex gap-2">
+        <USelectMenu
+          v-model="state.category"
+          :items="categoryOptions"
+          value-key="value"
+          size="lg"
+          class="flex-1"
+          placeholder="Keine Kategorie"
+        />
+        <UButton
+          v-if="state.category"
+          icon="i-lucide-x"
+          color="neutral"
+          variant="ghost"
+          size="lg"
+          @click="state.category = ''"
+        />
+      </div>
+    </UFormField>
+
     <UFormField class="w-full" label="Übergeordnetes Material" name="parent">
       <div class="flex gap-2">
         <USelectMenu
@@ -114,6 +135,14 @@ const parentOptions = computed(() =>
   (allItems.value ?? [])
     .filter((i) => i.id !== props.item.id)
     .map((i) => ({ label: i.name || i.id, value: i.id })),
+);
+
+const { data: allCategories } = await useAsyncData("itemcategories-all", () =>
+  pb.collection(Collections.Itemcategories).getFullList<ItemcategoriesResponse>({ sort: "name", requestKey: null }),
+);
+
+const categoryOptions = computed(() =>
+  (allCategories.value ?? []).map((c) => ({ label: c.name || c.id, value: c.id })),
 );
 
 const state = reactive({ ...props.item });

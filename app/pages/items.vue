@@ -111,7 +111,7 @@ const toastError = useToastError();
 const { pb } = usePocketbase();
 
 const { data: items, refresh: refreshItems } = await useAsyncData<any[]>(() =>
-  pb.collection("items").getFullList({ requestKey: null }),
+  pb.collection("items").getFullList({ expand: "category", requestKey: null }),
 );
 
 useRealtimeRefresh("items", refreshItems);
@@ -122,6 +122,11 @@ const columnPinning = ref({
 
 const itemColumns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
+  {
+    header: "Kategorie",
+    accessorKey: "category",
+    cell: ({ row }) => row.original.expand?.category?.name || "-",
+  },
   {
     header: "Beschreibung",
     accessorKey: "description",

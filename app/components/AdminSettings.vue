@@ -118,6 +118,41 @@
         <div class="flex flex-col gap-4">
           <div class="flex justify-between items-center">
             <h4 class="text-lg flex items-center gap-2">
+              <UIcon name="i-lucide-layers" class="size-6" />
+              <span>Materialkategorien</span>
+            </h4>
+
+            <CreateItemCategory @refresh="getItemCategories()" />
+          </div>
+
+          <UTable v-if="itemCategories.length" v-model:column-pinning="columnPinning" :data="itemCategories" :columns="itemCategoryColumns">
+            <template #actions-cell="{ row }">
+              <div class="flex gap-1 items-center">
+                <EditItemCategory :category="row.original" @refresh="getItemCategories()" />
+
+                <DeleteConfirmModal
+                  title="Kategorie löschen"
+                  :description="`Soll die Kategorie ${row.original.name} wirklich gelöscht werden?`"
+                  confirm-label="Kategorie löschen"
+                  @confirm="(close: () => void) => onDeleteItemCategory(row, close)"
+                />
+              </div>
+            </template>
+          </UTable>
+
+          <UEmpty
+            v-else
+            icon="i-lucide-layers"
+            size="sm"
+            description="Noch keine Kategorien angelegt."
+          />
+        </div>
+
+        <USeparator class="h-4"></USeparator>
+
+        <div class="flex flex-col gap-4">
+          <div class="flex justify-between items-center">
+            <h4 class="text-lg flex items-center gap-2">
               <UIcon name="i-lucide-list-plus" class="size-6" />
               <span>NaMi Mitglieder Import</span>
             </h4>
@@ -309,11 +344,39 @@ const rankColumns: TableColumn<RanksResponse>[] = [
   { header: "", accessorKey: "actions" },
 ];
 
+const itemCategories = ref<ItemcategoriesResponse[]>([]);
+
+const getItemCategories = async () => {
+  if (!user.value?.admin) return;
+  itemCategories.value = await pb
+    .collection(Collections.Itemcategories)
+    .getFullList<ItemcategoriesResponse>({ sort: "name" });
+};
+
+await getItemCategories();
+
+const itemCategoryColumns: TableColumn<ItemcategoriesResponse>[] = [
+  { header: "Name", accessorKey: "name" },
+  { header: "", accessorKey: "actions" },
+];
+
 useRealtimeRefresh(Collections.Users, getUsers);
 useRealtimeRefresh(Collections.Ranks, () => {
   getRanks();
   getUsers();
 });
+useRealtimeRefresh(Collections.Itemcategories, getItemCategories);
+
+const onDeleteItemCategory = async (row: any, close: () => void) => {
+  try {
+    await pb.collection(Collections.Itemcategories).delete(row.original.id);
+    toast.add({ title: "Kategorie gelöscht", icon: "i-lucide-trash" });
+    close();
+    await getItemCategories();
+  } catch (error: any) {
+    toastError(error);
+  }
+};
 
 const onDeleteRank = async (row: any, close: () => void) => {
   try {

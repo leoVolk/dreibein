@@ -169,7 +169,7 @@ const { data: list, refresh: refreshList } = await useAsyncData(
     pb
       .collection(Collections.Eventlists)
       .getOne<EventlistsResponse<Expand>>(route.params.listId as string, {
-        expand: "items",
+        expand: "items,items.category",
       }),
 );
 
@@ -177,6 +177,11 @@ useRealtimeRefresh(["eventlists", "items"], refreshList);
 
 const itemColumns: TableColumn<ItemsRecord>[] = [
   { header: "Name", accessorKey: "name" },
+  {
+    header: "Kategorie",
+    accessorKey: "category",
+    cell: ({ row }) => (row.original as any).expand?.category?.name || "-",
+  },
   {
     header: "Beschreibung",
     accessorKey: "description",

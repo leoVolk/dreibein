@@ -165,7 +165,7 @@ const { data: list, refresh: refreshList } = await useAsyncData(
   () => `list-${id.value}`,
   () =>
     pb.collection(Collections.Lists).getOne<ListsResponse<Expand>>(id.value, {
-      expand: "createdBy,updatedBy,items",
+      expand: "createdBy,updatedBy,items,items.category",
     }),
 );
 
@@ -173,6 +173,11 @@ useRealtimeRefresh(["lists", "items"], refreshList);
 
 const itemColumns: TableColumn<ItemsRecord>[] = [
   { header: "Name", accessorKey: "name" },
+  {
+    header: "Kategorie",
+    accessorKey: "category",
+    cell: ({ row }) => (row.original as any).expand?.category?.name || "-",
+  },
   {
     header: "Beschreibung",
     accessorKey: "description",

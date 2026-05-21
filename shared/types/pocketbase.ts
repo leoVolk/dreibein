@@ -13,6 +13,7 @@ export const Collections = {
 	Superusers: "_superusers",
 	Eventlists: "eventlists",
 	Events: "events",
+	Itemcategories: "itemcategories",
 	Items: "items",
 	Lists: "lists",
 	Members: "members",
@@ -126,6 +127,13 @@ export type EventsRecord<TdaysOfWeek = unknown> = {
 	updatedBy?: RecordIdString
 }
 
+export type ItemcategoriesRecord = {
+	created: IsoAutoDateString
+	id: string
+	name?: string
+	updated: IsoAutoDateString
+}
+
 export const ItemsStatusOptions = {
 	"none": "none",
 	"damaged": "damaged",
@@ -134,6 +142,7 @@ export const ItemsStatusOptions = {
 } as const
 export type ItemsStatusOptions = typeof ItemsStatusOptions[keyof typeof ItemsStatusOptions]
 export type ItemsRecord = {
+	category?: RecordIdString
 	checkout?: string
 	created: IsoAutoDateString
 	description?: HTMLString
@@ -244,6 +253,7 @@ export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemF
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
 export type EventlistsResponse<Texpand = unknown> = Required<EventlistsRecord> & BaseSystemFields<Texpand>
 export type EventsResponse<TdaysOfWeek = unknown, Texpand = unknown> = Required<EventsRecord<TdaysOfWeek>> & BaseSystemFields<Texpand>
+export type ItemcategoriesResponse<Texpand = unknown> = Required<ItemcategoriesRecord> & BaseSystemFields<Texpand>
 export type ItemsResponse<Texpand = unknown> = Required<ItemsRecord> & BaseSystemFields<Texpand>
 export type ListsResponse<Texpand = unknown> = Required<ListsRecord> & BaseSystemFields<Texpand>
 export type MembersResponse<Texpand = unknown> = Required<MembersRecord> & BaseSystemFields<Texpand>
@@ -263,6 +273,7 @@ export type CollectionRecords = {
 	_superusers: SuperusersRecord
 	eventlists: EventlistsRecord
 	events: EventsRecord
+	itemcategories: ItemcategoriesRecord
 	items: ItemsRecord
 	lists: ListsRecord
 	members: MembersRecord
@@ -281,6 +292,7 @@ export type CollectionResponses = {
 	_superusers: SuperusersResponse
 	eventlists: EventlistsResponse
 	events: EventsResponse
+	itemcategories: ItemcategoriesResponse
 	items: ItemsResponse
 	lists: ListsResponse
 	members: MembersResponse
