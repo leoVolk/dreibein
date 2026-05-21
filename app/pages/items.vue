@@ -62,7 +62,7 @@
           </template>
 
           <template #expanded="{ row }">
-            <div class="bg-neutral-950/20 lg:pl-32 pl-16">
+            <div class="lg:pl-32 pl-16">
               <UTable
                 :data="childrenOf(row.original.id)"
                 :columns="childColumns"
