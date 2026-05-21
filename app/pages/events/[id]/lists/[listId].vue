@@ -33,12 +33,25 @@
       </template>
       <template #default>
         <UTable
+          v-model:expanded="expanded"
+          :get-row-id="(row) => row.id"
           loading-color="primary"
           loading-animation="carousel"
-          :data="list.expand.items"
+          :data="topLevelItems"
           :columns="columns"
           :meta="meta"
         >
+          <template #expand-cell="{ row }">
+            <UButton
+              v-if="childrenOf(row.original.id).length"
+              :icon="row.getIsExpanded() ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              @click="row.toggleExpanded()"
+            />
+          </template>
+
           <template #description-cell="{ row }">
             <div>{{ row.original.description?.substring(0, 64) || "-" }}</div>
           </template>
@@ -50,18 +63,47 @@
           <template #actions-cell="{ row }">
             <div class="flex gap-1 items-center">
               <EditItem
-                :item="list?.expand?.items?.[row.index]"
+                :item="row.original"
                 :list-id="list?.id"
                 @refresh="refreshList()"
               />
-
               <DeleteConfirmModal
                 title="Eintrag entfernen"
                 description="Willst du diesen Eintrag wirklich aus der Liste entfernen?"
                 confirm-label="Entfernen"
-                @confirm="(close) => removeItem(row.index, close)"
+                @confirm="(close) => removeItem(row.original, close)"
               />
             </div>
+          </template>
+
+          <template #expanded="{ row }">
+            <UTable
+              :data="childrenOf(row.original.id)"
+              :columns="childColumns"
+              :meta="meta"
+            >
+              <template #description-cell="{ row: child }">
+                <div>{{ child.original.description?.substring(0, 64) || "-" }}</div>
+              </template>
+              <template #status-cell="{ row: child }">
+                <ItemStatusBadge :status="child.original.status" />
+              </template>
+              <template #actions-cell="{ row: child }">
+                <div class="flex gap-1 items-center">
+                  <EditItem
+                    :item="child.original"
+                    :list-id="list?.id"
+                    @refresh="refreshList()"
+                  />
+                  <DeleteConfirmModal
+                    title="Eintrag entfernen"
+                    description="Willst du diesen Eintrag wirklich aus der Liste entfernen?"
+                    confirm-label="Entfernen"
+                    @confirm="(close) => removeItem(child.original, close)"
+                  />
+                </div>
+              </template>
+            </UTable>
           </template>
         </UTable>
       </template>
@@ -116,7 +158,7 @@ const { data: list, refresh: refreshList } = await useAsyncData(
 
 useRealtimeRefresh(["eventlists", "items"], refreshList);
 
-const columns: TableColumn<ItemsRecord>[] = [
+const itemColumns: TableColumn<ItemsRecord>[] = [
   { header: "Name", accessorKey: "name" },
   {
     header: "Beschreibung",
@@ -138,17 +180,35 @@ const columns: TableColumn<ItemsRecord>[] = [
   { header: "", accessorKey: "actions" },
 ];
 
+const columns: TableColumn<ItemsRecord>[] = [{ id: "expand", header: "" }, ...itemColumns];
+const childColumns: TableColumn<ItemsRecord>[] = itemColumns;
+
 const meta = useItemStatusMeta();
 
-const removeItem = async (index: number, close: () => void) => {
-  const item = list.value?.expand?.items?.[index];
-  if (!item || !list.value) return;
+const expanded = ref<Record<string, boolean>>({});
+
+const listItemIds = computed(
+  () => new Set((list.value?.expand?.items ?? []).map((i) => i.id)),
+);
+
+const topLevelItems = computed(() =>
+  (list.value?.expand?.items ?? []).filter(
+    (i) => !i.parent || !listItemIds.value.has(i.parent),
+  ),
+);
+
+const childrenOf = (parentId: string): ItemsResponse[] =>
+  (list.value?.expand?.items ?? []).filter((i) => i.parent === parentId);
+
+const removeItem = async (item: ItemsResponse, close: () => void) => {
+  if (!list.value) return;
 
   try {
     await pb.collection(Collections.Eventlists).update(list.value.id, {
       updatedBy: user.value?.id,
       items: (list.value.items ?? []).filter((i) => i !== item.id),
     });
+
     toast.add({ title: "Eintrag entfernt", icon: "i-lucide-trash" });
     close();
     await refreshList();

@@ -16,14 +16,31 @@
           size="xl"
         />
         <UTable
+          v-model:expanded="expanded"
+          :get-row-id="(row) => row.id"
           loading-color="primary"
           loading-animation="carousel"
-          :data="items ?? []"
+          :data="topLevelItems"
           :global-filter="globalFilter"
           sticky
           :columns="columns"
           :meta="meta"
         >
+          <template #expand-cell="{ row }">
+            <UButton
+              v-if="childrenOf(row.original.id).length"
+              :icon="
+                row.getIsExpanded()
+                  ? 'i-lucide-chevron-down'
+                  : 'i-lucide-chevron-right'
+              "
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              @click="row.toggleExpanded()"
+            />
+          </template>
+
           <template #description-cell="{ row }">
             <div>{{ row.original.description?.substring(0, 64) || "-" }}</div>
           </template>
@@ -36,8 +53,32 @@
             <DeleteConfirmModal
               title="Eintrag löschen"
               confirm-label="Eintrag löschen"
-              @confirm="(close) => deleteItem(items![row.index], close)"
+              @confirm="(close) => deleteItem(row.original, close)"
             />
+          </template>
+
+          <template #expanded="{ row }">
+            <UTable
+              :data="childrenOf(row.original.id)"
+              :columns="childColumns"
+              :meta="meta"
+            >
+              <template #description-cell="{ row: child }">
+                <div>
+                  {{ child.original.description?.substring(0, 64) || "-" }}
+                </div>
+              </template>
+              <template #status-cell="{ row: child }">
+                <ItemStatusBadge :status="child.original.status" />
+              </template>
+              <template #actions-cell="{ row: child }">
+                <DeleteConfirmModal
+                  title="Eintrag löschen"
+                  confirm-label="Eintrag löschen"
+                  @confirm="(close) => deleteItem(child.original, close)"
+                />
+              </template>
+            </UTable>
           </template>
         </UTable>
       </div>
@@ -62,7 +103,7 @@ const { data: items, refresh: refreshItems } = await useAsyncData<any[]>(() =>
 
 useRealtimeRefresh("items", refreshItems);
 
-const columns: TableColumn<any>[] = [
+const itemColumns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
   {
     header: "Beschreibung",
@@ -84,12 +125,32 @@ const columns: TableColumn<any>[] = [
   { header: "", accessorKey: "actions" },
 ];
 
+const columns: TableColumn<any>[] = [
+  { id: "expand", header: "" },
+  ...itemColumns,
+];
+const childColumns: TableColumn<any>[] = itemColumns;
+
 const meta = useItemStatusMeta();
 const globalFilter = ref("");
+const expanded = ref<Record<string, boolean>>({});
+
+const allItemIds = computed(
+  () => new Set((items.value ?? []).map((i: any) => i.id)),
+);
+
+const topLevelItems = computed(() =>
+  (items.value ?? []).filter(
+    (i: any) => !i.parent || !allItemIds.value.has(i.parent),
+  ),
+);
+
+const childrenOf = (parentId: string): any[] =>
+  (items.value ?? []).filter((i: any) => i.parent === parentId);
 
 const deleteItem = async (item: any, close: () => void) => {
   try {
-    await pb.collection("items").delete(item.id);
+    await pb.collection(Collections.Items).delete(item.id);
     toast.add({ title: "Eintrag gelöscht", icon: "i-lucide-trash" });
     close();
     await refreshItems();
