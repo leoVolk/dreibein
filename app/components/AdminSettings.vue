@@ -11,233 +11,236 @@
 
     <template #default>
       <div class="flex flex-col gap-4">
-        <div>
-          <div class="flex justify-between items-center mb-4">
-            <h4 class="text-lg flex items-center gap-2">
-              <UIcon name="i-lucide-users" class="size-6" />
-              <span>Benutzer</span>
-            </h4>
-
-            <CreateUser @refresh="getUsers()"></CreateUser>
-          </div>
-          <UTable v-model:column-pinning="columnPinning" :data="users" :columns="userColumns" sticky>
-            <template #ranks-cell="{ row }">
-              <div
-                v-if="row.original.expand?.ranks?.length"
-                class="flex flex-wrap gap-1"
+        <UAccordion :items="accordionItems">
+          <template #users>
+            <div class="flex flex-col gap-4 pb-4">
+              <div class="flex justify-end">
+                <CreateUser @refresh="getUsers()" />
+              </div>
+              <UTable
+                v-model:column-pinning="columnPinning"
+                :data="users"
+                :columns="userColumns"
+                sticky
               >
-                <RankBadge
-                  v-for="rank in row.original.expand.ranks"
-                  :key="rank.id"
-                  :name="rank.name"
-                  :colour="rank.colour"
-                />
-              </div>
-              <span v-else class="text-muted text-sm">—</span>
-            </template>
-
-            <template #admin-cell="{ row }">
-              <UCheckbox
-                v-model="row.original.admin"
-                @click="onAdminToggle(row)"
-              ></UCheckbox>
-            </template>
-
-            <template #actions-cell="{ row }">
-              <div class="flex gap-1 items-center">
-                <EditUser :user="row.original" @refresh="getUsers()" />
-
-                <DeleteConfirmModal
-                  title="Passwort zurücksetzen"
-                  :description="`Soll wirklich eine Passwort-Reset E-Mail an ${row.original.email} versandt werden?`"
-                  confirm-label="E-Mail senden"
-                  @confirm="(close: () => void) => onSendPasswordReset(row, close)"
-                >
-                  <UTooltip text="Passwort-Reset E-Mail senden">
-                    <UButton
-                      size="sm"
-                      variant="ghost"
-                      color="primary"
-                      icon="i-lucide-mail"
-                      :loading="resetLoading === row.original.id"
+                <template #ranks-cell="{ row }">
+                  <div
+                    v-if="row.original.expand?.ranks?.length"
+                    class="flex flex-wrap gap-1"
+                  >
+                    <RankBadge
+                      v-for="rank in row.original.expand.ranks"
+                      :key="rank.id"
+                      :name="rank.name"
+                      :colour="rank.colour"
                     />
-                  </UTooltip>
-                </DeleteConfirmModal>
+                  </div>
+                  <span v-else class="text-muted text-sm">—</span>
+                </template>
+
+                <template #admin-cell="{ row }">
+                  <UCheckbox
+                    v-model="row.original.admin"
+                    @click="onAdminToggle(row)"
+                  />
+                </template>
+
+                <template #actions-cell="{ row }">
+                  <div class="flex gap-1 items-center">
+                    <EditUser :user="row.original" @refresh="getUsers()" />
+                    <DeleteConfirmModal
+                      title="Passwort zurücksetzen"
+                      :description="`Soll wirklich eine Passwort-Reset E-Mail an ${row.original.email} versandt werden?`"
+                      confirm-label="E-Mail senden"
+                      @confirm="
+                        (close: () => void) => onSendPasswordReset(row, close)
+                      "
+                    >
+                      <UTooltip text="Passwort-Reset E-Mail senden">
+                        <UButton
+                          size="sm"
+                          variant="ghost"
+                          color="primary"
+                          icon="i-lucide-mail"
+                          :loading="resetLoading === row.original.id"
+                        />
+                      </UTooltip>
+                    </DeleteConfirmModal>
+                  </div>
+                </template>
+              </UTable>
+            </div>
+          </template>
+
+          <template #ranks>
+            <div class="flex flex-col gap-4 pb-4">
+              <div class="flex justify-end">
+                <CreateRank @refresh="getRanks()" />
               </div>
-            </template>
-          </UTable>
-        </div>
-
-        <USeparator class="h-4"></USeparator>
-
-        <div class="flex flex-col gap-4">
-          <div class="flex justify-between items-center">
-            <h4 class="text-lg flex items-center gap-2">
-              <UIcon name="i-lucide-tag" class="size-6" />
-              <span>Stufen</span>
-            </h4>
-
-            <CreateRank @refresh="getRanks()" />
-          </div>
-
-          <UTable v-if="ranks.length" v-model:column-pinning="columnPinning" :data="ranks" :columns="rankColumns" sticky>
-            <template #colour-cell="{ row }">
-              <div class="flex items-center gap-2">
-                <span
-                  class="inline-block size-4 rounded border border-default"
-                  :style="{ backgroundColor: row.original.colour }"
-                />
-                <span class="text-muted text-sm">{{ row.original.colour }}</span>
-              </div>
-            </template>
-
-            <template #actions-cell="{ row }">
-              <div class="flex gap-1 items-center">
-                <EditRank :rank="row.original" @refresh="getRanks()" />
-
-                <DeleteConfirmModal
-                  title="Stufe löschen"
-                  :description="`Soll die Stufe ${row.original.name} wirklich gelöscht werden?`"
-                  confirm-label="Stufe löschen"
-                  @confirm="(close: () => void) => onDeleteRank(row, close)"
-                />
-              </div>
-            </template>
-          </UTable>
-
-          <UEmpty
-            v-else
-            icon="i-lucide-tag"
-            size="sm"
-            description="Noch keine Stufen angelegt."
-          />
-        </div>
-
-        <USeparator class="h-4"></USeparator>
-
-        <div class="flex flex-col gap-4">
-          <div class="flex justify-between items-center">
-            <h4 class="text-lg flex items-center gap-2">
-              <UIcon name="i-lucide-layers" class="size-6" />
-              <span>Materialkategorien</span>
-            </h4>
-
-            <CreateItemCategory @refresh="getItemCategories()" />
-          </div>
-
-          <UTable v-if="itemCategories.length" v-model:column-pinning="columnPinning" :data="itemCategories" :columns="itemCategoryColumns" sticky>
-            <template #actions-cell="{ row }">
-              <div class="flex gap-1 items-center">
-                <EditItemCategory :category="row.original" @refresh="getItemCategories()" />
-
-                <DeleteConfirmModal
-                  title="Kategorie löschen"
-                  :description="`Soll die Kategorie ${row.original.name} wirklich gelöscht werden?`"
-                  confirm-label="Kategorie löschen"
-                  @confirm="(close: () => void) => onDeleteItemCategory(row, close)"
-                />
-              </div>
-            </template>
-          </UTable>
-
-          <UEmpty
-            v-else
-            icon="i-lucide-layers"
-            size="sm"
-            description="Noch keine Kategorien angelegt."
-          />
-        </div>
-
-        <USeparator class="h-4"></USeparator>
-
-        <div class="flex flex-col gap-4">
-          <div class="flex justify-between items-center">
-            <h4 class="text-lg flex items-center gap-2">
-              <UIcon name="i-lucide-list-plus" class="size-6" />
-              <span>NaMi Mitglieder Import</span>
-            </h4>
-          </div>
-
-          <UAlert
-            v-if="namiFileData.length"
-            color="error"
-            title="Bei Import werden aktuell alle vorherigen Mitglieder überschrieben bzw gelöscht."
-            icon="i-lucide-triangle-alert"
-          />
-
-          <UAlert color="warning" icon="i-lucide-info">
-            <template #title>
-              Aktuell unterstützt 3Bein nur die NaMi Export Option:
-              <ULink class="text-inverted" to="/help" target="_blank">
-                <span class="underline italic font-semibold"
-                  >'Mitglieder: Grundinformationen'</span
-                >
-              </ULink>
-            </template>
-          </UAlert>
-
-          <div class="flex items-center gap-4 justify-between">
-            <UFileUpload
-              v-slot="{ open, removeFile }"
-              v-model="namiFile"
-              size="xl"
-              variant="button"
-              accept=".xlsx, .xls"
-              @update:model-value="handleFileUpload"
-            >
-              <div class="flex flex-wrap items-center gap-3">
-                <UButton
-                  v-if="!namiFile"
-                  size="lg"
-                  color="primary"
-                  label="NaMi Liste importieren"
-                  @click="open()"
-                  icon="i-lucide-import"
-                />
-
-                <UButton
-                  v-else
-                  size="lg"
-                  color="error"
-                  :label="`${namiFile.name}`"
-                  @click="removeFile()"
-                  icon="i-lucide-x"
-                />
-              </div>
-            </UFileUpload>
-
-            <div v-if="namiFile" class="flex items-center gap-4 justify-end">
-              <USwitch
-                v-model="anonymize"
-                label="Daten anonymisieren"
-                description="Namen, Adressen und Kontaktdaten werden für Präsentationszwecke durch Platzhalter ersetzt."
-              />
-              <UButton
-                :loading="importLoading"
-                icon="i-lucide-upload"
-                size="lg"
-                @click="onNamiFileImport()"
-                label="Hochladen"
-                color="primary"
+              <UTable
+                v-if="ranks.length"
+                v-model:column-pinning="columnPinning"
+                :data="ranks"
+                :columns="rankColumns"
+                sticky
+              >
+                <template #colour-cell="{ row }">
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="inline-block size-4 rounded border border-default"
+                      :style="{ backgroundColor: row.original.colour }"
+                    />
+                    <span class="text-muted text-sm">{{
+                      row.original.colour
+                    }}</span>
+                  </div>
+                </template>
+                <template #actions-cell="{ row }">
+                  <div class="flex gap-1 items-center">
+                    <EditRank :rank="row.original" @refresh="getRanks()" />
+                    <DeleteConfirmModal
+                      title="Stufe löschen"
+                      :description="`Soll die Stufe ${row.original.name} wirklich gelöscht werden?`"
+                      confirm-label="Stufe löschen"
+                      @confirm="(close: () => void) => onDeleteRank(row, close)"
+                    />
+                  </div>
+                </template>
+              </UTable>
+              <UEmpty
+                v-else
+                icon="i-lucide-tag"
+                size="sm"
+                description="Noch keine Stufen angelegt."
               />
             </div>
-          </div>
+          </template>
 
-          <UAlert
-            v-if="namiFile && anonymize"
-            color="info"
-            icon="i-lucide-eye-off"
-            title="Vorschau und Import werden anonymisiert"
-          />
+          <template #itemcategories>
+            <div class="flex flex-col gap-4 pb-4">
+              <div class="flex justify-end">
+                <CreateItemCategory @refresh="getItemCategories()" />
+              </div>
+              <UTable
+                v-if="itemCategories.length"
+                v-model:column-pinning="columnPinning"
+                :data="itemCategories"
+                :columns="itemCategoryColumns"
+                sticky
+              >
+                <template #actions-cell="{ row }">
+                  <div class="flex gap-1 items-center">
+                    <EditItemCategory
+                      :category="row.original"
+                      @refresh="getItemCategories()"
+                    />
+                    <DeleteConfirmModal
+                      title="Kategorie löschen"
+                      :description="`Soll die Kategorie ${row.original.name} wirklich gelöscht werden?`"
+                      confirm-label="Kategorie löschen"
+                      @confirm="
+                        (close: () => void) => onDeleteItemCategory(row, close)
+                      "
+                    />
+                  </div>
+                </template>
+              </UTable>
+              <UEmpty
+                v-else
+                icon="i-lucide-layers"
+                size="sm"
+                description="Noch keine Kategorien angelegt."
+              />
+            </div>
+          </template>
 
-          <UTable
-            v-if="namiFile && previewData.length"
-            class="max-h-96"
-            sticky
-            :columns="namiColumns"
-            :data="previewData"
-          />
-        </div>
+          <template #namilist>
+            <div class="flex flex-col gap-4">
+              <UAlert
+                v-if="namiFileData.length"
+                color="error"
+                title="Bei Import werden aktuell alle vorherigen Mitglieder überschrieben bzw gelöscht."
+                icon="i-lucide-triangle-alert"
+              />
+
+              <UAlert color="warning" icon="i-lucide-info">
+                <template #title>
+                  Aktuell unterstützt 3Bein nur die NaMi Export Option:
+                  <ULink class="text-inverted" to="/help" target="_blank">
+                    <span class="underline italic font-semibold"
+                      >'Mitglieder: Grundinformationen'</span
+                    >
+                  </ULink>
+                </template>
+              </UAlert>
+
+              <div class="flex items-center gap-4 justify-between">
+                <UFileUpload
+                  v-slot="{ open, removeFile }"
+                  v-model="namiFile"
+                  size="xl"
+                  variant="button"
+                  accept=".xlsx, .xls"
+                  @update:model-value="handleFileUpload"
+                >
+                  <div class="flex flex-wrap items-center gap-3">
+                    <UButton
+                      v-if="!namiFile"
+                      size="lg"
+                      color="primary"
+                      label="NaMi Liste importieren"
+                      @click="open()"
+                      icon="i-lucide-import"
+                    />
+
+                    <UButton
+                      v-else
+                      size="lg"
+                      color="error"
+                      :label="`${namiFile.name}`"
+                      @click="removeFile()"
+                      icon="i-lucide-x"
+                    />
+                  </div>
+                </UFileUpload>
+
+                <div
+                  v-if="namiFile"
+                  class="flex items-center gap-4 justify-end"
+                >
+                  <USwitch
+                    v-model="anonymize"
+                    label="Daten anonymisieren"
+                    description="Namen, Adressen und Kontaktdaten werden für Präsentationszwecke durch Platzhalter ersetzt."
+                  />
+                  <UButton
+                    :loading="importLoading"
+                    icon="i-lucide-upload"
+                    size="lg"
+                    @click="onNamiFileImport()"
+                    label="Hochladen"
+                    color="primary"
+                  />
+                </div>
+              </div>
+
+              <UAlert
+                v-if="namiFile && anonymize"
+                color="info"
+                icon="i-lucide-eye-off"
+                title="Vorschau und Import werden anonymisiert"
+              />
+
+              <UTable
+                v-if="namiFile && previewData.length"
+                class="max-h-96"
+                sticky
+                :columns="namiColumns"
+                :data="previewData"
+              />
+            </div>
+          </template>
+        </UAccordion>
       </div>
     </template>
   </UCard>
@@ -296,6 +299,21 @@ const previewData = computed(() =>
     : namiFileData.value,
 );
 
+const accordionItems = [
+  { label: "Benutzer", icon: "i-lucide-users", slot: "users" },
+  { label: "Stufen", icon: "i-lucide-tag", slot: "ranks" },
+  {
+    label: "Materialkategorien",
+    icon: "i-lucide-layers",
+    slot: "itemcategories",
+  },
+  {
+    label: "NaMi Mitglieder Import",
+    icon: "i-lucide-list-plus",
+    slot: "namilist",
+  },
+];
+
 const getUsers = async () => {
   if (!user.value?.admin) return;
 
@@ -331,9 +349,11 @@ const ranks = ref<RanksResponse[]>([]);
 
 const getRanks = async () => {
   if (!user.value?.admin) return;
-  ranks.value = await pb.collection(Collections.Ranks).getFullList<RanksResponse>({
-    sort: "name",
-  });
+  ranks.value = await pb
+    .collection(Collections.Ranks)
+    .getFullList<RanksResponse>({
+      sort: "name",
+    });
 };
 
 await getRanks();
@@ -392,7 +412,9 @@ const onDeleteRank = async (row: any, close: () => void) => {
 const onSendPasswordReset = async (row: any, close: () => void) => {
   resetLoading.value = row.original.id;
   try {
-    await pb.collection(Collections.Users).requestPasswordReset(row.original.email);
+    await pb
+      .collection(Collections.Users)
+      .requestPasswordReset(row.original.email);
     toast.add({
       title: "Passwort-Reset E-Mail versandt",
       description: row.original.email,

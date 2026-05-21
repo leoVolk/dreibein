@@ -25,6 +25,11 @@ export default defineAppConfig({
           }
         },
       }
+    },
+    accordion: {
+      slots: {
+        label: 'text-lg'
+      }
     }
   }
 });
