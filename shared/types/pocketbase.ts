@@ -5,22 +5,24 @@
 import type PocketBase from 'pocketbase'
 import type { RecordService } from 'pocketbase'
 
-export enum Collections {
-	Authorigins = "_authOrigins",
-	Externalauths = "_externalAuths",
-	Mfas = "_mfas",
-	Otps = "_otps",
-	Superusers = "_superusers",
-	Eventlists = "eventlists",
-	Events = "events",
-	Items = "items",
-	Lists = "lists",
-	Members = "members",
-	Notes = "notes",
-	Participantlists = "participantlists",
-	Shoppinglists = "shoppinglists",
-	Users = "users",
-}
+export const Collections = {
+	Authorigins: "_authOrigins",
+	Externalauths: "_externalAuths",
+	Mfas: "_mfas",
+	Otps: "_otps",
+	Superusers: "_superusers",
+	Eventlists: "eventlists",
+	Events: "events",
+	Items: "items",
+	Lists: "lists",
+	Members: "members",
+	Notes: "notes",
+	Participantlists: "participantlists",
+	Ranks: "ranks",
+	Shoppinglists: "shoppinglists",
+	Users: "users",
+} as const
+export type Collections = typeof Collections[keyof typeof Collections]
 
 // Alias types for improved usability
 export type IsoDateString = string
@@ -124,18 +126,20 @@ export type EventsRecord<TdaysOfWeek = unknown> = {
 	updatedBy?: RecordIdString
 }
 
-export enum ItemsStatusOptions {
-	"none" = "none",
-	"damaged" = "damaged",
-	"repair" = "repair",
-	"checkedOut" = "checkedOut",
-}
+export const ItemsStatusOptions = {
+	"none": "none",
+	"damaged": "damaged",
+	"repair": "repair",
+	"checkedOut": "checkedOut",
+} as const
+export type ItemsStatusOptions = typeof ItemsStatusOptions[keyof typeof ItemsStatusOptions]
 export type ItemsRecord = {
 	checkout?: string
 	created: IsoAutoDateString
 	description?: HTMLString
 	id: string
 	name?: string
+	parent?: RecordIdString
 	quantity?: number
 	status?: ItemsStatusOptions
 	updated: IsoAutoDateString
@@ -165,15 +169,18 @@ export type MembersRecord = {
 	id: string
 	joinDate?: string
 	lastName?: string
+	lists?: RecordIdString[]
 	magazineDelivery?: boolean
 	memberNumber?: number
 	membershipType?: string
 	nationality?: string
+	paidLists?: RecordIdString[]
 	parentEmail?: string
 	phone1?: string
 	phone2?: string
 	phone3?: string
 	postalCode?: number
+	ranks?: RecordIdString[]
 	status?: string
 	street?: string
 	updated: IsoAutoDateString
@@ -197,6 +204,14 @@ export type ParticipantlistsRecord = {
 	updated: IsoAutoDateString
 }
 
+export type RanksRecord = {
+	colour?: string
+	created: IsoAutoDateString
+	id: string
+	name?: string
+	updated: IsoAutoDateString
+}
+
 export type ShoppinglistsRecord = {
 	created: IsoAutoDateString
 	event?: RecordIdString
@@ -215,6 +230,7 @@ export type UsersRecord = {
 	id: string
 	name?: string
 	password: string
+	ranks?: RecordIdString[]
 	tokenKey: string
 	updated: IsoAutoDateString
 	verified?: boolean
@@ -233,6 +249,7 @@ export type ListsResponse<Texpand = unknown> = Required<ListsRecord> & BaseSyste
 export type MembersResponse<Texpand = unknown> = Required<MembersRecord> & BaseSystemFields<Texpand>
 export type NotesResponse<Texpand = unknown> = Required<NotesRecord> & BaseSystemFields<Texpand>
 export type ParticipantlistsResponse<Texpand = unknown> = Required<ParticipantlistsRecord> & BaseSystemFields<Texpand>
+export type RanksResponse<Texpand = unknown> = Required<RanksRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsResponse<Texpand = unknown> = Required<ShoppinglistsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 
@@ -251,6 +268,7 @@ export type CollectionRecords = {
 	members: MembersRecord
 	notes: NotesRecord
 	participantlists: ParticipantlistsRecord
+	ranks: RanksRecord
 	shoppinglists: ShoppinglistsRecord
 	users: UsersRecord
 }
@@ -268,6 +286,7 @@ export type CollectionResponses = {
 	members: MembersResponse
 	notes: NotesResponse
 	participantlists: ParticipantlistsResponse
+	ranks: RanksResponse
 	shoppinglists: ShoppinglistsResponse
 	users: UsersResponse
 }
