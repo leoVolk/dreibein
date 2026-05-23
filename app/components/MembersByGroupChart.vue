@@ -17,7 +17,7 @@
       description="Noch keine NaMi Mitglieder importiert."
     />
 
-    <ul v-else class="flex flex-row gap-3">
+    <ul v-else class="flex flex-col md:flex-row gap-3">
       <li
         v-for="row in rows"
         :key="row.id"
@@ -32,7 +32,13 @@
           }"
         />
         <div class="flex flex-row justify-between">
-          <p class="mt-2 text-sm">{{ row.name }}</p>
+          <p class="mt-2 text-sm flex gap-2 items-center">
+            <span
+              class="rounded full h-2 w-2"
+              :style="{ backgroundColor: row.color }"
+            ></span>
+            {{ row.name }}
+          </p>
           <p class="mt-2 text-sm font-semibold">{{ row.count }}</p>
         </div>
       </li>
