@@ -30,12 +30,14 @@
         to="/items"
       />
       <StatTile
-        label="Mitglieder"
+        label="Mitglieder "
         :value="stats.members"
         icon="i-lucide-users"
         to="/members"
       />
     </div>
+
+    <MembersByGroupChart />
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <OverviewCard
