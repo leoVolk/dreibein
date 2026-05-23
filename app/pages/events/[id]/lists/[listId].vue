@@ -23,7 +23,7 @@
               {{ list.name }}
             </h1>
             <div class="flex gap-4">
-              <AddEventItem :list="list!" @refresh="refreshList()" />
+              <AddEventItem :list="list!" @refresh="refreshItems()" />
               <DeleteConfirmModal
                 title="Liste löschen"
                 description="Willst du diese Liste wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
@@ -42,7 +42,7 @@
     </div>
 
     <UTable
-      v-if="list?.expand?.items?.length"
+      v-if="items?.length"
       sticky
       v-model:expanded="expanded"
       v-model:column-pinning="columnPinning"
@@ -78,11 +78,7 @@
 
       <template #actions-cell="{ row }">
         <div class="flex gap-1 items-center">
-          <EditItem
-            :item="row.original"
-            :list-id="list?.id"
-            @refresh="refreshList()"
-          />
+          <EditItem :item="row.original" @refresh="refreshItems()" />
           <DeleteConfirmModal
             title="Eintrag entfernen"
             description="Willst du diesen Eintrag wirklich aus der Liste entfernen?"
@@ -111,11 +107,7 @@
           </template>
           <template #actions-cell="{ row: child }">
             <div class="flex gap-1 items-center">
-              <EditItem
-                :item="child.original"
-                :list-id="list?.id"
-                @refresh="refreshList()"
-              />
+              <EditItem :item="child.original" @refresh="refreshItems()" />
               <DeleteConfirmModal
                 title="Eintrag entfernen"
                 description="Willst du diesen Eintrag wirklich aus der Liste entfernen?"
@@ -135,12 +127,12 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <AddEventItem :list="list!" @refresh="refreshList()" />
+        <AddEventItem :list="list!" @refresh="refreshItems()" />
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
-          @click="refreshList()"
+          @click="refreshItems()"
         />
       </template>
     </UEmpty>
@@ -157,23 +149,27 @@ const toastError = useToastError();
 const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
-const { user } = usePocketbaseAuth();
-
-type Expand = {
-  items: ItemsResponse[];
-};
 
 const { data: list, refresh: refreshList } = await useAsyncData(
   () => `eventlist-${route.params.listId}`,
   () =>
     pb
       .collection(Collections.Eventlists)
-      .getOne<EventlistsResponse<Expand>>(route.params.listId as string, {
-        expand: "items,items.category",
-      }),
+      .getOne<EventlistsResponse>(route.params.listId as string),
 );
 
-useRealtimeRefresh(["eventlists", "items"], refreshList);
+const { data: items, refresh: refreshItems } = await useAsyncData(
+  () => `eventlist-items-${route.params.listId}`,
+  () =>
+    pb.collection(Collections.Items).getFullList<ItemsResponse>({
+      filter: `eventlists ~ "${route.params.listId}"`,
+      expand: "category",
+      requestKey: null,
+    }),
+);
+
+useRealtimeRefresh("eventlists", refreshList);
+useRealtimeRefresh("items", refreshItems);
 
 const { columns, childColumns } = useItemColumns();
 const meta = useItemStatusMeta();
@@ -181,21 +177,17 @@ const expanded = ref<Record<string, boolean>>({});
 const columnPinning = ref({ right: ["actions"] });
 
 const { topLevelItems, childrenOf } = useHierarchicalItems(
-  computed(() => list.value?.expand?.items ?? []),
+  computed(() => items.value ?? []),
 );
 
 const removeItem = async (item: ItemsResponse, close: () => void) => {
-  if (!list.value) return;
-
   try {
-    await pb.collection(Collections.Eventlists).update(list.value.id, {
-      updatedBy: user.value?.id,
-      items: (list.value.items ?? []).filter((i) => i !== item.id),
+    await pb.collection(Collections.Items).update(item.id, {
+      "eventlists-": list.value?.id,
     });
-
     toast.add({ title: "Eintrag entfernt", icon: "i-lucide-trash" });
     close();
-    await refreshList();
+    await refreshItems();
   } catch (error: any) {
     toastError(error);
   }

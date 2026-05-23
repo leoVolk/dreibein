@@ -11,7 +11,7 @@
       ref="table"
       sticky
       v-model:row-selection="rowSelection"
-      :data="getFilterItems"
+      :data="items ?? []"
       :columns="columns"
     />
     <p v-else class="text-muted text-sm">Keine Materialien verfügbar.</p>
@@ -22,7 +22,6 @@
 import type { TableColumn, TableRow } from "@nuxt/ui";
 
 const { pb } = usePocketbase();
-const { user } = usePocketbaseAuth();
 
 const emit = defineEmits(["refresh"]);
 const props = defineProps({
@@ -42,6 +41,9 @@ const table = useTemplateRef("table");
 const { data: items, execute } = useAsyncData(
   () =>
     pb.collection(Collections.Items).getFullList<ItemsResponse>({
+      filter: `list != "" && eventlists !~ "${props.list.id}"`,
+      expand: "category",
+      sort: "name",
       requestKey: null,
     }),
   { immediate: false },
@@ -101,10 +103,13 @@ const onSubmit = async () => {
   loading.value = true;
 
   try {
-    await pb.collection(Collections.Eventlists).update(props.list.id, {
-      updatedBy: user.value?.id,
-      items: [...(props.list.items || []), ...selectedRows],
-    });
+    await Promise.all(
+      selectedRows.map((itemId: string) =>
+        pb.collection(Collections.Items).update(itemId, {
+          "eventlists+": props.list.id,
+        }),
+      ),
+    );
 
     toast.add({
       title: `${selectedRows.length} Material(ien) hinzugefügt`,
@@ -121,11 +126,4 @@ const onSubmit = async () => {
 };
 
 const rowSelection = ref<Record<string, boolean>>({});
-
-const getFilterItems = computed(
-  () =>
-    items.value?.filter(
-      (item) => !(props.list.items || []).includes(item.id),
-    ) || [],
-);
 </script>

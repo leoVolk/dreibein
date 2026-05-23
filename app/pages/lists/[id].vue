@@ -18,7 +18,7 @@
               {{ list.name }}
             </h1>
             <div class="flex gap-4">
-              <CreateItem :list="list!" @refresh="refreshList()" />
+              <CreateItem :list="list!" @refresh="refreshItems()" />
               <DeleteConfirmModal
                 title="Liste löschen"
                 description="Willst du diese Liste wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
@@ -37,7 +37,7 @@
     </div>
 
     <UTable
-      v-if="list?.expand?.items?.length"
+      v-if="items?.length"
       class="mt-8"
       sticky
       v-model:expanded="expanded"
@@ -74,11 +74,8 @@
 
       <template #actions-cell="{ row }">
         <div class="flex gap-1 items-center">
-          <EditItem
-            :item="row.original"
-            :list-id="list?.id"
-            @refresh="refreshList()"
-          />
+          <EditItem :item="row.original" @refresh="refreshItems()" />
+          <MoveItem :item="row.original" @refresh="refreshItems()" />
           <DeleteConfirmModal
             title="Eintrag löschen"
             confirm-label="Eintrag löschen"
@@ -106,11 +103,7 @@
           </template>
           <template #actions-cell="{ row: child }">
             <div class="flex gap-1 items-center">
-              <EditItem
-                :item="child.original"
-                :list-id="list?.id"
-                @refresh="refreshList()"
-              />
+              <EditItem :item="child.original" @refresh="refreshItems()" />
               <DeleteConfirmModal
                 title="Eintrag löschen"
                 confirm-label="Eintrag löschen"
@@ -129,12 +122,12 @@
       description="Diese Liste scheint noch keine Einträge zu haben."
     >
       <template #actions>
-        <CreateItem :list="list!" @refresh="refreshList()" />
+        <CreateItem :list="list!" @refresh="refreshItems()" />
         <UButton
           icon="i-lucide-refresh-cw"
           label="Aktualisieren"
           color="neutral"
-          @click="refreshList()"
+          @click="refreshItems()"
         />
       </template>
     </UEmpty>
@@ -151,12 +144,10 @@ const toastError = useToastError();
 const { pb } = usePocketbase();
 const route = useRoute();
 const router = useRouter();
-const { user } = usePocketbaseAuth();
 
 const id = computed(() => route.params.id as string);
 
 type Expand = {
-  items: ItemsResponse[];
   createdBy: UsersResponse;
   updatedBy: UsersResponse;
 };
@@ -165,11 +156,22 @@ const { data: list, refresh: refreshList } = await useAsyncData(
   () => `list-${id.value}`,
   () =>
     pb.collection(Collections.Lists).getOne<ListsResponse<Expand>>(id.value, {
-      expand: "createdBy,updatedBy,items,items.category",
+      expand: "createdBy,updatedBy",
     }),
 );
 
-useRealtimeRefresh(["lists", "items"], refreshList);
+const { data: items, refresh: refreshItems } = await useAsyncData(
+  () => `list-items-${id.value}`,
+  () =>
+    pb.collection(Collections.Items).getFullList<ItemsResponse>({
+      filter: `list = "${id.value}"`,
+      expand: "category",
+      requestKey: null,
+    }),
+);
+
+useRealtimeRefresh("lists", refreshList);
+useRealtimeRefresh("items", refreshItems);
 
 const { columns, childColumns } = useItemColumns();
 const meta = useItemStatusMeta();
@@ -177,20 +179,15 @@ const expanded = ref<Record<string, boolean>>({});
 const columnPinning = ref({ right: ["actions"] });
 
 const { topLevelItems, childrenOf } = useHierarchicalItems(
-  computed(() => list.value?.expand?.items ?? []),
+  computed(() => items.value ?? []),
 );
 
 const deleteItem = async (item: ItemsResponse, close: () => void) => {
-  if (!list.value) return;
-
   try {
     await pb.collection(Collections.Items).delete(item.id);
-    await pb
-      .collection(Collections.Lists)
-      .update(list.value.id, { updatedBy: user.value?.id });
     toast.add({ title: "Eintrag gelöscht", icon: "i-lucide-trash" });
     close();
-    await refreshList();
+    await refreshItems();
   } catch (error: any) {
     toastError(error);
   }

@@ -96,7 +96,6 @@
 
 <script lang="ts" setup>
 const { pb } = usePocketbase();
-const { user } = usePocketbaseAuth();
 
 const emit = defineEmits(["refresh"]);
 const props = defineProps({
@@ -155,13 +154,9 @@ const onSubmit = async () => {
   loading.value = true;
 
   try {
-    const item = await pb
-      .collection<ItemsResponse>(Collections.Items)
-      .create(state);
-
-    await pb.collection(Collections.Lists).update(props.list.id, {
-      updatedBy: user.value?.id,
-      items: [...(props.list.items || []), item.id],
+    await pb.collection<ItemsResponse>(Collections.Items).create({
+      ...state,
+      list: props.list.id,
     });
 
     toast.add({ title: "Eintrag eingefügt", icon: "i-lucide-save" });

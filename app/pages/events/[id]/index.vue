@@ -37,7 +37,7 @@
         :items="lists ?? []"
         empty-description="Noch keine Materiallisten angelegt."
         :to-for="eventListTo"
-        :meta="itemsCount"
+        :meta="updatedMeta"
       >
         <template #action>
           <CreateEventList :event-id="id" @refresh="refreshLists()" />

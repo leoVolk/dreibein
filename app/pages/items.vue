@@ -53,6 +53,7 @@
           <template #actions-cell="{ row }">
             <div class="flex gap-1 items-center">
               <EditItem :item="row.original" @refresh="refreshItems()" />
+              <MoveItem :item="row.original" @refresh="refreshItems()" />
               <DeleteConfirmModal
                 title="Eintrag löschen"
                 confirm-label="Eintrag löschen"
@@ -110,7 +111,11 @@ const toastError = useToastError();
 const { pb } = usePocketbase();
 
 const { data: items, refresh: refreshItems } = await useAsyncData<any[]>(() =>
-  pb.collection("items").getFullList({ expand: "category", requestKey: null }),
+  pb.collection("items").getFullList({
+    filter: 'list != ""',
+    expand: "category",
+    requestKey: null,
+  }),
 );
 
 useRealtimeRefresh("items", refreshItems);

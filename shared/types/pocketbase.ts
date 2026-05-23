@@ -147,7 +147,9 @@ export type ItemsRecord = {
 	checkout?: string
 	created: IsoAutoDateString
 	description?: HTMLString
+	eventlists?: RecordIdString[]
 	id: string
+	list?: RecordIdString
 	name?: string
 	parent?: RecordIdString
 	quantity?: number
@@ -160,7 +162,6 @@ export type ListsRecord = {
 	created: IsoAutoDateString
 	createdBy?: RecordIdString
 	id: string
-	items?: RecordIdString[]
 	name?: string
 	updated: IsoAutoDateString
 	updatedBy?: RecordIdString
