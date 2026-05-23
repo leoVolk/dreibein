@@ -43,14 +43,38 @@
             />
           </div>
 
+          <div
+            v-if="selectedCount"
+            class="flex items-end gap-4 py-3 border-b border-accented"
+          >
+            <span class="text-sm text-muted whitespace-nowrap pt-7">
+              {{ selectedCount }} ausgewählt
+            </span>
+            <RankSelectField v-model="bulkRanks" class="flex-1" />
+            <UButton
+              label="Stufe setzen"
+              icon="i-lucide-check"
+              :loading="bulkLoading"
+              @click="applyBulkRanks"
+            />
+            <UButton
+              label="Auswahl aufheben"
+              color="neutral"
+              variant="ghost"
+              @click="rowSelection = {}"
+            />
+          </div>
+
           <UTable
             ref="table"
+            v-model:row-selection="rowSelection"
             v-model:column-pinning="columnPinning"
             v-model:global-filter="globalFilter"
+            :get-row-id="(row) => row.id"
             sticky
-            class=""
             :data="members"
             :columns="columns"
+            @select="(_e, row) => row.toggleSelected()"
           >
             <template #ranks-cell="{ row }">
               <div
@@ -106,7 +130,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { TableColumn } from "@nuxt/ui";
+import type { TableColumn, TableRow } from "@nuxt/ui";
 
 definePageMeta({
   middleware: ["auth"],
@@ -119,6 +143,12 @@ const toastError = useToastError();
 const members = ref<any[]>([]);
 const globalFilter = ref("");
 const columnPinning = ref({ right: ["actions"] });
+const rowSelection = ref<Record<string, boolean>>({});
+const bulkRanks = ref<string[]>([]);
+const bulkLoading = ref(false);
+const table = useTemplateRef("table");
+
+const selectedCount = computed(() => Object.keys(rowSelection.value).length);
 
 const getNamiMembers = async () => {
   members.value = await pb.collection(Collections.Members).getFullList({
@@ -128,7 +158,27 @@ const getNamiMembers = async () => {
 
 useRealtimeRefresh([Collections.Members, Collections.Ranks], getNamiMembers);
 
+const UCheckbox = resolveComponent("UCheckbox");
+
 const columns: TableColumn<any>[] = [
+  {
+    id: "select",
+    header: ({ table }) =>
+      h(UCheckbox, {
+        modelValue: table.getIsSomePageRowsSelected()
+          ? "indeterminate"
+          : table.getIsAllPageRowsSelected(),
+        "onUpdate:modelValue": (value: boolean | "indeterminate") =>
+          table.toggleAllPageRowsSelected(!!value),
+        "aria-label": "Alle auswählen",
+      }),
+    cell: ({ row }) =>
+      h(UCheckbox, {
+        modelValue: row.getIsSelected(),
+        "onUpdate:modelValue": (value: boolean) => row.toggleSelected(value),
+        "aria-label": "Zeile auswählen",
+      }),
+  },
   { header: "Mitgliedsnummer", accessorKey: "memberNumber" },
   { header: "Vorname", accessorKey: "firstName" },
   { header: "Nachname", accessorKey: "lastName" },
@@ -153,6 +203,34 @@ const columns: TableColumn<any>[] = [
   { header: "Gruppierungsnummer", accessorKey: "groupNumber" },
   { header: "", accessorKey: "actions" },
 ];
+
+const applyBulkRanks = async () => {
+  const selectedIds = (
+    table.value?.tableApi?.getSelectedRowModel().rows ?? []
+  ).map((row: TableRow<any>) => row.original.id);
+
+  if (!selectedIds.length) return;
+
+  bulkLoading.value = true;
+  try {
+    await Promise.all(
+      selectedIds.map((id: string) =>
+        pb.collection(Collections.Members).update(id, { ranks: bulkRanks.value }),
+      ),
+    );
+    toast.add({
+      title: `Stufe für ${selectedIds.length} Mitglied(er) gesetzt`,
+      icon: "i-lucide-check",
+    });
+    rowSelection.value = {};
+    bulkRanks.value = [];
+    await getNamiMembers();
+  } catch (error: any) {
+    toastError(error);
+  } finally {
+    bulkLoading.value = false;
+  }
+};
 
 const onDeleteMember = async (row: any, close: () => void) => {
   try {
