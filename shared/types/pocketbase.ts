@@ -220,6 +220,7 @@ export type RanksRecord = {
 	created: IsoAutoDateString
 	id: string
 	name?: string
+	sort?: number
 	updated: IsoAutoDateString
 }
 

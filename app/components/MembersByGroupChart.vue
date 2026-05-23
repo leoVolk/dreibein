@@ -48,7 +48,7 @@ const { data: ranks, refresh: refreshRanks } = await useAsyncData(
   () =>
     pb
       .collection(Collections.Ranks)
-      .getFullList<RanksResponse>({ sort: "name", requestKey: null }),
+      .getFullList<RanksResponse>({ sort: "sort,name", requestKey: null }),
   { default: () => [] as RanksResponse[] },
 );
 
@@ -86,8 +86,7 @@ const rows = computed(() => {
       color: r.colour || "var(--ui-color-neutral-400)",
       count: rankCounts.get(r.id) ?? 0,
     }))
-    .filter((r) => r.count > 0)
-    .sort((a, b) => b.count - a.count);
+    .filter((r) => r.count > 0);
 
   if (noRankCount > 0) {
     result.push({

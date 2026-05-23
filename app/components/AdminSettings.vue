@@ -77,36 +77,46 @@
               <div class="flex justify-end">
                 <CreateRank @refresh="getRanks()" />
               </div>
-              <UTable
+
+              <ul
                 v-if="ranks.length"
-                v-model:column-pinning="columnPinning"
-                :data="ranks"
-                :columns="rankColumns"
-                sticky
+                class="flex flex-col divide-y divide-default"
               >
-                <template #colour-cell="{ row }">
-                  <div class="flex items-center gap-2">
-                    <span
-                      class="inline-block size-4 rounded border border-default"
-                      :style="{ backgroundColor: row.original.colour }"
-                    />
-                    <span class="text-muted text-sm">{{
-                      row.original.colour
-                    }}</span>
-                  </div>
-                </template>
-                <template #actions-cell="{ row }">
+                <li
+                  v-for="rank in ranks"
+                  :key="rank.id"
+                  draggable="true"
+                  class="flex items-center gap-3 py-2 px-1 transition-opacity"
+                  :class="{ 'opacity-40': draggingId === rank.id }"
+                  @dragstart="draggingId = rank.id"
+                  @dragend="draggingId = null"
+                  @dragover.prevent
+                  @drop.prevent="onRankDrop(rank.id)"
+                >
+                  <UIcon
+                    name="i-lucide-grip-vertical"
+                    class="size-4 text-muted cursor-grab shrink-0"
+                  />
+                  <span
+                    class="inline-block size-4 rounded border border-default shrink-0"
+                    :style="{ backgroundColor: rank.colour }"
+                  />
+                  <span class="flex-1 text-sm">{{ rank.name }}</span>
+                  <span class="text-muted text-xs">{{ rank.colour }}</span>
                   <div class="flex gap-1 items-center">
-                    <EditRank :rank="row.original" @refresh="getRanks()" />
+                    <EditRank :rank="rank" @refresh="getRanks()" />
                     <DeleteConfirmModal
                       title="Stufe löschen"
-                      :description="`Soll die Stufe ${row.original.name} wirklich gelöscht werden?`"
+                      :description="`Soll die Stufe ${rank.name} wirklich gelöscht werden?`"
                       confirm-label="Stufe löschen"
-                      @confirm="(close: () => void) => onDeleteRank(row, close)"
+                      @confirm="
+                        (close: () => void) => onDeleteRankById(rank.id, close)
+                      "
                     />
                   </div>
-                </template>
-              </UTable>
+                </li>
+              </ul>
+
               <UEmpty
                 v-else
                 icon="i-lucide-tag"
@@ -346,23 +356,33 @@ const resetLoading = ref<string | null>(null);
 const toastError = useToastError();
 
 const ranks = ref<RanksResponse[]>([]);
+const draggingId = ref<string | null>(null);
 
 const getRanks = async () => {
   if (!user.value?.admin) return;
   ranks.value = await pb
     .collection(Collections.Ranks)
-    .getFullList<RanksResponse>({
-      sort: "name",
-    });
+    .getFullList<RanksResponse>({ sort: "sort,name" });
 };
 
 await getRanks();
 
-const rankColumns: TableColumn<RanksResponse>[] = [
-  { header: "Name", accessorKey: "name" },
-  { header: "Farbe", accessorKey: "colour" },
-  { header: "", accessorKey: "actions" },
-];
+const onRankDrop = async (targetId: string) => {
+  if (!draggingId.value || draggingId.value === targetId) return;
+  const from = ranks.value.findIndex((r) => r.id === draggingId.value);
+  const to = ranks.value.findIndex((r) => r.id === targetId);
+  if (from === -1 || to === -1) return;
+  const reordered = [...ranks.value];
+  const [item] = reordered.splice(from, 1);
+  reordered.splice(to, 0, item!);
+  ranks.value = reordered;
+  draggingId.value = null;
+  await Promise.all(
+    reordered.map((r, i) =>
+      pb.collection(Collections.Ranks).update(r.id, { sort: i }),
+    ),
+  );
+};
 
 const itemCategories = ref<ItemcategoriesResponse[]>([]);
 
@@ -398,9 +418,9 @@ const onDeleteItemCategory = async (row: any, close: () => void) => {
   }
 };
 
-const onDeleteRank = async (row: any, close: () => void) => {
+const onDeleteRankById = async (id: string, close: () => void) => {
   try {
-    await pb.collection(Collections.Ranks).delete(row.original.id);
+    await pb.collection(Collections.Ranks).delete(id);
     toast.add({ title: "Stufe gelöscht", icon: "i-lucide-trash" });
     close();
     await getRanks();
