@@ -1,5 +1,11 @@
 <template>
   <UDashboardGroup>
+    <UProgress
+      v-if="isLoading"
+      animation="carousel"
+      size="xs"
+      class="fixed top-0 left-0 right-0"
+    />
     <UDashboardSidebar :ui="{ footer: 'border-t border-default' }">
       <template #header="{ collapsed }">
         <h2 v-if="!collapsed" class="font-semibold text-2xl">3Bein</h2>
@@ -89,6 +95,8 @@ const { data: lists, refresh: refreshLists } = await useAsyncData<any>(() =>
 const { data: events, refresh: refreshEvents } = await useAsyncData<any>(() =>
   pb.collection("events").getFullList(),
 );
+
+const { isLoading } = usePBLoading();
 
 useRealtimeRefresh("lists", refreshLists);
 useRealtimeRefresh("events", refreshEvents);

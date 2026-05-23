@@ -94,11 +94,6 @@
       </UCard>
     </div>
 
-    <!--     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <MaterialStatusChart />
-      <MembersByGroupChart />
-    </div> -->
-
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <OverviewCard
         title="Zuletzt bearbeitete Listen"
