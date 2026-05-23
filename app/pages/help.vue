@@ -9,15 +9,13 @@
     <UPageHeader title="Hilfe & Infos" />
 
     <p class="text-muted my-4">
-      Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-      eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-      voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-      clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
-      amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-      nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
-      diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-      Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
-      sit amet.
+      Willkommen bei 3Bein – der Verwaltungs-App für euren Pfadfinderstamm. Hier
+      könnt ihr Materialien erfassen und ihren Zustand im Blick behalten, Läger
+      und Aktionen planen, Materiallisten für Veranstaltungen zusammenstellen
+      und Mitglieder verwalten. Alle Änderungen werden in Echtzeit
+      synchronisiert, sodass alle Beteiligten immer auf dem aktuellen Stand
+      sind. Falls ihr eine Frage habt, die hier nicht beantwortet wird, meldet
+      euch gerne über den Feedback-Bereich.
     </p>
 
     <UAccordion
