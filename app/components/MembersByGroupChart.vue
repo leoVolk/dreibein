@@ -31,11 +31,7 @@
       description="Noch keine NaMi Mitglieder importiert."
     />
 
-    <ul
-      v-else
-      class="flex gap-3 flex-col"
-      :class="isColumn ? 'md:flex-col' : ' md:flex-row'"
-    >
+    <ul v-else class="flex gap-3 flex-row">
       <li
         v-for="row in rows"
         :key="row.id"
@@ -43,26 +39,36 @@
           width: `${(row.count / total) * 100}%`,
         }"
       >
-        <div
-          class="h-1.5 w-full rounded-full transition-all duration-500 text-ellipsis"
-          :style="{
-            backgroundColor: row.color,
-          }"
-        />
-        <div class="flex flex-row justify-between">
-          <p class="mt-2 text-sm flex gap-2 items-center">
-            <span
-              class="rounded full h-2 w-2"
-              :style="{ backgroundColor: row.color }"
-            ></span>
-            {{ row.name }}
-          </p>
-          <p class="mt-2 text-sm font-semibold">
-            {{ row.count }}
-          </p>
-        </div>
+        <UTooltip :delayDuration="0">
+          <div
+            class="h-3 w-full rounded-full transition-all duration-500 text-ellipsis"
+            :style="{
+              backgroundColor: row.color,
+            }"
+          />
+
+          <template #content>
+            <p class="text-base font-semibold">
+              {{ row.name }}: {{ row.count }}
+            </p>
+          </template>
+        </UTooltip>
       </li>
     </ul>
+
+    <div class="flex flex-row gap-2 justify-center">
+      <div
+        v-for="row in rows"
+        :key="row.id"
+        class="mt-2 text-sm flex gap-2 items-center"
+      >
+        <span
+          class="rounded full h-2 w-2"
+          :style="{ backgroundColor: row.color }"
+        ></span>
+        <span>{{ row.name }}</span>
+      </div>
+    </div>
   </UCard>
 </template>
 
