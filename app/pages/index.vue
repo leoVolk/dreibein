@@ -30,7 +30,7 @@
         to="/items"
       />
       <StatTile
-        label="NaMi Mitglieder"
+        label="Mitglieder"
         :value="stats.members"
         icon="i-lucide-users"
         to="/members"
