@@ -1,13 +1,27 @@
 <template>
   <UCard>
     <template #header>
-      <h3 class="text-lg flex items-center gap-2">
-        <UIcon name="i-lucide-users" class="size-5 text-primary" />
-        <span>Mitglieder je Stufe</span>
-        <UBadge color="neutral" variant="subtle" size="sm">
-          {{ total }}
-        </UBadge>
-      </h3>
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg flex items-center gap-2">
+          <UIcon name="i-lucide-users" class="size-5 text-primary" />
+          <span>Mitglieder je Stufe</span>
+          <UBadge color="neutral" variant="subtle" size="sm">
+            {{ total }}
+          </UBadge>
+        </h3>
+
+        <UButton
+          variant="ghost"
+          color="neutral"
+          :icon="
+            isColumn
+              ? 'i-lucide-gallery-vertical'
+              : 'i-lucide-gallery-horizontal'
+          "
+          size="sm"
+          @click="isColumn = !isColumn"
+        />
+      </div>
     </template>
 
     <UEmpty
@@ -17,7 +31,11 @@
       description="Noch keine NaMi Mitglieder importiert."
     />
 
-    <ul v-else class="flex flex-col md:flex-row gap-3">
+    <ul
+      v-else
+      class="flex gap-3 flex-col"
+      :class="isColumn ? 'md:flex-col' : ' md:flex-row'"
+    >
       <li
         v-for="row in rows"
         :key="row.id"
@@ -26,7 +44,7 @@
         }"
       >
         <div
-          class="h-1.5 w-full rounded-full transition-all duration-500"
+          class="h-1.5 w-full rounded-full transition-all duration-500 text-ellipsis"
           :style="{
             backgroundColor: row.color,
           }"
@@ -39,7 +57,9 @@
             ></span>
             {{ row.name }}
           </p>
-          <p class="mt-2 text-sm font-semibold">{{ row.count }}</p>
+          <p class="mt-2 text-sm font-semibold">
+            {{ row.count }}
+          </p>
         </div>
       </li>
     </ul>
@@ -57,6 +77,8 @@ const { data: ranks, refresh: refreshRanks } = await useAsyncData(
       .getFullList<RanksResponse>({ sort: "sort,name", requestKey: null }),
   { default: () => [] as RanksResponse[] },
 );
+
+const isColumn = ref(false);
 
 const { data: members, refresh: refreshMembers } = await useAsyncData(
   "dashboard-members-by-rank",

@@ -2,7 +2,7 @@ export default defineAppConfig({
   ui: {
     colors: {
       primary: 'emerald',
-      neutral: 'gray'
+      neutral: 'slate'
     },
     container: {
       base: 'w-full max-w-(--ui-container) mx-auto px-4 sm:px-6 lg:px-8'
