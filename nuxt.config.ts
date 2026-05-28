@@ -8,6 +8,12 @@ export default defineNuxtConfig({
   pocketbase: {
     url: process.env.POCKETBASE_URL,  // Your PocketBase URL
   },
+  runtimeConfig: {
+    public: {
+      pocketbaseAdminEmail: process.env.POCKETBASE_ADMIN_EMAIL ?? '',
+      pocketbaseAdminPassword: process.env.POCKETBASE_ADMIN_PASSWORD ?? '',
+    },
+  },
   nitro: {
     output: {
       //fix for nuxt dev deleting the generated output folder

@@ -14,8 +14,9 @@
         <UAccordion :items="accordionItems">
           <template #users>
             <div class="flex flex-col gap-4 pb-4">
-              <div class="flex justify-end">
+              <div class="flex justify-end gap-4">
                 <CreateUser @refresh="getUsers()" />
+                <UButton @click="onSendInvite()">Send Test Email</UButton>
               </div>
               <UTable
                 v-model:column-pinning="columnPinning"
@@ -579,6 +580,12 @@ const onAdminToggle = async (row: any) => {
       color: "error",
     });
   }
+};
+
+const onSendInvite = async () => {
+  const result = pb
+    .collection(Collections.Invites)
+    .create<InvitesRecord>({ email: "leovolkmann@googlemail.com" });
 };
 </script>
 
