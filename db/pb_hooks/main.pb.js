@@ -47,7 +47,7 @@ onRecordCreateRequest((e) => {
                       <table width="100%" cellpadding="0" cellspacing="0">
                         <tr>
                           <td align="center" style="padding:8px 0 32px;">
-                            <a href="${e.app.settings().meta.appURL}/invite?id=${e.record.id}"
+                            <a href="${e.app.settings().meta.appURL}/invite/${e.record.id}"
                                style="display:inline-block;background-color:#16a34a;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:13px 32px;border-radius:8px;">
                               Konto erstellen
                             </a>
@@ -59,9 +59,9 @@ onRecordCreateRequest((e) => {
 
                       <p style="margin:0;font-size:13px;color:#a1a1aa;line-height:1.6;">
                         Falls der Button nicht funktioniert, kopiere diesen Link in deinen Browser:<br />
-                        <a href="${e.app.settings().meta.appURL}/invite?id=${e.record.id}"
+                        <a href="${e.app.settings().meta.appURL}/invite/${e.record.id}"
                            style="color:#16a34a;word-break:break-all;">
-                          ${e.app.settings().meta.appURL}/invite?id=${e.record.id}
+                          ${e.app.settings().meta.appURL}/invite/${e.record.id}
                         </a>
                       </p>
                     </td>
