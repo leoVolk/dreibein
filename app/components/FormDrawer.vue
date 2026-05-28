@@ -8,7 +8,7 @@
     <slot name="trigger" :open="openDrawer">
       <UButton
         color="primary"
-        icon="i-lucide-plus"
+        :icon="triggerIcon || 'i-lucide-plus'"
         :label="triggerLabel"
         @click="openDrawer"
       />
@@ -65,6 +65,7 @@
 const props = defineProps({
   title: { type: String, required: true },
   triggerLabel: { type: String, default: "" },
+  triggerIcon: { type: String, default: "" },
   submitLabel: { type: String, default: "Speichern" },
   loading: { type: Boolean, default: false },
   state: { type: Object, default: undefined },

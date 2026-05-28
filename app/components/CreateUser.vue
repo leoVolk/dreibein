@@ -3,6 +3,7 @@
     v-model:open="open"
     title="Neuen Benutzer erstellen"
     trigger-label="Benutzer anlegen"
+    trigger-icon="i-lucide-user-plus"
     :loading="loading"
     :state="state"
     @submit="onSubmit"
