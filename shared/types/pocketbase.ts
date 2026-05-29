@@ -14,6 +14,7 @@ export const Collections = {
 	Eventlists: "eventlists",
 	Events: "events",
 	Invites: "invites",
+	Invoices: "invoices",
 	Itemcategories: "itemcategories",
 	Items: "items",
 	Lists: "lists",
@@ -133,6 +134,16 @@ export type InvitesRecord = {
 	email?: string
 	id: string
 	updated: IsoAutoDateString
+}
+
+export type InvoicesRecord = {
+	created: IsoAutoDateString
+	event?: RecordIdString
+	file?: FileNameString
+	id: string
+	name?: string
+	updated: IsoAutoDateString
+	value?: number
 }
 
 export type ItemcategoriesRecord = {
@@ -265,6 +276,7 @@ export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> &
 export type EventlistsResponse<Texpand = unknown> = Required<EventlistsRecord> & BaseSystemFields<Texpand>
 export type EventsResponse<TdaysOfWeek = unknown, Texpand = unknown> = Required<EventsRecord<TdaysOfWeek>> & BaseSystemFields<Texpand>
 export type InvitesResponse<Texpand = unknown> = Required<InvitesRecord> & BaseSystemFields<Texpand>
+export type InvoicesResponse<Texpand = unknown> = Required<InvoicesRecord> & BaseSystemFields<Texpand>
 export type ItemcategoriesResponse<Texpand = unknown> = Required<ItemcategoriesRecord> & BaseSystemFields<Texpand>
 export type ItemsResponse<Texpand = unknown> = Required<ItemsRecord> & BaseSystemFields<Texpand>
 export type ListsResponse<Texpand = unknown> = Required<ListsRecord> & BaseSystemFields<Texpand>
@@ -286,6 +298,7 @@ export type CollectionRecords = {
 	eventlists: EventlistsRecord
 	events: EventsRecord
 	invites: InvitesRecord
+	invoices: InvoicesRecord
 	itemcategories: ItemcategoriesRecord
 	items: ItemsRecord
 	lists: ListsRecord
@@ -306,6 +319,7 @@ export type CollectionResponses = {
 	eventlists: EventlistsResponse
 	events: EventsResponse
 	invites: InvitesResponse
+	invoices: InvoicesResponse
 	itemcategories: ItemcategoriesResponse
 	items: ItemsResponse
 	lists: ListsResponse

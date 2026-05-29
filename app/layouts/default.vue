@@ -154,6 +154,11 @@ const items = computed<NavigationMenuItem[][]>(() => [
       to: "/items",
       defaultOpen: true,
     },
+    {
+      label: "Alle Rechnungen",
+      icon: "i-lucide-files",
+      to: "/invoices",
+    },
   ],
   [
     {

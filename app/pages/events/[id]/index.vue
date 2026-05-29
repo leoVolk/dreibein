@@ -10,27 +10,123 @@
       />
     </div>
 
-    <UPageHeader :title="event?.name ?? ''" :description="dateRange" />
+    <UPageHeader :title="event?.name ?? ''" class="border-0 pb-0">
+      <template #headline>
+        <div
+          v-if="recurringDays.length"
+          class="flex items-center gap-2 text-sm"
+        >
+          <UIcon name="i-lucide-repeat" class="size-4" />
+          <span>Wiederholung:</span>
+          <UBadge
+            v-for="day in recurringDays"
+            :key="day"
+            color="neutral"
+            variant="subtle"
+            size="sm"
+          >
+            {{ day }}
+          </UBadge>
+        </div>
+        <div v-else>
+          {{ dateRange }}
+        </div>
+      </template>
 
-    <div
-      v-if="recurringDays.length"
-      class="flex items-center gap-2 text-sm text-muted"
-    >
-      <UIcon name="i-lucide-repeat" class="size-4" />
-      <span>Wiederholung:</span>
-      <UBadge
-        v-for="day in recurringDays"
-        :key="day"
-        color="neutral"
-        variant="subtle"
-        size="sm"
+      <template #description>
+        <UTabs
+          v-model="activeTab"
+          color="primary"
+          variant="link"
+          :content="false"
+          :items="tabItems"
+          class="w-full"
+        />
+      </template>
+    </UPageHeader>
+
+    <div>
+      <!-- Übersicht -->
+      <div
+        v-if="activeTab === 'overview'"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-4"
       >
-        {{ day }}
-      </UBadge>
-    </div>
+        <OverviewCard
+          title="Material Listen"
+          icon="i-lucide-clipboard-list"
+          item-icon="i-lucide-clipboard-list"
+          :items="(lists ?? []).slice(0, 5)"
+          empty-description="Noch keine Materiallisten angelegt."
+          :to-for="eventListTo"
+          :meta="updatedMeta"
+        >
+          <template #action>
+            <CreateEventList :event-id="id" @refresh="refreshLists()" />
+          </template>
+        </OverviewCard>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+        <OverviewCard
+          title="Teilnehmerlisten"
+          icon="i-lucide-users"
+          item-icon="i-lucide-user"
+          :items="(participantLists ?? []).slice(0, 5)"
+          empty-description="Noch keine Teilnehmerlisten angelegt."
+          :to-for="participantListTo"
+          :meta="createdMeta"
+        >
+          <template #action>
+            <AddParticipantList
+              :event-id="id"
+              @refresh="refreshParticipantLists()"
+            />
+          </template>
+        </OverviewCard>
+
+        <InvoiceCard
+          :invoices="(invoices ?? []).slice(0, 5)"
+          :total-value="(invoices ?? []).reduce((s, i) => s + (i.value ?? 0), 0)"
+          :event-id="id"
+          @refresh="refreshInvoices()"
+        />
+
+        <OverviewCard
+          title="Einkaufslisten"
+          icon="i-lucide-shopping-cart"
+          item-icon="i-lucide-shopping-bag"
+          :items="(shoppingLists ?? []).slice(0, 5)"
+          empty-description="Noch keine Einkaufslisten angelegt."
+          :meta="itemsCount"
+        >
+          <template #action>
+            <CreateShoppingList
+              :event-id="id"
+              @refresh="refreshShoppingLists()"
+            />
+          </template>
+        </OverviewCard>
+
+        <OverviewCard
+          title="Notizen"
+          icon="i-lucide-notebook-pen"
+          item-icon="i-lucide-file-text"
+          :items="(notes ?? []).slice(0, 5)"
+          empty-description="Noch keine Notizen erstellt."
+          :to-for="noteTo"
+          :meta="updatedMeta"
+        >
+          <template #action>
+            <UButton
+              color="primary"
+              icon="i-lucide-plus"
+              :to="`/events/${id}/notes/create`"
+            />
+          </template>
+        </OverviewCard>
+      </div>
+
+      <!-- Material Listen -->
       <OverviewCard
+        v-else-if="activeTab === 'lists'"
         title="Material Listen"
         icon="i-lucide-clipboard-list"
         item-icon="i-lucide-clipboard-list"
@@ -44,7 +140,9 @@
         </template>
       </OverviewCard>
 
+      <!-- Teilnehmerlisten -->
       <OverviewCard
+        v-else-if="activeTab === 'participants'"
         title="Teilnehmerlisten"
         icon="i-lucide-users"
         item-icon="i-lucide-user"
@@ -61,7 +159,35 @@
         </template>
       </OverviewCard>
 
+      <!-- Rechnungen -->
+      <InvoiceCard
+        v-else-if="activeTab === 'invoices'"
+        :invoices="invoices ?? []"
+        :event-id="id"
+        @refresh="refreshInvoices()"
+      />
+
+      <!-- Einkaufslisten -->
       <OverviewCard
+        v-else-if="activeTab === 'shopping'"
+        title="Einkaufslisten"
+        icon="i-lucide-shopping-cart"
+        item-icon="i-lucide-shopping-bag"
+        :items="shoppingLists ?? []"
+        empty-description="Noch keine Einkaufslisten angelegt."
+        :meta="itemsCount"
+      >
+        <template #action>
+          <CreateShoppingList
+            :event-id="id"
+            @refresh="refreshShoppingLists()"
+          />
+        </template>
+      </OverviewCard>
+
+      <!-- Notizen -->
+      <OverviewCard
+        v-else-if="activeTab === 'notes'"
         title="Notizen"
         icon="i-lucide-notebook-pen"
         item-icon="i-lucide-file-text"
@@ -75,22 +201,6 @@
             color="primary"
             icon="i-lucide-plus"
             :to="`/events/${id}/notes/create`"
-          />
-        </template>
-      </OverviewCard>
-
-      <OverviewCard
-        title="Einkaufslisten"
-        icon="i-lucide-shopping-cart"
-        item-icon="i-lucide-shopping-bag"
-        :items="shoppingLists ?? []"
-        empty-description="Noch keine Einkaufslisten angelegt."
-        :meta="itemsCount"
-      >
-        <template #action>
-          <CreateShoppingList
-            :event-id="id"
-            @refresh="refreshShoppingLists()"
           />
         </template>
       </OverviewCard>
@@ -108,6 +218,15 @@ const route = useRoute();
 
 const id = computed(() => route.params.id as string);
 
+const activeTab = ref("overview");
+const tabItems = [
+  { label: "Übersicht", value: "overview" },
+  { label: "Material Listen", value: "lists" },
+  { label: "Teilnehmerlisten", value: "participants" },
+  { label: "Rechnungen", value: "invoices" },
+  { label: "Einkaufslisten", value: "shopping" },
+  { label: "Notizen", value: "notes" },
+];
 
 const formatDate = (value?: string) =>
   value ? new Date(value).toLocaleDateString() : "";
@@ -185,10 +304,21 @@ const { data: shoppingLists, refresh: refreshShoppingLists } =
         }),
   );
 
+const { data: invoices, refresh: refreshInvoices } = await useAsyncData(
+  () => `event-invoices-${id.value}`,
+  () =>
+    pb.collection(Collections.Invoices).getFullList<InvoicesResponse>({
+      filter: `event = "${id.value}"`,
+      sort: "-updated",
+      requestKey: null,
+    }),
+);
+
 useRealtimeRefresh("eventlists", refreshLists);
 useRealtimeRefresh("notes", refreshNotes);
 useRealtimeRefresh("participantlists", refreshParticipantLists);
 useRealtimeRefresh("shoppinglists", refreshShoppingLists);
+useRealtimeRefresh("invoices", refreshInvoices);
 
 const dateRange = computed(() => {
   const start = formatDate(event.value?.startDate);

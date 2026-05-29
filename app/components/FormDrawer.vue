@@ -9,7 +9,7 @@
       <UButton
         color="primary"
         :icon="triggerIcon || 'i-lucide-plus'"
-        :label="triggerLabel"
+        :label="triggerLabel || undefined"
         @click="openDrawer"
       />
     </slot>
