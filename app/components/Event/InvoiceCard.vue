@@ -48,16 +48,7 @@
           </td>
           <td class="py-2 text-right">
             <div class="flex items-center justify-end gap-1">
-              <UTooltip v-if="invoice.file" text="Datei herunterladen">
-                <UButton
-                  icon="i-lucide-download"
-                  size="xs"
-                  variant="ghost"
-                  color="neutral"
-                  :to="fileUrl(invoice)"
-                  target="_blank"
-                />
-              </UTooltip>
+              <InvoiceFilePreview v-if="invoice.file" :invoice="invoice" />
               <EditInvoice :invoice="invoice" @refresh="emit('refresh')" />
               <DeleteConfirmModal
                 title="Rechnung löschen"
@@ -111,9 +102,6 @@ const formatDate = (iso: string) =>
     month: "2-digit",
     year: "numeric",
   });
-
-const fileUrl = (invoice: InvoicesResponse) =>
-  invoice.file ? pb.files.getURL(invoice, invoice.file) : undefined;
 
 const onDelete = async (id: string, close: () => void) => {
   try {
