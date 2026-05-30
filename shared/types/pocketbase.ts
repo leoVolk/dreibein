@@ -136,12 +136,29 @@ export type InvitesRecord = {
 	updated: IsoAutoDateString
 }
 
+export const InvoicesPaidViaOptions = {
+	"User": "User",
+	"Lagerkarte": "Lagerkarte",
+	"Stammeskarte": "Stammeskarte",
+} as const
+export type InvoicesPaidViaOptions = typeof InvoicesPaidViaOptions[keyof typeof InvoicesPaidViaOptions]
+
+export const InvoicesCategoryOptions = {
+	"Material": "Material",
+	"Versicherung": "Versicherung",
+	"Lebensmittel": "Lebensmittel",
+	"Unterkunft": "Unterkunft",
+} as const
+export type InvoicesCategoryOptions = typeof InvoicesCategoryOptions[keyof typeof InvoicesCategoryOptions]
 export type InvoicesRecord = {
+	category?: InvoicesCategoryOptions
 	created: IsoAutoDateString
 	event?: RecordIdString
 	file?: FileNameString
 	id: string
 	name?: string
+	paidBy?: RecordIdString
+	paidVia?: InvoicesPaidViaOptions
 	updated: IsoAutoDateString
 	value?: number
 }

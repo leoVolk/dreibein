@@ -32,10 +32,41 @@
       />
     </UFormField>
 
+    <CurrencyConverter @use="(v) => (state.value = v)" />
+
+    <UFormField class="w-full" label="Kategorie" name="category">
+      <USelect
+        v-model="state.category"
+        :items="categoryOptions"
+        size="lg"
+        class="w-full"
+        placeholder="Kategorie wählen"
+      />
+    </UFormField>
+
+    <UFormField class="w-full" label="Bezahlt via" name="paidVia">
+      <USelect
+        v-model="state.paidVia"
+        :items="paidViaOptions"
+        size="lg"
+        class="w-full"
+        placeholder="Zahlungsweg wählen"
+      />
+    </UFormField>
+
+    <UFormField v-if="state.paidVia === 'User'" class="w-full" label="Bezahlt von" name="paidBy">
+      <USelect
+        v-model="state.paidBy"
+        :items="userItems"
+        size="lg"
+        class="w-full"
+        placeholder="Benutzer wählen"
+      />
+    </UFormField>
+
     <UFormField class="w-full" label="Datei" name="file">
-      <!-- Existing file -->
       <div
-        v-if="invoice.file && !newFile"
+        v-if="invoice.file && !newFile && !removeExistingFile"
         class="flex items-center gap-2 p-3 border border-default rounded-lg mb-2 text-sm"
       >
         <UIcon name="i-lucide-paperclip" class="size-4 text-muted shrink-0" />
@@ -49,13 +80,15 @@
         />
       </div>
 
-      <!-- New file picker -->
       <div
         class="flex items-center gap-3 p-3 border border-default rounded-lg cursor-pointer hover:border-primary transition-colors"
         @click="fileInput?.click()"
       >
         <UIcon name="i-lucide-paperclip" class="size-4 text-muted shrink-0" />
-        <span class="text-sm truncate flex-1" :class="newFile ? 'text-foreground' : 'text-muted'">
+        <span
+          class="text-sm truncate flex-1"
+          :class="newFile ? 'text-foreground' : 'text-muted'"
+        >
           {{ newFile?.name ?? "Neue Datei auswählen (PDF, Bild)" }}
         </span>
         <UButton
@@ -92,9 +125,24 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const newFile = ref<File | null>(null);
 const removeExistingFile = ref(false);
 
+const paidViaOptions = Object.values(InvoicesPaidViaOptions);
+const categoryOptions = Object.values(InvoicesCategoryOptions);
+
+const { data: users } = await useAsyncData("invoice-users", () =>
+  pb.collection(Collections.Users).getFullList<UsersResponse>({ sort: "name", requestKey: null }),
+  { default: () => [] as UsersResponse[] },
+);
+
+const userItems = computed(() =>
+  users.value.map((u) => ({ label: u.name || u.email, value: u.id })),
+);
+
 const state = reactive({
   name: props.invoice.name ?? "",
   value: props.invoice.value as number | undefined,
+  category: props.invoice.category as string | undefined,
+  paidVia: props.invoice.paidVia as string | undefined,
+  paidBy: props.invoice.paidBy as string | undefined,
 });
 
 const onFileChange = (e: Event) => {
@@ -114,6 +162,9 @@ const onSubmit = async () => {
     const payload: Record<string, any> = {
       name: state.name,
       value: state.value,
+      category: state.category,
+      paidVia: state.paidVia,
+      paidBy: state.paidVia === "User" ? state.paidBy : null,
     };
     if (newFile.value) {
       payload.file = newFile.value;
@@ -135,6 +186,9 @@ const onSubmit = async () => {
 const onAbort = () => {
   state.name = props.invoice.name ?? "";
   state.value = props.invoice.value;
+  state.category = props.invoice.category;
+  state.paidVia = props.invoice.paidVia;
+  state.paidBy = props.invoice.paidBy;
   clearNewFile();
   removeExistingFile.value = false;
 };

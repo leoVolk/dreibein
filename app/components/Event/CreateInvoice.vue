@@ -30,6 +30,38 @@
       />
     </UFormField>
 
+    <CurrencyConverter @use="(v) => (state.value = v)" />
+
+    <UFormField class="w-full" label="Kategorie" name="category">
+      <USelect
+        v-model="state.category"
+        :items="categoryOptions"
+        size="lg"
+        class="w-full"
+        placeholder="Kategorie wählen"
+      />
+    </UFormField>
+
+    <UFormField class="w-full" label="Bezahlt via" name="paidVia">
+      <USelect
+        v-model="state.paidVia"
+        :items="paidViaOptions"
+        size="lg"
+        class="w-full"
+        placeholder="Zahlungsweg wählen"
+      />
+    </UFormField>
+
+    <UFormField v-if="state.paidVia === 'User'" class="w-full" label="Bezahlt von" name="paidBy">
+      <USelect
+        v-model="state.paidBy"
+        :items="userItems"
+        size="lg"
+        class="w-full"
+        placeholder="Benutzer wählen"
+      />
+    </UFormField>
+
     <UFormField class="w-full" label="Datei" name="file">
       <div
         class="flex items-center gap-3 p-3 border border-default rounded-lg cursor-pointer hover:border-primary transition-colors"
@@ -75,9 +107,24 @@ const loading = ref(false);
 const fileInput = ref<HTMLInputElement | null>(null);
 const file = ref<File | null>(null);
 
+const paidViaOptions = Object.values(InvoicesPaidViaOptions);
+const categoryOptions = Object.values(InvoicesCategoryOptions);
+
+const { data: users } = await useAsyncData("invoice-users", () =>
+  pb.collection(Collections.Users).getFullList<UsersResponse>({ sort: "name", requestKey: null }),
+  { default: () => [] as UsersResponse[] },
+);
+
+const userItems = computed(() =>
+  users.value.map((u) => ({ label: u.name || u.email, value: u.id })),
+);
+
 const initialState = () => ({
   name: "",
   value: undefined as number | undefined,
+  category: undefined as string | undefined,
+  paidVia: undefined as string | undefined,
+  paidBy: undefined as string | undefined,
 });
 const state = reactive(initialState());
 
@@ -92,6 +139,9 @@ const onSubmit = async () => {
     const payload: Record<string, any> = {
       name: state.name,
       event: props.eventId,
+      category: state.category,
+      paidVia: state.paidVia,
+      paidBy: state.paidVia === "User" ? state.paidBy : null,
     };
     if (state.value !== undefined) payload.value = state.value;
     if (file.value) payload.file = file.value;
