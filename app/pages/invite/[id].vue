@@ -15,27 +15,23 @@
         </div>
       </template>
 
-      <!-- Success state -->
-      <template v-else-if="success">
-        <div class="flex flex-col items-center gap-4 py-4">
-          <UIcon name="i-lucide-circle-check" class="size-12 text-success" />
-          <h1 class="text-xl font-bold text-center">Konto erstellt!</h1>
-          <p class="text-sm text-muted text-center">
-            Willkommen bei 3Bein, {{ form.name }}! Du kannst dich jetzt anmelden.
-          </p>
-          <UButton to="/login" icon="i-lucide-log-in">Zur Anmeldung</UButton>
-        </div>
-      </template>
-
       <!-- Registration form -->
       <template v-else-if="invite">
-        <UIcon name="i-lucide-tent-tree" class="size-12 mx-auto mb-4 text-primary" />
+        <UIcon
+          name="i-lucide-tent-tree"
+          class="size-12 mx-auto mb-4 text-primary"
+        />
         <h1 class="text-2xl text-center font-bold mb-1">Gut Pfad!</h1>
         <p class="text-center text-muted text-sm mb-6">
-          Erstelle dein <span class="text-foreground font-semibold">3Bein</span> Konto.
+          Erstelle dein
+          <span class="text-foreground font-semibold">3Bein</span> Konto.
         </p>
 
-        <UForm :state="form" class="flex flex-col gap-4" @submit.prevent="register">
+        <UForm
+          :state="form"
+          class="flex flex-col gap-4"
+          @submit.prevent="register"
+        >
           <UFormField label="E-Mail" required>
             <UInput
               :model-value="invite.email"
@@ -70,7 +66,11 @@
             />
           </UFormField>
 
-          <UFormField label="Passwort bestätigen" required :error="errors.passwordConfirm">
+          <UFormField
+            label="Passwort bestätigen"
+            required
+            :error="errors.passwordConfirm"
+          >
             <UInput
               v-model="form.passwordConfirm"
               type="password"
@@ -122,13 +122,14 @@ definePageMeta({
 
 const route = useRoute();
 const { pb } = usePocketbase();
+const { signup, login, signOut } = usePocketbaseAuth();
+
 const { adminFetch } = usePocketbaseAdmin();
 
 type InviteRecord = { id: string; email: string };
 
 const invite = ref<InviteRecord | null>(null);
 const invalidInvite = ref(false);
-const success = ref(false);
 const loading = ref(false);
 const submitError = ref<string | null>(null);
 
@@ -169,22 +170,34 @@ const validate = () => {
 
 const register = async () => {
   if (!invite.value || !validate()) return;
+
+  if (pb.authStore.isValid) {
+    await signOut();
+    await pb.authStore.clear();
+  }
+
   loading.value = true;
   submitError.value = null;
 
   try {
-    await pb.collection(Collections.Users).create({
+    const newUser = await signup({
       email: invite.value.email,
       name: form.name,
       password: form.password,
       passwordConfirm: form.passwordConfirm,
     });
 
+    if (!newUser) {
+      submitError.value = "Registrierung fehlgeschlagen.";
+      return;
+    }
+
     await adminFetch(`/api/collections/invites/records/${invite.value.id}`, {
       method: "DELETE",
     });
 
-    success.value = true;
+    await login({ email: invite.value.email, password: form.password });
+    await navigateTo("/");
   } catch (e: any) {
     submitError.value =
       e?.response?.message ?? e?.message ?? "Registrierung fehlgeschlagen.";

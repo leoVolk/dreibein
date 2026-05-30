@@ -47,11 +47,11 @@ export const usePocketbaseAdmin = () => {
     options?: RequestInit,
   ): Promise<T> => {
     const res = await adminFetchRaw(path, options);
+    const text = await res.text();
     if (!res.ok) {
-      const text = await res.text();
       throw new Error(`Admin API ${res.status}: ${text}`);
     }
-    return res.json() as Promise<T>;
+    return (text ? JSON.parse(text) : undefined) as T;
   };
 
   return { adminFetch, adminFetchRaw, baseUrl };
