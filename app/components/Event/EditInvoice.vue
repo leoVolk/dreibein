@@ -64,6 +64,15 @@
       />
     </UFormField>
 
+    <UFormField class="w-full" label="Bezahlt am" name="paidAt">
+      <UInput
+        v-model="state.paidAt"
+        type="date"
+        size="lg"
+        class="w-full"
+      />
+    </UFormField>
+
     <UFormField class="w-full" label="Datei" name="file">
       <div
         v-if="invoice.file && !newFile && !removeExistingFile"
@@ -143,6 +152,7 @@ const state = reactive({
   category: props.invoice.category as string | undefined,
   paidVia: props.invoice.paidVia as string | undefined,
   paidBy: props.invoice.paidBy as string | undefined,
+  paidAt: props.invoice.paidAt ? props.invoice.paidAt.slice(0, 10) : undefined as string | undefined,
 });
 
 const onFileChange = (e: Event) => {
@@ -165,6 +175,7 @@ const onSubmit = async () => {
       category: state.category,
       paidVia: state.paidVia,
       paidBy: state.paidVia === "User" ? state.paidBy : null,
+      paidAt: state.paidAt || null,
     };
     if (newFile.value) {
       payload.file = newFile.value;
@@ -189,6 +200,7 @@ const onAbort = () => {
   state.category = props.invoice.category;
   state.paidVia = props.invoice.paidVia;
   state.paidBy = props.invoice.paidBy;
+  state.paidAt = props.invoice.paidAt ? props.invoice.paidAt.slice(0, 10) : undefined;
   clearNewFile();
   removeExistingFile.value = false;
 };

@@ -157,6 +157,7 @@ export type InvoicesRecord = {
 	file?: FileNameString
 	id: string
 	name?: string
+	paidAt?: IsoDateString
 	paidBy?: RecordIdString
 	paidVia?: InvoicesPaidViaOptions
 	updated: IsoAutoDateString

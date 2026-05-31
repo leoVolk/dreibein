@@ -9,11 +9,35 @@
             {{ invoices.length }}
           </UBadge>
         </h3>
-        <CreateInvoice
-          v-if="eventId"
-          :event-id="eventId"
-          @refresh="emit('refresh')"
-        />
+        <div class="flex items-center gap-2">
+          <UTooltip text="Belege exportieren">
+            <UButton
+              icon="i-lucide-image"
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              :loading="exportingReceipts"
+              :disabled="!invoices.length"
+              @click="onExportReceipts"
+            />
+          </UTooltip>
+          <UTooltip text="Zusammenfassung exportieren">
+            <UButton
+              icon="i-lucide-download"
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              :loading="exporting"
+              :disabled="!invoices.length"
+              @click="onExport"
+            />
+          </UTooltip>
+          <CreateInvoice
+            v-if="eventId"
+            :event-id="eventId"
+            @refresh="emit('refresh')"
+          />
+        </div>
       </div>
     </template>
 
@@ -27,10 +51,10 @@
     <table v-else class="w-full text-sm">
       <thead>
         <tr class="text-left text-muted border-b border-default">
-          <th class="pb-2 font-medium">Name</th>
-          <th class="pb-2 font-medium text-right">Betrag</th>
-          <th class="pb-2 font-medium text-right">Datum</th>
-          <th class="pb-2 font-medium text-right">Kategorie</th>
+          <th class="pb-2 font-semibold">Name</th>
+          <th class="pb-2 font-semibold text-right">Kategorie</th>
+          <th class="pb-2 font-semibold text-right">Betrag</th>
+          <th class="pb-2 font-semibold text-right">Datum</th>
           <th class="pb-2" />
         </tr>
       </thead>
@@ -41,15 +65,16 @@
           class="border-b border-default last:border-0"
         >
           <td class="py-2">{{ invoice.name || "Ohne Titel" }}</td>
+          <td class="py-2 text-right text-muted">
+            {{ invoice.category }}
+          </td>
           <td class="py-2 text-right tabular-nums">
             {{ formatCurrency(invoice.value) }}
           </td>
           <td class="py-2 text-right text-muted">
-            {{ formatDate(invoice.created) }}
+            {{ formatDate(invoice.paidAt) }}
           </td>
-          <td class="py-2 text-right text-muted">
-            {{ invoice.category }}
-          </td>
+
           <td class="py-2 text-right">
             <div class="flex items-center justify-end gap-1">
               <InvoiceFilePreview v-if="invoice.file" :invoice="invoice" />
@@ -81,12 +106,34 @@ const props = defineProps<{
   invoices: InvoicesResponse[];
   eventId?: string;
   totalValue?: number;
+  eventName?: string;
 }>();
 
 const emit = defineEmits(["refresh"]);
 
 const { pb } = usePocketbase();
 const toast = useToast();
+const { exportPDF, exportReceiptsPDF } = useInvoicePDF();
+const exporting = ref(false);
+const exportingReceipts = ref(false);
+
+const onExport = async () => {
+  exporting.value = true;
+  try {
+    await exportPDF(props.invoices, props.eventName);
+  } finally {
+    exporting.value = false;
+  }
+};
+
+const onExportReceipts = async () => {
+  exportingReceipts.value = true;
+  try {
+    await exportReceiptsPDF(props.invoices, props.eventName);
+  } finally {
+    exportingReceipts.value = false;
+  }
+};
 const toastError = useToastError();
 
 const total = computed(

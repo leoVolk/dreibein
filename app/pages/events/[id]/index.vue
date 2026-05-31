@@ -84,10 +84,9 @@
 
         <InvoiceCard
           :invoices="(invoices ?? []).slice(0, 5)"
-          :total-value="
-            (invoices ?? []).reduce((s, i) => s + (i.value ?? 0), 0)
-          "
+          :total-value="(invoices ?? []).reduce((s, i) => s + (i.value ?? 0), 0)"
           :event-id="id"
+          :event-name="event?.name"
           @refresh="refreshInvoices()"
         />
 
@@ -166,6 +165,7 @@
         v-else-if="activeTab === 'invoices'"
         :invoices="invoices ?? []"
         :event-id="id"
+        :event-name="event?.name"
         @refresh="refreshInvoices()"
       />
 

@@ -52,7 +52,12 @@
       />
     </UFormField>
 
-    <UFormField v-if="state.paidVia === 'User'" class="w-full" label="Bezahlt von" name="paidBy">
+    <UFormField
+      v-if="state.paidVia === 'User'"
+      class="w-full"
+      label="Bezahlt von"
+      name="paidBy"
+    >
       <USelect
         v-model="state.paidBy"
         :items="userItems"
@@ -60,6 +65,10 @@
         class="w-full"
         placeholder="Benutzer wählen"
       />
+    </UFormField>
+
+    <UFormField class="w-full" label="Bezahlt am" name="paidAt">
+      <UInput v-model="state.paidAt" type="date" size="lg" class="w-full" />
     </UFormField>
 
     <UFormField class="w-full" label="Datei" name="file">
@@ -110,8 +119,12 @@ const file = ref<File | null>(null);
 const paidViaOptions = Object.values(InvoicesPaidViaOptions) as string[];
 const categoryOptions = Object.values(InvoicesCategoryOptions) as string[];
 
-const { data: users } = await useAsyncData("invoice-users", () =>
-  pb.collection(Collections.Users).getFullList<UsersResponse>({ sort: "name", requestKey: null }),
+const { data: users } = await useAsyncData(
+  "invoice-users",
+  () =>
+    pb
+      .collection(Collections.Users)
+      .getFullList<UsersResponse>({ sort: "name", requestKey: null }),
   { default: () => [] as UsersResponse[] },
 );
 
@@ -125,6 +138,7 @@ const initialState = () => ({
   category: undefined as string | undefined,
   paidVia: undefined as string | undefined,
   paidBy: undefined as string | undefined,
+  paidAt: undefined as string | undefined,
 });
 const state = reactive(initialState());
 
@@ -142,6 +156,7 @@ const onSubmit = async () => {
       category: state.category,
       paidVia: state.paidVia,
       paidBy: state.paidVia === "User" ? state.paidBy : null,
+      paidAt: state.paidAt || null,
     };
     if (state.value !== undefined) payload.value = state.value;
     if (file.value) payload.file = file.value;
@@ -149,6 +164,7 @@ const onSubmit = async () => {
     await pb.collection(Collections.Invoices).create(payload);
     toast.add({ title: "Rechnung hinzugefügt", icon: "i-lucide-save" });
     emit("refresh");
+    onAbort();
     open.value = false;
   } catch (error: any) {
     toastError(error);
