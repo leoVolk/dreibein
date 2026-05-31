@@ -125,8 +125,8 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const newFile = ref<File | null>(null);
 const removeExistingFile = ref(false);
 
-const paidViaOptions = Object.values(InvoicesPaidViaOptions);
-const categoryOptions = Object.values(InvoicesCategoryOptions);
+const paidViaOptions = Object.values(InvoicesPaidViaOptions) as string[];
+const categoryOptions = Object.values(InvoicesCategoryOptions) as string[];
 
 const { data: users } = await useAsyncData("invoice-users", () =>
   pb.collection(Collections.Users).getFullList<UsersResponse>({ sort: "name", requestKey: null }),
