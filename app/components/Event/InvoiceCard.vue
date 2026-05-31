@@ -30,6 +30,7 @@
           <th class="pb-2 font-medium">Name</th>
           <th class="pb-2 font-medium text-right">Betrag</th>
           <th class="pb-2 font-medium text-right">Datum</th>
+          <th class="pb-2 font-medium text-right">Kategorie</th>
           <th class="pb-2" />
         </tr>
       </thead>
@@ -45,6 +46,9 @@
           </td>
           <td class="py-2 text-right text-muted">
             {{ formatDate(invoice.created) }}
+          </td>
+          <td class="py-2 text-right text-muted">
+            {{ invoice.category }}
           </td>
           <td class="py-2 text-right">
             <div class="flex items-center justify-end gap-1">

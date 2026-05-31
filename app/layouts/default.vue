@@ -8,13 +8,9 @@
     />
     <UDashboardSidebar :ui="{ footer: 'border-t border-default' }">
       <template #header="{ collapsed }">
+        <UIcon name="i-lucide-tent" class="size-5 text-primary" />
         <h2 v-if="!collapsed" class="font-semibold text-2xl">3Bein</h2>
-        <UIcon
-          v-else
-          name="i-simple-icons-nuxtdotjs"
-          class="size-5 text-primary mx-auto"
-        />
-        <UBadge class="hidden lg:block" color="primary" variant="soft"
+        <UBadge class="hidden lg:block" color="primary" variant="soft" size="sm"
           >v.0.1.0</UBadge
         >
       </template>
@@ -153,11 +149,6 @@ const items = computed<NavigationMenuItem[][]>(() => [
       icon: "i-lucide-list",
       to: "/items",
       defaultOpen: true,
-    },
-    {
-      label: "Alle Rechnungen",
-      icon: "i-lucide-files",
-      to: "/invoices",
     },
   ],
   [

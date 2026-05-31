@@ -84,7 +84,9 @@
 
         <InvoiceCard
           :invoices="(invoices ?? []).slice(0, 5)"
-          :total-value="(invoices ?? []).reduce((s, i) => s + (i.value ?? 0), 0)"
+          :total-value="
+            (invoices ?? []).reduce((s, i) => s + (i.value ?? 0), 0)
+          "
           :event-id="id"
           @refresh="refreshInvoices()"
         />
@@ -215,10 +217,14 @@ definePageMeta({
 
 const { pb } = usePocketbase();
 const route = useRoute();
+const router = useRouter();
 
 const id = computed(() => route.params.id as string);
 
-const activeTab = ref("overview");
+const validTabs = ["overview", "lists", "participants", "invoices", "shopping", "notes"];
+const activeTab = ref(
+  validTabs.includes(route.query.tab as string) ? (route.query.tab as string) : "overview",
+);
 const tabItems = [
   { label: "Übersicht", value: "overview" },
   { label: "Material Listen", value: "lists" },
@@ -238,6 +244,10 @@ type OverviewItem = {
   created?: string;
   updated?: string;
 };
+
+watch(activeTab, (tab) => {
+  router.replace({ query: { ...route.query, tab } });
+});
 
 const eventListTo = (item: OverviewItem) =>
   `/events/${id.value}/lists/${item.id}`;
