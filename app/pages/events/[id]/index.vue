@@ -40,7 +40,16 @@
           variant="link"
           :content="false"
           :items="tabItems"
-          class="w-full"
+          class="w-full hidden md:block"
+        />
+        <UTabs
+          v-model="activeTab"
+          color="primary"
+          variant="link"
+          orientation="vertical"
+          :content="false"
+          :items="tabItems"
+          class="w-full md:hidden block"
         />
       </template>
     </UPageHeader>
@@ -84,7 +93,9 @@
 
         <InvoiceCard
           :invoices="(invoices ?? []).slice(0, 5)"
-          :total-value="(invoices ?? []).reduce((s, i) => s + (i.value ?? 0), 0)"
+          :total-value="
+            (invoices ?? []).reduce((s, i) => s + (i.value ?? 0), 0)
+          "
           :event-id="id"
           :event-name="event?.name"
           @refresh="refreshInvoices()"
@@ -221,9 +232,18 @@ const router = useRouter();
 
 const id = computed(() => route.params.id as string);
 
-const validTabs = ["overview", "lists", "participants", "invoices", "shopping", "notes"];
+const validTabs = [
+  "overview",
+  "lists",
+  "participants",
+  "invoices",
+  "shopping",
+  "notes",
+];
 const activeTab = ref(
-  validTabs.includes(route.query.tab as string) ? (route.query.tab as string) : "overview",
+  validTabs.includes(route.query.tab as string)
+    ? (route.query.tab as string)
+    : "overview",
 );
 const tabItems = [
   { label: "Übersicht", value: "overview" },

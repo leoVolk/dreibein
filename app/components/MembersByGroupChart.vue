@@ -9,18 +9,6 @@
             {{ total }}
           </UBadge>
         </h3>
-
-        <UButton
-          variant="ghost"
-          color="neutral"
-          :icon="
-            isColumn
-              ? 'i-lucide-gallery-vertical'
-              : 'i-lucide-gallery-horizontal'
-          "
-          size="sm"
-          @click="isColumn = !isColumn"
-        />
       </div>
     </template>
 
@@ -31,7 +19,7 @@
       description="Noch keine NaMi Mitglieder importiert."
     />
 
-    <ul v-else class="flex gap-3 flex-row">
+    <ul v-else class="flex gap-3 md:flex-row flex-col">
       <li
         v-for="row in rows"
         :key="row.id"
