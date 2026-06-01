@@ -48,60 +48,57 @@
       description="Noch keine Rechnungen angelegt."
     />
 
-    <table v-else class="w-full text-sm">
-      <thead>
-        <tr class="text-left text-muted border-b border-default">
-          <th class="pb-2 font-semibold">Name</th>
-          <th class="pb-2 font-semibold text-right">Kategorie</th>
-          <th class="pb-2 font-semibold text-right">Betrag</th>
-          <th class="pb-2 font-semibold text-right">Datum</th>
-          <th class="pb-2" />
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="invoice in invoices"
-          :key="invoice.id"
-          class="border-b border-default last:border-0"
-        >
-          <td class="py-2">{{ invoice.name || "Ohne Titel" }}</td>
-          <td class="py-2 text-right text-muted">
-            {{ invoice.category }}
-          </td>
-          <td class="py-2 text-right tabular-nums">
-            {{ formatCurrency(invoice.value) }}
-          </td>
-          <td class="py-2 text-right text-muted">
-            {{ formatDate(invoice.paidAt) }}
-          </td>
+    <template v-else>
+      <UTable
+        :data="invoices"
+        :columns="columns"
+        v-model:column-pinning="columnPinning"
+        sticky
+      >
+        <template #name-cell="{ row }">
+          {{ row.original.name || "Ohne Titel" }}
+        </template>
 
-          <td class="py-2 text-right">
-            <div class="flex items-center justify-end gap-1">
-              <InvoiceFilePreview v-if="invoice.file" :invoice="invoice" />
-              <EditInvoice :invoice="invoice" @refresh="emit('refresh')" />
-              <DeleteConfirmModal
-                title="Rechnung löschen"
-                :description="`Soll '${invoice.name || 'diese Rechnung'}' wirklich gelöscht werden?`"
-                confirm-label="Löschen"
-                @confirm="(close) => onDelete(invoice.id, close)"
-              />
-            </div>
-          </td>
-        </tr>
-        <tr class="font-semibold border-t-2 border-default">
-          <td class="pt-3">Gesamt</td>
-          <td class="pt-3 text-right tabular-nums">
-            {{ formatCurrency(total) }}
-          </td>
-          <td class="pt-3" />
-          <td class="pt-3" />
-        </tr>
-      </tbody>
-    </table>
+        <template #value-cell="{ row }">
+          <span class="tabular-nums">{{
+            formatCurrency(row.original.value)
+          }}</span>
+        </template>
+
+        <template #paidAt-cell="{ row }">
+          <span class="text-muted">{{ formatDate(row.original.paidAt) }}</span>
+        </template>
+
+        <template #actions-cell="{ row }">
+          <div class="flex items-center justify-end gap-1">
+            <InvoiceFilePreview
+              v-if="row.original.file"
+              :invoice="row.original"
+            />
+            <EditInvoice :invoice="row.original" @refresh="emit('refresh')" />
+            <DeleteConfirmModal
+              title="Rechnung löschen"
+              :description="`Soll '${row.original.name || 'diese Rechnung'}' wirklich gelöscht werden?`"
+              confirm-label="Löschen"
+              @confirm="(close) => onDelete(row.original.id, close)"
+            />
+          </div>
+        </template>
+      </UTable>
+
+      <div
+        class="flex justify-between items-center pt-3 mt-1 border-t-2 border-default px-4 font-semibold text-sm"
+      >
+        <span>Gesamt</span>
+        <span class="tabular-nums">{{ formatCurrency(total) }}</span>
+      </div>
+    </template>
   </UCard>
 </template>
 
 <script lang="ts" setup>
+import type { TableColumn } from "@nuxt/ui";
+
 const props = defineProps<{
   invoices: InvoicesResponse[];
   eventId?: string;
@@ -113,9 +110,39 @@ const emit = defineEmits(["refresh"]);
 
 const { pb } = usePocketbase();
 const toast = useToast();
+const toastError = useToastError();
 const { exportPDF, exportReceiptsPDF } = useInvoicePDF();
 const exporting = ref(false);
 const exportingReceipts = ref(false);
+const columnPinning = ref({ right: ["actions"] });
+
+const columns: TableColumn<InvoicesResponse>[] = [
+  { header: "Name", accessorKey: "name" },
+  { header: "Kategorie", accessorKey: "category" },
+  { header: "Betrag", accessorKey: "value" },
+  { header: "Datum", accessorKey: "paidAt" },
+  { header: "", accessorKey: "actions" },
+];
+
+const total = computed(
+  () =>
+    props.totalValue ??
+    props.invoices.reduce((sum, inv) => sum + (inv.value ?? 0), 0),
+);
+
+const formatCurrency = (value?: number) =>
+  new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
+    value ?? 0,
+  );
+
+const formatDate = (iso: string) =>
+  iso
+    ? new Date(iso).toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : "";
 
 const onExport = async () => {
   exporting.value = true;
@@ -134,25 +161,6 @@ const onExportReceipts = async () => {
     exportingReceipts.value = false;
   }
 };
-const toastError = useToastError();
-
-const total = computed(
-  () =>
-    props.totalValue ??
-    props.invoices.reduce((sum, inv) => sum + (inv.value ?? 0), 0),
-);
-
-const formatCurrency = (value?: number) =>
-  new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
-    value ?? 0,
-  );
-
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
 
 const onDelete = async (id: string, close: () => void) => {
   try {
