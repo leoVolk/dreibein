@@ -124,8 +124,6 @@ const route = useRoute();
 const { pb } = usePocketbase();
 const { signup, login, signOut } = usePocketbaseAuth();
 
-const { adminFetch } = usePocketbaseAdmin();
-
 type InviteRecord = { id: string; email: string };
 
 const invite = ref<InviteRecord | null>(null);
@@ -192,11 +190,8 @@ const register = async () => {
       return;
     }
 
-    await adminFetch(`/api/collections/invites/records/${invite.value.id}`, {
-      method: "DELETE",
-    });
-
     await login({ email: invite.value.email, password: form.password });
+    await pb.send(`/api/invites/${invite.value.id}`, { method: "DELETE" });
     await navigateTo("/");
   } catch (e: any) {
     submitError.value =

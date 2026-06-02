@@ -44,10 +44,6 @@
 const { user } = usePocketbaseAuth();
 const { pb } = usePocketbase();
 
-definePageMeta({
-  middleware: ["auth"],
-});
-
 const toast = useToast();
 const toastError = useToastError();
 

@@ -89,3 +89,54 @@ onRecordCreateRequest((e) => {
 
   e.app.newMailClient().send(message)
 }, "invites")
+
+routerAdd("GET", "/api/admin/logs", (e) => {
+  const info = e.requestInfo();
+
+  if (!info.auth || info.auth.collection().name !== "users") {
+    return e.json(401, { message: "Unauthorized" });
+  }
+
+  try {
+    const user = $app.findRecordById("users", info.auth.id);
+    if (!user.getBool("admin")) {
+      return e.json(403, { message: "Forbidden" });
+    }
+  } catch (_) {
+    return e.json(403, { message: "Forbidden" });
+  }
+
+  let logs = arrayOf(new DynamicModel({
+    id: "",
+    created: "",
+    message: "",
+    level: 0,
+    data: {},
+  }))
+
+  $app.logQuery().orderBy("created DESC").limit(100).all(logs);
+  return e.json(200, { items: logs });
+});
+
+routerAdd("DELETE", "/api/invites/{id}", (e) => {
+  const info = e.requestInfo();
+
+  if (!info.auth) {
+    return e.json(401, { message: "Unauthorized" });
+  }
+
+  const inviteId = e.request.pathValue("id");
+
+  try {
+    const invite = $app.findRecordById("invites", inviteId);
+
+    if (invite.getString("email") !== info.auth.getString("email")) {
+      return e.json(403, { message: "Forbidden" });
+    }
+
+    $app.delete(invite);
+    return e.json(200, {});
+  } catch (_) {
+    return e.json(404, { message: "Not found" });
+  }
+});
