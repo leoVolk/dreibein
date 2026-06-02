@@ -64,7 +64,19 @@
 
     <UDashboardPanel :ui="{ body: 'bg-elevated/40 dark:bg-elevated/20' }">
       <template #header>
-        <UDashboardNavbar class="lg:hidden" />
+        <UDashboardNavbar class="lg:hidden" toggle-side="right">
+          <template #left>
+            <UIcon name="i-lucide-tent" class="size-5 text-primary" />
+            <h2 class="font-semibold text-2xl">3Bein</h2>
+            <UBadge
+              class="hidden lg:block"
+              color="primary"
+              variant="soft"
+              size="sm"
+              >v.0.1.0</UBadge
+            >
+          </template>
+        </UDashboardNavbar>
       </template>
       <template #body>
         <main class="container">

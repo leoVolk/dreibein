@@ -30,6 +30,11 @@ export default defineAppConfig({
       slots: {
         label: 'text-lg'
       }
+    },
+    pageHeader: {
+      slots: {
+        root: 'pb-4 pt-0'
+      }
     }
   }
 });
