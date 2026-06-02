@@ -22,6 +22,7 @@ export const Collections = {
 	Notes: "notes",
 	Participantlists: "participantlists",
 	Ranks: "ranks",
+	Settings: "settings",
 	Shoppinglists: "shoppinglists",
 	Users: "users",
 } as const
@@ -261,6 +262,15 @@ export type RanksRecord = {
 	updated: IsoAutoDateString
 }
 
+export type SettingsRecord = {
+	created: IsoAutoDateString
+	id: string
+	namiGroupId?: number
+	namiPassword?: string
+	namiUsername?: string
+	updated: IsoAutoDateString
+}
+
 export type ShoppinglistsRecord = {
 	created: IsoAutoDateString
 	event?: RecordIdString
@@ -302,6 +312,7 @@ export type MembersResponse<Texpand = unknown> = Required<MembersRecord> & BaseS
 export type NotesResponse<Texpand = unknown> = Required<NotesRecord> & BaseSystemFields<Texpand>
 export type ParticipantlistsResponse<Texpand = unknown> = Required<ParticipantlistsRecord> & BaseSystemFields<Texpand>
 export type RanksResponse<Texpand = unknown> = Required<RanksRecord> & BaseSystemFields<Texpand>
+export type SettingsResponse<Texpand = unknown> = Required<SettingsRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsResponse<Texpand = unknown> = Required<ShoppinglistsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 
@@ -324,6 +335,7 @@ export type CollectionRecords = {
 	notes: NotesRecord
 	participantlists: ParticipantlistsRecord
 	ranks: RanksRecord
+	settings: SettingsRecord
 	shoppinglists: ShoppinglistsRecord
 	users: UsersRecord
 }
@@ -345,6 +357,7 @@ export type CollectionResponses = {
 	notes: NotesResponse
 	participantlists: ParticipantlistsResponse
 	ranks: RanksResponse
+	settings: SettingsResponse
 	shoppinglists: ShoppinglistsResponse
 	users: UsersResponse
 }

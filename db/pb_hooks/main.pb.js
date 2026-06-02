@@ -118,6 +118,144 @@ routerAdd("GET", "/api/admin/logs", (e) => {
   return e.json(200, { items: logs });
 });
 
+routerAdd("POST", "/api/nami/import", (e) => {
+  const info = e.requestInfo();
+
+  if (!info.auth || info.auth.collection().name !== "users") {
+    return e.json(401, { message: "Unauthorized" });
+  }
+
+  try {
+    const user = $app.findRecordById("users", info.auth.id);
+    if (!user.getBool("admin")) return e.json(403, { message: "Forbidden" });
+  } catch (_) {
+    return e.json(403, { message: "Forbidden" });
+  }
+
+  // Read NaMi credentials from settings collection
+  let namiUsername, namiPassword, namiGroupId;
+  try {
+    const rows = $app.findRecordsByFilter("settings", `name = "nami"`, "", 1, 0);
+    if (!rows.length) return e.json(400, { message: "NaMi Einstellungen nicht gefunden" });
+    const s = rows[ 0 ];
+    namiUsername = s.getString("namiUsername");
+    namiPassword = s.getString("namiPassword");
+    namiGroupId = s.getString("namiGroupId");
+  } catch (err) {
+    return e.json(500, { message: "Fehler beim Laden der Einstellungen: " + String(err) });
+  }
+
+  if (!namiUsername || !namiPassword || !namiGroupId) {
+    return e.json(400, { message: "NaMi Einstellungen unvollständig (Benutzername, Passwort, Gruppierungsnummer)" });
+  }
+
+  const BASE = "https://nami.dpsg.de/ica/rest";
+
+  // Step 1: Login
+  let loginRes;
+  try {
+    loginRes = $http.send({
+      url: `${BASE}/nami/auth/manual/sessionStartup`,
+      method: "POST",
+      body: `username=${encodeURIComponent(namiUsername)}&password=${encodeURIComponent(namiPassword)}&Login=API&redirectTo=`,
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
+  } catch (err) {
+    return e.json(502, { message: "NaMi nicht erreichbar: " + String(err) });
+  }
+
+  if (loginRes.statusCode !== 200) {
+    return e.json(502, { message: `NaMi Login fehlgeschlagen (HTTP ${loginRes.statusCode})` });
+  }
+
+  const loginData = loginRes.json;
+  if (!loginData || loginData.statusCode !== 0) {
+    return e.json(502, { message: "NaMi Login fehlgeschlagen: " + (loginData && loginData.statusMessage ? loginData.statusMessage : "Ungültige Anmeldedaten") });
+  }
+
+  // Extract session cookies
+  const rawCookie = loginRes.headers[ "Set-Cookie" ] || loginRes.headers[ "set-cookie" ] || "";
+  const cookieStr = (Array.isArray(rawCookie) ? rawCookie : String(rawCookie).split("\n"))
+    .map(function (c) { return c.split(";")[ 0 ].trim(); })
+    .filter(Boolean)
+    .join("; ");
+
+  if (!cookieStr) {
+    return e.json(502, { message: "NaMi Session-Cookie nicht empfangen" });
+  }
+
+  // Step 2: Fetch member list
+  let membersRes;
+  try {
+    membersRes = $http.send({
+      url: `${BASE}/nami/mitglied/filtered-for-navigation/gruppierung/gruppierung/${namiGroupId}/flist?page=1&start=0&limit=5000`,
+      method: "GET",
+      headers: { "Cookie": cookieStr },
+    });
+  } catch (err) {
+    return e.json(502, { message: "NaMi Mitgliederliste fehlgeschlagen: " + String(err) });
+  }
+
+  // Step 3: Logout (best effort)
+  try {
+    $http.send({ url: `${BASE}/nami/auth/logout`, method: "GET", headers: { "Cookie": cookieStr } });
+  } catch (_) { }
+
+  if (membersRes.statusCode !== 200) {
+    return e.json(502, { message: `NaMi Mitgliederliste fehlgeschlagen (HTTP ${membersRes.statusCode})` });
+  }
+
+  const membersData = membersRes.json;
+  if (!membersData || !membersData.success) {
+    return e.json(502, { message: "NaMi Mitgliederliste fehlgeschlagen" });
+  }
+
+  const namiList = membersData.data || [];
+
+  // Step 4: Delete all existing members
+  try {
+    const existing = $app.findRecordsByFilter("members", "", "", 99999, 0);
+    for (var i = 0; i < existing.length; i++) {
+      $app.delete(existing[ i ]);
+    }
+  } catch (err) {
+    return e.json(500, { message: "Fehler beim Löschen der Mitglieder: " + String(err) });
+  }
+
+  // Step 5: Insert fetched members
+  const col = $app.findCollectionByNameOrId("members");
+  let imported = 0;
+  let skipped = 0;
+
+  for (var j = 0; j < namiList.length; j++) {
+    var m = namiList[ j ];
+    try {
+      var rec = new Record(col);
+      rec.set("memberNumber",  parseInt(m.entries_mitgliedsNummer) || 0);
+      rec.set("firstName",     m.entries_vorname                   || "");
+      rec.set("lastName",      m.entries_nachname                  || "");
+      rec.set("gender",        m.entries_geschlecht                || "");
+      rec.set("birthdate",     (m.entries_geburtsDatum  || "").slice(0, 10));
+      rec.set("joinDate",      (m.entries_eintrittsdatum || "").slice(0, 10));
+      rec.set("email",         m.entries_email                     || "");
+      rec.set("parentEmail",   m.entries_emailVertretungsberechtigter || "");
+      rec.set("phone1",        m.entries_telefon1                  || "");
+      rec.set("phone2",        m.entries_telefon2                  || "");
+      rec.set("phone3",        m.entries_telefon3                  || "");
+      rec.set("nationality",   m.entries_staatsangehoerigkeit      || "");
+      rec.set("status",        m.entries_status                    || "");
+      rec.set("membershipType", m.entries_mglType                  || "");
+      $app.save(rec);
+      imported++;
+    } catch (err) {
+      skipped++;
+      $app.logger().error("NaMi import: failed to save member", "memberNumber", m.entries_mitgliedsNummer, "error", String(err));
+    }
+  }
+
+  return e.json(200, { imported: imported, skipped: skipped, total: namiList.length });
+});
+
 routerAdd("DELETE", "/api/invites/{id}", (e) => {
   const info = e.requestInfo();
 
