@@ -7,14 +7,25 @@
         </h3>
       </template>
       <template #default>
-        <UForm class="flex flex-col gap-4" :state="userState">
-          <UFormField label="Benutzername" class="w-1/2">
-            <UInput
-              v-model="userState.username"
-              size="lg"
-              class="w-full"
-            ></UInput>
-          </UFormField>
+        <UForm class="flex flex-col gap-4" :state="state">
+          <div class="grid grid-rows-1 md:grid-cols-2 gap-4">
+            <UFormField label="Benutzername">
+              <UInput
+                v-model="state.username"
+                size="lg"
+                class="w-full"
+              ></UInput>
+            </UFormField>
+            <UFormField label="E-Mail">
+              <UInput
+                icon="i-lucide-mail"
+                disabled
+                v-model="state.email"
+                size="lg"
+                class="w-full"
+              ></UInput>
+            </UFormField>
+          </div>
           <div class="flex justify-end">
             <UButton
               icon="i-lucide-save"
@@ -40,26 +51,28 @@ definePageMeta({
 const toast = useToast();
 const toastError = useToastError();
 
-const userState = reactive({
+const state = reactive({
   username: user.value?.name,
+  email: user.value?.email,
 });
 
 const onUserNameChange = async () => {
   if (!user.value?.id) return;
 
   try {
-    await pb
-      .collection("users")
-      .update(user.value?.id, { name: userState.username });
+    await pb.collection("users").update(user.value?.id, {
+      name: state.username,
+    });
 
-    toast.add({ title: "Benutzername geändert", icon: "i-lucide-save" });
+    toast.add({ title: "Nutzerdaten geändert", icon: "i-lucide-save" });
   } catch (error: any) {
     toastError(error);
   }
 };
 
 onMounted(async () => {
-  userState.username = user.value?.name;
+  state.username = user.value?.name;
+  state.email = user.value?.email;
 });
 </script>
 
