@@ -4,7 +4,7 @@
 
     <UPageHeader title="Dashboard">
       <template #description>
-        Hallo,
+        Gut Pfad,
         <span class="text-primary font-semibold">{{ user?.name }}</span
         ><span>!</span>
       </template>

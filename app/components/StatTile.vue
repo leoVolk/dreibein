@@ -1,11 +1,8 @@
 <template>
-  <NuxtLink
-    :to="to"
-    class="group block"
-  >
+  <NuxtLink :to="to" class="group block">
     <UCard
       :ui="{
-        root: 'transition-colors group-hover:border-primary group-hover:ring-primary',
+        root: 'transition-all duration-150 group-hover:border-primary group-hover:ring-primary',
       }"
     >
       <div class="flex items-center gap-4">

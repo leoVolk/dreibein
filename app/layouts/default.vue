@@ -17,11 +17,11 @@
 
       <template #default="{ collapsed }">
         <UDashboardSearchButton
-          :label="collapsed ? undefined : 'Search...'"
+          v-model:search-term="searchTerm"
+          :label="collapsed ? undefined : 'Suchen...'"
           :square="collapsed"
           block
-        >
-        </UDashboardSearchButton>
+        />
 
         <UNavigationMenu
           :collapsed="collapsed"
@@ -85,7 +85,10 @@
       </template>
     </UDashboardPanel>
 
-    <UDashboardSearch />
+    <UDashboardSearch
+      :groups="searchGroups"
+      :placeholder="`Was suchst du, ${user?.name}?`"
+    />
   </UDashboardGroup>
 </template>
 <script lang="ts" setup>
@@ -95,6 +98,8 @@ const { user, signOut } = usePocketbaseAuth();
 const { pb } = usePocketbase();
 
 const router = useRouter();
+
+const searchTerm = ref("");
 
 const { data: lists, refresh: refreshLists } = await useAsyncData<any>(() =>
   pb.collection("lists").getFullList(),
@@ -180,6 +185,38 @@ const items = computed<NavigationMenuItem[][]>(() => [
       to: "/settings",
     },
   ],
+]);
+
+const searchGroups = computed(() => [
+  {
+    id: "pages",
+    label: "Seiten",
+    items: [
+      { label: "Home", icon: "i-lucide-home", to: "/" },
+      { label: "Material Listen", icon: "i-lucide-folder", to: "/lists" },
+      {
+        label: "Läger & Aktionen",
+        icon: "i-lucide-flame-kindling",
+        to: "/events",
+      },
+      { label: "Kalender", icon: "i-lucide-calendar", to: "/calendar" },
+      { label: "Mitglieder", icon: "i-lucide-users", to: "/members" },
+      { label: "Alle Materialien", icon: "i-lucide-list", to: "/items" },
+      { label: "Hilfe & Info", icon: "i-lucide-info", to: "/help" },
+      {
+        label: "Feedback",
+        icon: "i-lucide-message-circle-heart",
+        to: "/feedback",
+      },
+      { label: "Einstellungen", icon: "i-lucide-settings", to: "/settings" },
+    ],
+  },
+  ...(listLinks.value.length
+    ? [{ id: "lists", label: "Material Listen", items: listLinks.value }]
+    : []),
+  ...(eventLinks.value.length
+    ? [{ id: "events", label: "Läger & Aktionen", items: eventLinks.value }]
+    : []),
 ]);
 
 const onSignOut = () => {
