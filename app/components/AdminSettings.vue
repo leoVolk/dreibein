@@ -10,7 +10,6 @@
 
       <UAccordion :items="accordionItems">
         <template #users><UsersSettings /></template>
-        <template #ranks><RanksSettings /></template>
         <template #itemcategories><ItemCategoriesSettings /></template>
         <template #namilist><NamiImportSettings /></template>
       </UAccordion>
@@ -23,8 +22,15 @@
 <script lang="ts" setup>
 const accordionItems = [
   { label: "Benutzer", icon: "i-lucide-users", slot: "users" },
-  { label: "Stufen", icon: "i-lucide-tag", slot: "ranks" },
-  { label: "Materialkategorien", icon: "i-lucide-layers", slot: "itemcategories" },
-  { label: "NaMi Mitglieder Import", icon: "i-lucide-list-plus", slot: "namilist" },
+  {
+    label: "Materialkategorien",
+    icon: "i-lucide-layers",
+    slot: "itemcategories",
+  },
+  {
+    label: "NaMi Mitglieder Import",
+    icon: "i-lucide-list-plus",
+    slot: "namilist",
+  },
 ];
 </script>
