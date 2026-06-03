@@ -7,7 +7,7 @@
       ]"
     />
 
-    <UPageHeader title="Alle Materialien" />
+    <UPageHeader title="Alle Mitglieder" />
 
     <UEmpty
       v-if="!isConfigured"
@@ -59,7 +59,7 @@ const isConfigured = computed(
 const { data: namiSettings } = await useAsyncData("nami-settings", () =>
   pb
     .collection(Collections.Settings)
-    .getFirstListItem('integration = "nami"')
+    .getFirstListItem("")
     .catch(() => null),
 );
 

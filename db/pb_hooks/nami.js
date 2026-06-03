@@ -3,12 +3,12 @@
 const NAMI_BASE = "https://nami.dpsg.de/ica/rest";
 
 function namiSession() {
-  const rows = $app.findRecordsByFilter("settings", `integration = "nami"`, "", 1, 0);
+  const rows = $app.findRecordsByFilter("settings", `integration = "nami"`);
   if (!rows.length) throw new Error("NaMi Einstellungen nicht gefunden");
-  const s = rows[0];
+  const s = rows[ 0 ];
   const username = s.getString("namiUsername");
   const password = s.getString("namiPassword");
-  const groupId  = s.getString("namiGroupId");
+  const groupId = s.getString("namiGroupId");
   if (!username || !password || !groupId) throw new Error("NaMi Einstellungen unvollständig");
 
   const loginRes = $http.send({
@@ -24,9 +24,9 @@ function namiSession() {
     throw new Error("Login fehlgeschlagen: " + (loginData && loginData.statusMessage ? loginData.statusMessage : "Ungültige Anmeldedaten"));
   }
 
-  const rawCookie = loginRes.headers["Set-Cookie"] || loginRes.headers["set-cookie"] || "";
+  const rawCookie = loginRes.headers[ "Set-Cookie" ] || loginRes.headers[ "set-cookie" ] || "";
   const cookieStr = (Array.isArray(rawCookie) ? rawCookie : String(rawCookie).split("\n"))
-    .map(function(c) { return c.split(";")[0].trim(); })
+    .map(function (c) { return c.split(";")[ 0 ].trim(); })
     .filter(Boolean)
     .join("; ");
 
@@ -37,7 +37,7 @@ function namiSession() {
 function namiLogout(cookieStr) {
   try {
     $http.send({ url: `${NAMI_BASE}/nami/auth/logout`, method: "GET", headers: { "Cookie": cookieStr } });
-  } catch (_) {}
+  } catch (_) { }
 }
 
 module.exports = { namiSession, namiLogout, NAMI_BASE };

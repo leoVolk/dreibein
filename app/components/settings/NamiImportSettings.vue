@@ -89,7 +89,7 @@ const onSaveCredentials = async () => {
   savingCredentials.value = true;
   try {
     const payload = {
-      name: "nami",
+      integration: "nami",
       namiUsername: credentials.namiUsername,
       namiPassword: credentials.namiPassword,
       namiGroupId: credentials.namiGroupId,
