@@ -59,7 +59,7 @@ const isConfigured = computed(
 const { data: namiSettings } = await useAsyncData("nami-settings", () =>
   pb
     .collection(Collections.Settings)
-    .getFirstListItem("")
+    .getFirstListItem('integration = "nami"')
     .catch(() => null),
 );
 
