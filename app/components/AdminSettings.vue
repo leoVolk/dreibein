@@ -28,7 +28,7 @@ const accordionItems = [
     slot: "itemcategories",
   },
   {
-    label: "NaMi Mitglieder Import",
+    label: "NaMi Integration",
     icon: "i-lucide-list-plus",
     slot: "namilist",
   },

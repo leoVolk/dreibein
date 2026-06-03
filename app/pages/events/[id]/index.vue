@@ -78,17 +78,12 @@
           title="Teilnehmerlisten"
           icon="i-lucide-users"
           item-icon="i-lucide-user"
-          :items="(participantLists ?? []).slice(0, 5)"
+          :items="[].slice(0, 5)"
           empty-description="Noch keine Teilnehmerlisten angelegt."
           :to-for="participantListTo"
           :meta="createdMeta"
         >
-          <template #action>
-            <AddParticipantList
-              :event-id="id"
-              @refresh="refreshParticipantLists()"
-            />
-          </template>
+          <template #action> </template>
         </OverviewCard>
 
         <InvoiceCard
@@ -155,20 +150,15 @@
       <!-- Teilnehmerlisten -->
       <OverviewCard
         v-else-if="activeTab === 'participants'"
-        title="Teilnehmerlisten"
+        title="Teilnehmer"
         icon="i-lucide-users"
         item-icon="i-lucide-user"
-        :items="participantLists ?? []"
+        :items="[]"
         empty-description="Noch keine Teilnehmerlisten angelegt."
         :to-for="participantListTo"
         :meta="createdMeta"
       >
-        <template #action>
-          <AddParticipantList
-            :event-id="id"
-            @refresh="refreshParticipantLists()"
-          />
-        </template>
+        <template #action> </template>
       </OverviewCard>
 
       <!-- Rechnungen -->
@@ -308,19 +298,6 @@ const { data: notes, refresh: refreshNotes } = await useAsyncData(
     }),
 );
 
-const { data: participantLists, refresh: refreshParticipantLists } =
-  await useAsyncData(
-    () => `event-participantlists-${id.value}`,
-    () =>
-      pb
-        .collection(Collections.Participantlists)
-        .getFullList<ParticipantlistsResponse>({
-          filter: `event = "${id.value}"`,
-          sort: "-updated",
-          requestKey: null,
-        }),
-  );
-
 const { data: shoppingLists, refresh: refreshShoppingLists } =
   await useAsyncData(
     () => `event-shoppinglists-${id.value}`,
@@ -346,7 +323,6 @@ const { data: invoices, refresh: refreshInvoices } = await useAsyncData(
 
 useRealtimeRefresh("eventlists", refreshLists);
 useRealtimeRefresh("notes", refreshNotes);
-useRealtimeRefresh("participantlists", refreshParticipantLists);
 useRealtimeRefresh("shoppinglists", refreshShoppingLists);
 useRealtimeRefresh("invoices", refreshInvoices);
 

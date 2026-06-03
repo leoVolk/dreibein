@@ -18,10 +18,7 @@ export const Collections = {
 	Itemcategories: "itemcategories",
 	Items: "items",
 	Lists: "lists",
-	Members: "members",
 	Notes: "notes",
-	Participantlists: "participantlists",
-	Ranks: "ranks",
 	Settings: "settings",
 	Shoppinglists: "shoppinglists",
 	Users: "users",
@@ -205,36 +202,6 @@ export type ListsRecord = {
 	updatedBy?: RecordIdString
 }
 
-export type MembersRecord = {
-	birthdate?: string
-	city?: string
-	created: IsoAutoDateString
-	dataUsageConsent?: boolean
-	email?: string
-	firstName?: string
-	gender?: string
-	groupName?: string
-	groupNumber?: number
-	id: string
-	joinDate?: string
-	lastName?: string
-	lists?: RecordIdString[]
-	magazineDelivery?: boolean
-	memberNumber?: number
-	membershipType?: string
-	nationality?: string
-	paidLists?: RecordIdString[]
-	parentEmail?: string
-	phone1?: string
-	phone2?: string
-	phone3?: string
-	postalCode?: number
-	ranks?: RecordIdString[]
-	status?: string
-	street?: string
-	updated: IsoAutoDateString
-}
-
 export type NotesRecord = {
 	content?: HTMLString
 	created: IsoAutoDateString
@@ -244,27 +211,10 @@ export type NotesRecord = {
 	updated: IsoAutoDateString
 }
 
-export type ParticipantlistsRecord = {
-	created: IsoAutoDateString
-	event?: RecordIdString
-	id: string
-	name?: string
-	participants?: RecordIdString[]
-	updated: IsoAutoDateString
-}
-
-export type RanksRecord = {
-	colour?: string
-	created: IsoAutoDateString
-	id: string
-	name?: string
-	sort?: number
-	updated: IsoAutoDateString
-}
-
 export type SettingsRecord = {
 	created: IsoAutoDateString
 	id: string
+	integration?: string
 	namiGroupId?: number
 	namiPassword?: string
 	namiUsername?: string
@@ -289,7 +239,6 @@ export type UsersRecord = {
 	id: string
 	name?: string
 	password: string
-	ranks?: RecordIdString[]
 	tokenKey: string
 	updated: IsoAutoDateString
 	verified?: boolean
@@ -308,10 +257,7 @@ export type InvoicesResponse<Texpand = unknown> = Required<InvoicesRecord> & Bas
 export type ItemcategoriesResponse<Texpand = unknown> = Required<ItemcategoriesRecord> & BaseSystemFields<Texpand>
 export type ItemsResponse<Texpand = unknown> = Required<ItemsRecord> & BaseSystemFields<Texpand>
 export type ListsResponse<Texpand = unknown> = Required<ListsRecord> & BaseSystemFields<Texpand>
-export type MembersResponse<Texpand = unknown> = Required<MembersRecord> & BaseSystemFields<Texpand>
 export type NotesResponse<Texpand = unknown> = Required<NotesRecord> & BaseSystemFields<Texpand>
-export type ParticipantlistsResponse<Texpand = unknown> = Required<ParticipantlistsRecord> & BaseSystemFields<Texpand>
-export type RanksResponse<Texpand = unknown> = Required<RanksRecord> & BaseSystemFields<Texpand>
 export type SettingsResponse<Texpand = unknown> = Required<SettingsRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsResponse<Texpand = unknown> = Required<ShoppinglistsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
@@ -331,10 +277,7 @@ export type CollectionRecords = {
 	itemcategories: ItemcategoriesRecord
 	items: ItemsRecord
 	lists: ListsRecord
-	members: MembersRecord
 	notes: NotesRecord
-	participantlists: ParticipantlistsRecord
-	ranks: RanksRecord
 	settings: SettingsRecord
 	shoppinglists: ShoppinglistsRecord
 	users: UsersRecord
@@ -353,10 +296,7 @@ export type CollectionResponses = {
 	itemcategories: ItemcategoriesResponse
 	items: ItemsResponse
 	lists: ListsResponse
-	members: MembersResponse
 	notes: NotesResponse
-	participantlists: ParticipantlistsResponse
-	ranks: RanksResponse
 	settings: SettingsResponse
 	shoppinglists: ShoppinglistsResponse
 	users: UsersResponse

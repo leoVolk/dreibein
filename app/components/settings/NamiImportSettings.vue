@@ -44,30 +44,6 @@
         />
       </div>
     </UForm>
-
-    <USeparator />
-
-    <div class="flex items-center justify-between gap-4">
-      <p class="text-sm text-muted">
-        Löscht alle vorhandenen Mitglieder und importiert die aktuelle
-        NaMi-Mitgliederliste.
-      </p>
-      <UButton
-        :loading="importing"
-        :disabled="!isConfigured"
-        icon="i-lucide-cloud-download"
-        label="Jetzt synchronisieren"
-        color="primary"
-        @click="onImport"
-      />
-    </div>
-
-    <UAlert
-      v-if="importResult"
-      color="success"
-      icon="i-lucide-check"
-      :title="`${importResult.imported} Mitglieder importiert${importResult.skipped ? `, ${importResult.skipped} übersprungen` : ''}.`"
-    />
   </div>
 </template>
 
@@ -98,7 +74,7 @@ const isConfigured = computed(
 const { data: existingSettings } = await useAsyncData("nami-settings", () =>
   pb
     .collection(Collections.Settings)
-    .getFirstListItem('name = "nami"')
+    .getFirstListItem('integration = "nami"')
     .catch(() => null),
 );
 
@@ -134,30 +110,6 @@ const onSaveCredentials = async () => {
     });
   } finally {
     savingCredentials.value = false;
-  }
-};
-
-const onImport = async () => {
-  importing.value = true;
-  importResult.value = null;
-  try {
-    const result = await pb.send("/api/nami/import", { method: "POST" });
-    importResult.value = result;
-    toast.add({
-      title: `${result.imported} Mitglieder synchronisiert`,
-      icon: "i-lucide-cloud-download",
-    });
-  } catch (error: any) {
-    const msg =
-      error?.response?.message || error?.message || "Unbekannter Fehler";
-    toast.add({
-      title: "Import fehlgeschlagen",
-      description: msg,
-      color: "error",
-      icon: "i-lucide-alert-circle",
-    });
-  } finally {
-    importing.value = false;
   }
 };
 </script>
