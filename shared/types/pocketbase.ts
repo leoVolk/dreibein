@@ -225,6 +225,7 @@ export type ParticipantsRecord = {
 	lastname?: string
 	mobile?: string
 	notes?: string
+	paid?: boolean
 	phone?: string
 	phoneGuardian?: string
 	rank?: string

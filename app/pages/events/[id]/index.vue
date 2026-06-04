@@ -81,6 +81,7 @@
           :items="participantItems.slice(0, 5)"
           empty-description="Noch keine Teilnehmer hinzugefügt."
           :meta="participantRank"
+          :to-for="participantsTo"
         />
 
         <InvoiceCard
@@ -144,15 +145,11 @@
         </template>
       </OverviewCard>
 
-      <!-- Teilnehmerlisten -->
-      <OverviewCard
+      <!-- Teilnehmer -->
+      <ParticipantListCard
         v-else-if="activeTab === 'participants'"
-        title="Teilnehmer"
-        icon="i-lucide-users"
-        item-icon="i-lucide-user"
-        :items="participantItems"
-        empty-description="Noch keine Teilnehmer hinzugefügt."
-        :meta="participantRank"
+        :participants="participants ?? []"
+        @refresh="refreshParticipants()"
       />
 
       <!-- Rechnungen -->
@@ -232,7 +229,7 @@ const activeTab = ref(
 const tabItems = [
   { label: "Übersicht", value: "overview" },
   { label: "Material Listen", value: "lists" },
-  { label: "Teilnehmerlisten", value: "participants" },
+  { label: "Teilnehmer", value: "participants" },
   { label: "Rechnungen", value: "invoices" },
   { label: "Einkaufslisten", value: "shopping" },
   { label: "Notizen", value: "notes" },
@@ -256,6 +253,9 @@ watch(activeTab, (tab) => {
 const eventListTo = (item: OverviewItem) =>
   `/events/${id.value}/lists/${item.id}`;
 const noteTo = (item: OverviewItem) => `/events/${id.value}/notes/${item.id}`;
+
+const participantsTo = (item: OverviewItem) =>
+  `/events/${id.value}/participants`;
 
 const itemsCount = (item: OverviewItem) =>
   `${(item.items ?? []).length} Einträge`;
