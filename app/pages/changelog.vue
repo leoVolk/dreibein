@@ -16,6 +16,11 @@
         v-for="(version, index) in changelog"
         :key="index"
         v-bind="version"
+        :badge="{
+          color: 'info',
+          variant: 'solid',
+          label: version.badge?.toString(),
+        }"
       >
         <template #description>
           <ul class="flex flex-col gap-2">

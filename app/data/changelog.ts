@@ -1,15 +1,15 @@
-import type { ChangelogVersionProps, BadgeProps } from "@nuxt/ui";
+import type { BadgeProps, ChangelogVersionProps } from "@nuxt/ui";
 
 type ChangeType = "feat" | "fix" | "security";
 
 export type ChangelogEntry = ChangelogVersionProps & {
-  changes: { type: ChangeType; label: string }[];
+  changes: { type: ChangeType; label: string; }[];
 };
 
-export const CHANGE_META: Record<ChangeType, { color: BadgeProps["color"]; label: string }> = {
-  feat: { color: "primary", label: "Neu" },
+export const CHANGE_META: Record<ChangeType, { color: BadgeProps["color"]; label: string; }> = {
+  feat: { color: "primary", label: "Feature" },
   fix: { color: "error", label: "Fix" },
-  security: { color: "warning", label: "Sicherheit" },
+  security: { color: "warning", label: "Security" },
 };
 
 export const changelog: ChangelogEntry[] = [
