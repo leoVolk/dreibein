@@ -75,16 +75,13 @@
         </OverviewCard>
 
         <OverviewCard
-          title="Teilnehmerlisten"
+          title="Teilnehmer"
           icon="i-lucide-users"
           item-icon="i-lucide-user"
-          :items="[].slice(0, 5)"
-          empty-description="Noch keine Teilnehmerlisten angelegt."
-          :to-for="participantListTo"
-          :meta="createdMeta"
-        >
-          <template #action> </template>
-        </OverviewCard>
+          :items="participantItems.slice(0, 5)"
+          empty-description="Noch keine Teilnehmer hinzugefügt."
+          :meta="participantRank"
+        />
 
         <InvoiceCard
           :invoices="(invoices ?? []).slice(0, 5)"
@@ -153,13 +150,10 @@
         title="Teilnehmer"
         icon="i-lucide-users"
         item-icon="i-lucide-user"
-        :items="[]"
-        empty-description="Noch keine Teilnehmerlisten angelegt."
-        :to-for="participantListTo"
-        :meta="createdMeta"
-      >
-        <template #action> </template>
-      </OverviewCard>
+        :items="participantItems"
+        empty-description="Noch keine Teilnehmer hinzugefügt."
+        :meta="participantRank"
+      />
 
       <!-- Rechnungen -->
       <InvoiceCard
@@ -261,13 +255,10 @@ watch(activeTab, (tab) => {
 
 const eventListTo = (item: OverviewItem) =>
   `/events/${id.value}/lists/${item.id}`;
-const participantListTo = (item: OverviewItem) =>
-  `/events/${id.value}/participants/${item.id}`;
 const noteTo = (item: OverviewItem) => `/events/${id.value}/notes/${item.id}`;
 
 const itemsCount = (item: OverviewItem) =>
   `${(item.items ?? []).length} Einträge`;
-const createdMeta = (item: OverviewItem) => formatDate(item.created);
 const updatedMeta = (item: OverviewItem) => formatDate(item.updated);
 
 const { data: event } = await useAsyncData(
@@ -287,6 +278,26 @@ const { data: lists, refresh: refreshLists } = await useAsyncData(
       requestKey: null,
     }),
 );
+
+const { data: participants, refresh: refreshParticipants } = await useAsyncData(
+  () => `event-participants-${id.value}`,
+  () =>
+    pb.collection(Collections.Participants).getFullList<ParticipantsResponse>({
+      filter: `event = "${id.value}"`,
+      sort: "lastname",
+      requestKey: null,
+    }),
+);
+
+const participantItems = computed(() =>
+  (participants.value ?? []).map((p) => ({
+    ...p,
+    name: `${p.firstname} ${p.lastname}`.trim(),
+  })),
+);
+
+const participantRank = (item: any) =>
+  [item.rank, item.isLeader ? "Leitung" : ""].filter(Boolean).join(" ");
 
 const { data: notes, refresh: refreshNotes } = await useAsyncData(
   () => `event-notes-${id.value}`,
@@ -322,6 +333,7 @@ const { data: invoices, refresh: refreshInvoices } = await useAsyncData(
 );
 
 useRealtimeRefresh("eventlists", refreshLists);
+useRealtimeRefresh("participants", refreshParticipants);
 useRealtimeRefresh("notes", refreshNotes);
 useRealtimeRefresh("shoppinglists", refreshShoppingLists);
 useRealtimeRefresh("invoices", refreshInvoices);
