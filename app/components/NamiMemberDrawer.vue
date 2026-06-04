@@ -3,7 +3,7 @@
     <template #content>
       <div
         v-if="member && !pending"
-        class="flex flex-col h-full overflow-y-auto lg:min-w-2xl max-w-2xl w-full"
+        class="flex flex-col h-full overflow-y-auto w-2xl max-w-2xl"
       >
         <div
           class="flex items-center justify-between p-4 border-b border-default"
@@ -111,7 +111,7 @@
 
       <div
         v-else-if="pending"
-        class="flex items-center justify-center h-full lg:min-w-2xl max-w-2xl w-full"
+        class="flex items-center justify-center h-full w-2xl max-w-2xl"
       >
         <UIcon
           name="i-lucide-loader-circle"
@@ -138,7 +138,12 @@ const {
 } = useAsyncData(
   () => `nami-member-${props.namiId}`,
   () => pb.send(`/api/nami/members/${props.namiId}`, { method: "GET" }),
-  { immediate: false },
+  {
+    immediate: false,
+    getCachedData(key, nuxtApp, context) {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+    },
+  },
 );
 
 watch(open, (val) => {

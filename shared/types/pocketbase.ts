@@ -19,6 +19,7 @@ export const Collections = {
 	Items: "items",
 	Lists: "lists",
 	Notes: "notes",
+	Participants: "participants",
 	Settings: "settings",
 	Shoppinglists: "shoppinglists",
 	Users: "users",
@@ -211,6 +212,26 @@ export type NotesRecord = {
 	updated: IsoAutoDateString
 }
 
+export type ParticipantsRecord = {
+	age?: number
+	city?: string
+	created: IsoAutoDateString
+	email?: string
+	emailGuardian?: string
+	firstname?: string
+	id: string
+	isLeader?: boolean
+	lastname?: string
+	mobile?: string
+	notes?: string
+	phone?: string
+	phoneGuardian?: string
+	rank?: string
+	street?: string
+	updated: IsoAutoDateString
+	zip?: number
+}
+
 export type SettingsRecord = {
 	created: IsoAutoDateString
 	id: string
@@ -258,6 +279,7 @@ export type ItemcategoriesResponse<Texpand = unknown> = Required<ItemcategoriesR
 export type ItemsResponse<Texpand = unknown> = Required<ItemsRecord> & BaseSystemFields<Texpand>
 export type ListsResponse<Texpand = unknown> = Required<ListsRecord> & BaseSystemFields<Texpand>
 export type NotesResponse<Texpand = unknown> = Required<NotesRecord> & BaseSystemFields<Texpand>
+export type ParticipantsResponse<Texpand = unknown> = Required<ParticipantsRecord> & BaseSystemFields<Texpand>
 export type SettingsResponse<Texpand = unknown> = Required<SettingsRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsResponse<Texpand = unknown> = Required<ShoppinglistsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
@@ -278,6 +300,7 @@ export type CollectionRecords = {
 	items: ItemsRecord
 	lists: ListsRecord
 	notes: NotesRecord
+	participants: ParticipantsRecord
 	settings: SettingsRecord
 	shoppinglists: ShoppinglistsRecord
 	users: UsersRecord
@@ -297,6 +320,7 @@ export type CollectionResponses = {
 	items: ItemsResponse
 	lists: ListsResponse
 	notes: NotesResponse
+	participants: ParticipantsResponse
 	settings: SettingsResponse
 	shoppinglists: ShoppinglistsResponse
 	users: UsersResponse
