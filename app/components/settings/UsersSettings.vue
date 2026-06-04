@@ -2,22 +2,14 @@
   <div class="flex flex-col gap-4 pb-4">
     <div class="flex justify-end gap-2">
       <SendInvite />
-      <CreateUser @refresh="getUsers()" />
     </div>
 
-    <UTable v-model:column-pinning="columnPinning" :data="users" :columns="columns" sticky>
-      <template #ranks-cell="{ row }">
-        <div v-if="row.original.expand?.ranks?.length" class="flex flex-wrap gap-1">
-          <RankBadge
-            v-for="rank in row.original.expand.ranks"
-            :key="rank.id"
-            :name="rank.name"
-            :colour="rank.colour"
-          />
-        </div>
-        <span v-else class="text-muted text-sm">—</span>
-      </template>
-
+    <UTable
+      v-model:column-pinning="columnPinning"
+      :data="users"
+      :columns="columns"
+      sticky
+    >
       <template #admin-cell="{ row }">
         <UCheckbox v-model="row.original.admin" @click="onAdminToggle(row)" />
       </template>
@@ -61,7 +53,6 @@ const users = ref<any[]>([]);
 const columns: TableColumn<any>[] = [
   { header: "Name", accessorKey: "name" },
   { header: "E-Mail", accessorKey: "email" },
-  { header: "Stufen", accessorKey: "ranks" },
   { header: "Admin", accessorKey: "admin" },
   {
     header: "Erstellt am",
@@ -78,18 +69,24 @@ const columns: TableColumn<any>[] = [
 
 const getUsers = async () => {
   if (!user.value?.admin) return;
-  users.value = await pb.collection(Collections.Users).getFullList({ expand: "ranks" });
+  users.value = await pb
+    .collection(Collections.Users)
+    .getFullList({ expand: "ranks" });
 };
 
 await getUsers();
 
 useRealtimeRefresh(Collections.Users, getUsers);
-useRealtimeRefresh(Collections.Ranks, getUsers);
 
 const onAdminToggle = async (row: any) => {
   try {
-    await pb.collection(Collections.Users).update(row.original.id, { admin: !row.original.admin });
-    toast.add({ title: "Admin Status aktualisiert", icon: "i-lucide-shield-user" });
+    await pb
+      .collection(Collections.Users)
+      .update(row.original.id, { admin: !row.original.admin });
+    toast.add({
+      title: "Admin Status aktualisiert",
+      icon: "i-lucide-shield-user",
+    });
   } catch (error: any) {
     toastError(error);
   }
@@ -98,7 +95,9 @@ const onAdminToggle = async (row: any) => {
 const onSendPasswordReset = async (row: any, close: () => void) => {
   resetLoading.value = row.original.id;
   try {
-    await pb.collection(Collections.Users).requestPasswordReset(row.original.email);
+    await pb
+      .collection(Collections.Users)
+      .requestPasswordReset(row.original.email);
     toast.add({
       title: "Passwort-Reset E-Mail versandt",
       description: row.original.email,

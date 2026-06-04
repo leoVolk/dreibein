@@ -55,21 +55,25 @@
         </template>
 
         <template #actions-cell="{ row }">
-          <UButton
-            icon="i-lucide-list-plus"
-            color="primary"
-            variant="ghost"
-            aria-label="Actions"
-            @click="onMemberListClicked(row)"
-          />
+          <UTooltip text="Als Teilnehmer hinzufügen" :delay-duration="100">
+            <UButton
+              icon="i-lucide-list-plus"
+              color="primary"
+              variant="ghost"
+              aria-label="Actions"
+              @click="onMemberListClicked(row)"
+            />
+          </UTooltip>
 
-          <UButton
-            icon="i-lucide-info"
-            color="info"
-            variant="ghost"
-            aria-label="Actions"
-            @click="onMemberInfoClick(row)"
-          />
+          <UTooltip text="Infos anzeigen" :delay-duration="100">
+            <UButton
+              icon="i-lucide-info"
+              color="info"
+              variant="ghost"
+              aria-label="Actions"
+              @click="onMemberInfoClick(row)"
+            />
+          </UTooltip>
         </template>
       </UTable>
     </div>

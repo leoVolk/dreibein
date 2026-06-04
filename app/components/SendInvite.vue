@@ -35,7 +35,8 @@ const state = reactive({ email: "" });
 const onSubmit = async () => {
   loading.value = true;
   try {
-    await pb.collection("invites").create({ email: state.email });
+    const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString().replace("T", " ").slice(0, 19);
+    await pb.collection(Collections.Invites).create<InvitesRecord>({ email: state.email, expires });
     toast.add({
       title: "Einladung versandt",
       description: state.email,

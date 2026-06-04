@@ -130,7 +130,8 @@ export type EventsRecord<TdaysOfWeek = unknown> = {
 
 export type InvitesRecord = {
 	created: IsoAutoDateString
-	email?: string
+	email: string
+	expires: IsoDateString
 	id: string
 	updated: IsoAutoDateString
 }

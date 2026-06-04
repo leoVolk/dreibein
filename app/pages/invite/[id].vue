@@ -1,8 +1,23 @@
 <template>
   <div class="h-screen flex flex-col p-4 justify-center items-center">
     <UPageCard class="w-full max-w-md">
+      <!-- Expired invite -->
+      <template v-if="expiredInvite">
+        <div class="flex flex-col items-center gap-4 py-4">
+          <UIcon name="i-lucide-clock-alert" class="size-12 text-warning" />
+          <h1 class="text-xl font-bold text-center">Einladung abgelaufen</h1>
+          <p class="text-sm text-muted text-center">
+            Diese Einladung ist abgelaufen. Bitte fordere eine neue Einladung
+            an.
+          </p>
+          <UButton to="/login" variant="ghost" icon="i-lucide-arrow-left">
+            Zur Anmeldung
+          </UButton>
+        </div>
+      </template>
+
       <!-- Invalid / missing invite -->
-      <template v-if="invalidInvite">
+      <template v-else-if="invalidInvite">
         <div class="flex flex-col items-center gap-4 py-4">
           <UIcon name="i-lucide-link-2-off" class="size-12 text-muted" />
           <h1 class="text-xl font-bold text-center">Einladung ungültig</h1>
@@ -124,10 +139,11 @@ const route = useRoute();
 const { pb } = usePocketbase();
 const { signup, login, signOut } = usePocketbaseAuth();
 
-type InviteRecord = { id: string; email: string };
+type InviteRecord = { id: string; email: string; expires: string };
 
 const invite = ref<InviteRecord | null>(null);
 const invalidInvite = ref(false);
+const expiredInvite = ref(false);
 const loading = ref(false);
 const submitError = ref<string | null>(null);
 
@@ -145,7 +161,12 @@ const errors = reactive({
 const inviteId = route.params.id as string;
 
 try {
-  invite.value = await pb.collection("invites").getOne<InviteRecord>(inviteId);
+  const record = await pb.collection("invites").getOne<InviteRecord>(inviteId);
+  if (record.expires && new Date(record.expires) < new Date()) {
+    expiredInvite.value = true;
+  } else {
+    invite.value = record;
+  }
 } catch {
   invalidInvite.value = true;
 }

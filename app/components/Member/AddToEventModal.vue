@@ -52,7 +52,7 @@
     </template>
 
     <template #footer>
-      <div class="flex justify-end gap-2">
+      <div class="flex w-full gap-2 justify-between">
         <UButton variant="ghost" label="Abbrechen" @click="open = false" />
         <UButton
           label="Hinzufügen"
