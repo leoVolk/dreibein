@@ -90,6 +90,24 @@ onRecordCreateRequest((e) => {
   e.app.newMailClient().send(message)
 }, "invites")
 
+onRecordCreateRequest((e) => {
+  const email = e.record.getString("email");
+
+  let invite = null;
+  try {
+    invite = $app.findFirstRecordByFilter(
+      "invites",
+      `email = "${email}" && expires > @now`
+    );
+  } catch (_) {}
+
+  if (!invite) {
+    throw new BadRequestError("Eine gültige Einladung ist erforderlich.");
+  }
+
+  e.next();
+}, "users");
+
 routerAdd("GET", "/api/admin/logs", (e) => {
   const info = e.requestInfo();
 
