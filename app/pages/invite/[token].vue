@@ -158,10 +158,10 @@ const errors = reactive({
   passwordConfirm: "",
 });
 
-const inviteId = route.params.id as string;
+const token = route.params.token as string;
 
 try {
-  const record = await pb.collection("invites").getOne<InviteRecord>(inviteId);
+  const record = await pb.collection("invites").getFirstListItem<InviteRecord>(`token = "${token}"`);
   if (record.expires && new Date(record.expires) < new Date()) {
     expiredInvite.value = true;
   } else {

@@ -133,6 +133,7 @@ export type InvitesRecord = {
 	email: string
 	expires: IsoDateString
 	id: string
+	token: string
 	updated: IsoAutoDateString
 }
 
