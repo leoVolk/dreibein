@@ -41,10 +41,10 @@
         :data="filteredNamiMembers || []"
         :columns="columns"
         class="flex-1"
-        ref="table"
-        @select="onSelect"
         sticky
+        v-model:row-selection="rowSelection"
         v-model:column-pinning="columnPinning"
+        :meta="tableMeta"
       >
         <template #empty>
           <UButton
@@ -60,6 +60,7 @@
             color="primary"
             variant="ghost"
             aria-label="Actions"
+            @click="onMemberListClicked(row)"
           />
 
           <UButton
@@ -67,10 +68,13 @@
             color="info"
             variant="ghost"
             aria-label="Actions"
+            @click="onMemberInfoClick(row)"
           />
         </template>
       </UTable>
     </div>
+
+    <NamiMemberDrawer v-model:open="drawerOpen" :nami-id="selectedNamiId" />
   </div>
 </template>
 
@@ -84,6 +88,8 @@ definePageMeta({
 const { pb } = usePocketbase();
 const toast = useToast();
 const toastError = useToastError();
+
+const tableMeta = useTableMeta();
 
 const settingsId = ref<string | null>(null);
 const credentials = reactive({
@@ -101,16 +107,21 @@ const isConfigured = computed(
     ),
 );
 
-const table = useTemplateRef("table");
-
 const rowSelection = ref<Record<string, boolean>>({});
-
 const columnPinning = ref({ right: ["actions"] });
+const drawerOpen = ref(false);
+const selectedNamiId = ref<number | null>(null);
 
-function onSelect(e: Event, row: TableRow<any>) {
-  /* If you decide to also select the column you can do this  */
-  // row.toggleSelected(!row.getIsSelected());
-}
+const selectRow = (row: TableRow<any>) => {
+  rowSelection.value = rowSelection.value[row.id] ? {} : { [row.id]: true };
+};
+
+const onMemberListClicked = (row: TableRow<any>) => selectRow(row);
+
+const onMemberInfoClick = (row: TableRow<any>) => {
+  selectedNamiId.value = row.original.entries_id ?? row.original.id ?? null;
+  drawerOpen.value = true;
+};
 
 const { data: namiSettings } = await useAsyncData("nami-settings", () =>
   pb
@@ -184,8 +195,4 @@ const filteredNamiMembers = computed(() => {
     });
 });
 
-const { data: selectedMember, pending: selectionPending } = useAsyncData(
-  "member-data",
-  () => pb.send(`/api/nami/members/${"310471"}`, { method: "GET" }),
-);
 </script>

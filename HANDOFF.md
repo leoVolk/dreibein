@@ -79,7 +79,7 @@ work.
    before the `toPbDateTime` seconds-padding fix may have empty dates.
    Open them in the editor, set date+time, save.
 
-5. **Timezone.** All datetime helpers treat values as *naive local*.
+5. **Timezone.** All datetime helpers treat values as _naive local_.
    Fine while everyone is in CET. If you ever go multi-timezone, the
    place to revisit is `app/utils/dates.ts` (and stop stripping the `Z`).
 
@@ -108,7 +108,7 @@ work.
 ## File map of the recent work
 
 - `app/composables/useRealtimeRefresh.ts`, `useToastError.ts`,
-  `useItemStatusMeta.ts`
+  `useTableMeta.ts`
 - `app/utils/dates.ts`
 - `app/components/FormDrawer.vue`, `DeleteConfirmModal.vue`,
   `ItemStatusBadge.vue`, `StatTile.vue`, `RankBadge.vue`,

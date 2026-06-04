@@ -174,7 +174,7 @@ useRealtimeRefresh("lists", refreshList);
 useRealtimeRefresh("items", refreshItems);
 
 const { columns, childColumns } = useItemColumns();
-const meta = useItemStatusMeta();
+const meta = useTableMeta();
 const expanded = ref<Record<string, boolean>>({});
 const columnPinning = ref({ right: ["actions"] });
 

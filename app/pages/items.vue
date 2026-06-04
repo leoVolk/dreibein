@@ -122,7 +122,7 @@ useRealtimeRefresh("items", refreshItems);
 
 const columnPinning = ref({ right: ["actions"] });
 const { columns, childColumns } = useItemColumns();
-const meta = useItemStatusMeta();
+const meta = useTableMeta();
 const globalFilter = ref("");
 const expanded = ref<Record<string, boolean>>({});
 
