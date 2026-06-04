@@ -4,7 +4,7 @@
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
-          { label: 'Kalender', to: '/calendar' },
+          { label: 'Changelog', to: '/changelog' },
         ]"
       />
     </div>
@@ -23,7 +23,7 @@
         }"
       >
         <template #description>
-          <ul class="flex flex-col gap-2">
+          <ul class="flex flex-col gap-2 mt-2">
             <li
               v-for="change in (version as ChangelogEntry).changes"
               :key="change.label"
