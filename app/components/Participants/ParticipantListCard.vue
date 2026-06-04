@@ -22,7 +22,12 @@
       <template #name-cell="{ row }">
         <div class="flex items-center gap-2">
           <span>{{ row.original.firstname }} {{ row.original.lastname }}</span>
-          <UBadge v-if="row.original.isLeader" color="primary" variant="subtle" size="xs">
+          <UBadge
+            v-if="row.original.isLeader"
+            color="primary"
+            variant="subtle"
+            size="xs"
+          >
             Leitung
           </UBadge>
         </div>
@@ -37,13 +42,43 @@
         </div>
       </template>
 
+      <template #paid-cell="{ row }">
+        <UBadge
+          :color="row.original.paid ? 'success' : 'error'"
+          variant="subtle"
+        >
+          {{ row.original.paid ? "Eingegangen" : "Ausstehend" }}
+        </UBadge>
+      </template>
+
       <template #actions-cell="{ row }">
-        <DeleteConfirmModal
-          title="Teilnehmer entfernen"
-          :description="`Soll ${row.original.firstname} ${row.original.lastname} wirklich entfernt werden?`"
-          confirm-label="Entfernen"
-          @confirm="(close) => onDelete(row.original.id, close)"
-        />
+        <div class="flex items-center gap-1">
+          <UTooltip
+            :text="
+              row.original.paid
+                ? 'Als ausstehend markieren'
+                : 'Als bezahlt markieren'
+            "
+            :delay-duration="100"
+          >
+            <UButton
+              :icon="
+                row.original.paid
+                  ? 'i-lucide-banknote-x'
+                  : 'i-lucide-banknote-arrow-up'
+              "
+              :color="row.original.paid ? 'error' : 'success'"
+              variant="ghost"
+              @click="onTogglePaid(row.original)"
+            />
+          </UTooltip>
+          <DeleteConfirmModal
+            title="Teilnehmer entfernen"
+            :description="`Soll ${row.original.firstname} ${row.original.lastname} wirklich entfernt werden?`"
+            confirm-label="Entfernen"
+            @confirm="(close) => onDelete(row.original.id, close)"
+          />
+        </div>
       </template>
     </UTable>
 
@@ -73,12 +108,23 @@ const columnPinning = ref({ right: ["actions"] });
 
 const columns: TableColumn<ParticipantsResponse>[] = [
   { id: "name", header: "Name" },
+  { id: "paid", header: "Bezahlt" },
   { header: "Stufe", accessorKey: "rank" },
   { header: "Alter", accessorKey: "age" },
   { id: "contact", header: "Kontakt" },
-  { header: "Notizen", accessorKey: "notes" },
   { header: "", id: "actions" },
 ];
+
+const onTogglePaid = async (participant: ParticipantsResponse) => {
+  try {
+    await pb
+      .collection(Collections.Participants)
+      .update(participant.id, { paid: !participant.paid });
+    emit("refresh");
+  } catch (error: any) {
+    toastError(error);
+  }
+};
 
 const onDelete = async (id: string, close: () => void) => {
   try {

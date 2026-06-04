@@ -50,13 +50,43 @@
         </div>
       </template>
 
+      <template #paid-cell="{ row }">
+        <UBadge
+          :color="row.original.paid ? 'success' : 'error'"
+          variant="subtle"
+        >
+          {{ row.original.paid ? "Eingegangen" : "Ausstehend" }}
+        </UBadge>
+      </template>
+
       <template #actions-cell="{ row }">
-        <DeleteConfirmModal
-          title="Teilnehmer entfernen"
-          :description="`Soll ${row.original.firstname} ${row.original.lastname} wirklich entfernt werden?`"
-          confirm-label="Entfernen"
-          @confirm="(close) => onDelete(row.original.id, close)"
-        />
+        <div class="flex items-center gap-1">
+          <UTooltip
+            :text="
+              row.original.paid
+                ? 'Als ausstehend markieren'
+                : 'Als bezahlt markieren'
+            "
+            :delay-duration="100"
+          >
+            <UButton
+              :icon="
+                row.original.paid
+                  ? 'i-lucide-circle-x'
+                  : 'i-lucide-circle-check'
+              "
+              :color="row.original.paid ? 'error' : 'success'"
+              variant="ghost"
+              @click="onTogglePaid(row.original)"
+            />
+          </UTooltip>
+          <DeleteConfirmModal
+            title="Teilnehmer entfernen"
+            :description="`Soll ${row.original.firstname} ${row.original.lastname} wirklich entfernt werden?`"
+            confirm-label="Entfernen"
+            @confirm="(close) => onDelete(row.original.id, close)"
+          />
+        </div>
       </template>
     </UTable>
   </div>
@@ -77,11 +107,11 @@ const columnPinning = ref({ right: ["actions"] });
 
 const columns: TableColumn<ParticipantsResponse>[] = [
   { id: "name", header: "Name" },
+  { id: "paid", header: "Zahlung" },
   { header: "Stufe", accessorKey: "rank" },
   { header: "Alter", accessorKey: "age" },
   { id: "contact", header: "Kontakt" },
   { id: "address", header: "Adresse" },
-  { header: "Notizen", accessorKey: "notes" },
   { header: "", id: "actions" },
 ];
 
@@ -101,6 +131,17 @@ const { data: participants, refresh } = await useAsyncData(
 );
 
 useRealtimeRefresh(Collections.Participants, refresh);
+
+const onTogglePaid = async (participant: ParticipantsResponse) => {
+  try {
+    await pb
+      .collection(Collections.Participants)
+      .update(participant.id, { paid: !participant.paid });
+    await refresh();
+  } catch (error: any) {
+    toastError(error);
+  }
+};
 
 const onDelete = async (participantId: string, close: () => void) => {
   try {
