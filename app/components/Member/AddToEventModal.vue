@@ -94,6 +94,8 @@ const {
   { immediate: false },
 );
 
+onMounted(() => fetchDetail());
+
 watch(open, (val) => {
   if (val) {
     fetchDetail();
