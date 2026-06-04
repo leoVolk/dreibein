@@ -12,6 +12,7 @@
     <div class="flex flex-col gap-8 mt-8">
       <UserSettings />
       <AdminSettings v-if="user?.admin" />
+      <Changelog />
     </div>
   </div>
 </template>
