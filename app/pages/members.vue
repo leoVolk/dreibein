@@ -75,6 +75,11 @@
     </div>
 
     <NamiMemberDrawer v-model:open="drawerOpen" :nami-id="selectedNamiId" />
+    <AddToEventModal
+      v-if="selectedMember"
+      v-model:open="addModalOpen"
+      :member="selectedMember"
+    />
   </div>
 </template>
 
@@ -111,12 +116,13 @@ const rowSelection = ref<Record<string, boolean>>({});
 const columnPinning = ref({ right: ["actions"] });
 const drawerOpen = ref(false);
 const selectedNamiId = ref<number | null>(null);
+const addModalOpen = ref(false);
+const selectedMember = ref<any>(null);
 
-const selectRow = (row: TableRow<any>) => {
-  rowSelection.value = rowSelection.value[row.id] ? {} : { [row.id]: true };
+const onMemberListClicked = (row: TableRow<any>) => {
+  selectedMember.value = row.original;
+  addModalOpen.value = true;
 };
-
-const onMemberListClicked = (row: TableRow<any>) => selectRow(row);
 
 const onMemberInfoClick = (row: TableRow<any>) => {
   selectedNamiId.value = row.original.entries_id ?? row.original.id ?? null;
@@ -194,5 +200,4 @@ const filteredNamiMembers = computed(() => {
       );
     });
 });
-
 </script>

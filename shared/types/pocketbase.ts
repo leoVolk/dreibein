@@ -218,6 +218,7 @@ export type ParticipantsRecord = {
 	created: IsoAutoDateString
 	email?: string
 	emailGuardian?: string
+	event?: RecordIdString
 	firstname?: string
 	id: string
 	isLeader?: boolean
