@@ -38,7 +38,7 @@
         <UButton
           variant="ghost"
           :loading="membersPending"
-          loading-icon="i-lucide-loader"
+          loading-icon="i-lucide-loader-circle"
         ></UButton>
       </template>
     </UTable>

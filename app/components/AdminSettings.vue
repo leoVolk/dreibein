@@ -29,7 +29,7 @@ const accordionItems = [
   },
   {
     label: "NaMi Integration",
-    icon: "i-lucide-list-plus",
+    icon: "i-lucide-cloud-sync",
     slot: "namilist",
   },
 ];
