@@ -31,14 +31,14 @@
       />
       <StatTile
         label="Aktive Mitglieder"
-        :value="filteredNamiMembers?.length || 0"
-        :loading="membersPending"
+        :value="namiStats?.nrMitglieder || 0"
+        :loading="namiStatsPending"
         icon="i-lucide-users"
         to="/members"
       />
     </div>
 
-    <MembersByGroupChart :members="filteredNamiMembers || []" />
+    <MembersByGroupChart :stats="namiStats" />
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <OverviewCard
@@ -168,24 +168,15 @@ const { data: stats, refresh: refreshStats } = await useAsyncData(
   { default: () => ({ events: 0, lists: 0, items: 0 }) },
 );
 
-const { data: namiMembers, pending: membersPending } = useAsyncData(
-  "nami-members",
-  () => pb.send("/api/nami/members", { method: "GET" }),
+const { data: namiStats, pending: namiStatsPending } = useAsyncData(
+  "nami-stats",
+  () => pb.send("/api/nami/stats", { method: "GET" }),
   {
-    transform: (res) => res.items,
     getCachedData(key, nuxtApp, context) {
       return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
     },
   },
 );
-
-const filteredNamiMembers = computed(() =>
-  namiMembers?.value?.filter(
-    (i: any) =>
-      i.entries_mglType === "Mitglied" && i.entries_status === "Aktiv",
-  ),
-);
-
 const { data: upcomingEvents, refresh: refreshUpcoming } = await useAsyncData(
   "dashboard-upcoming-events",
   () =>

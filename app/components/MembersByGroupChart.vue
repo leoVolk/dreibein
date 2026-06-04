@@ -6,7 +6,7 @@
           <UIcon name="i-lucide-users" class="size-5 text-primary" />
           <span>Mitglieder je Stufe</span>
           <UBadge color="neutral" variant="subtle" size="sm">
-            {{ members?.length }}
+            {{ total }}
           </UBadge>
         </h3>
       </div>
@@ -29,7 +29,7 @@
         <UTooltip :delayDuration="0">
           <div
             class="h-3 rounded-full transition-all duration-500 w-(--w) md:w-full"
-            :style="{ backgroundColor: row.color }"
+            :class="row.colorClass"
           />
           <template #content>
             <p class="text-base font-semibold">
@@ -47,10 +47,7 @@
         :key="row.id"
         class="mt-2 text-sm flex gap-2 items-center"
       >
-        <span
-          class="rounded full h-2 w-2"
-          :style="{ backgroundColor: row.color }"
-        ></span>
+        <span class="rounded-full h-2 w-2" :class="row.colorClass"></span>
         <span>{{ row.name }}</span>
       </div>
     </div>
@@ -59,40 +56,39 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
-  members: any[];
+  stats: {
+    nrMitglieder: number;
+    statsCategories: { name: string; count: number }[];
+  } | null;
 }>();
 
-const COLORS = [
-  "#f59e0b",
-  "#b5669a",
-  "#8b5cf6",
-  "#10b981",
-  "#ef4444",
-  "#ec4899",
-  "#14b8a6",
-  "#f97316",
+const CATEGORY_COLORS: Record<string, string> = {
+  Biber: "bg-white",
+  Wölfling: "bg-orange-500",
+  Jungpfadfinder: "bg-blue-600",
+  Pfadfinder: "bg-green-500",
+  Rover: "bg-red-500",
+  Vorstand: "bg-yellow-500",
+  Rechtsträger: "bg-fuchsia-500",
+  Sonstige: "bg-gray-500",
+};
+
+const FALLBACK_COLORS = [
+  "bg-cyan-500",
+  "bg-pink-500",
+  "bg-lime-500",
+  "bg-indigo-500",
 ];
 
-const rows = computed(() => {
-  const groups: Record<string, number> = {};
-  for (const m of props.members ?? []) {
-    const stufe = m.entries_stufe || "Keine Stufe";
-    groups[stufe] = (groups[stufe] ?? 0) + 1;
-  }
-  return Object.entries(groups)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, count], i) => ({
-      id: name,
-      name,
-      count,
-      color: COLORS[i % COLORS.length],
-    }));
-});
+const rows = computed(() =>
+  (props.stats?.statsCategories ?? []).map((c, i) => ({
+    id: c.name,
+    name: c.name,
+    count: c.count,
+    colorClass:
+      CATEGORY_COLORS[c.name] ?? FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+  })),
+);
 
-const total = computed(() => props.members?.length ?? 0);
+const total = computed(() => props.stats?.nrMitglieder ?? 0);
 </script>
-<style>
-.test {
-  color: #b5669a;
-}
-</style>

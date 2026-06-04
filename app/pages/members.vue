@@ -109,7 +109,7 @@ const columnPinning = ref({ right: ["actions"] });
 
 function onSelect(e: Event, row: TableRow<any>) {
   /* If you decide to also select the column you can do this  */
-  row.toggleSelected(!row.getIsSelected());
+  // row.toggleSelected(!row.getIsSelected());
 }
 
 const { data: namiSettings } = await useAsyncData("nami-settings", () =>
@@ -156,11 +156,10 @@ const { data: namiMembers, pending: membersPending } = useAsyncData(
   "nami-members",
   () => pb.send("/api/nami/members", { method: "GET" }),
   {
-    transform: (res) =>
-      res.items.filter(
-        (i: any) =>
-          i.entries_mglType === "Mitglied" && i.entries_status === "Aktiv",
-      ),
+    transform: (res) => res.items,
+    getCachedData(key, nuxtApp, context) {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+    },
   },
 );
 
@@ -168,16 +167,21 @@ const search = ref("");
 
 const filteredNamiMembers = computed(() => {
   const q = search.value.trim().toLowerCase();
-  return namiMembers?.value?.filter((i: any) => {
-    if (!q) return true;
-    return (
-      String(i.entries_mitgliedsNummer ?? "").includes(q) ||
-      (i.entries_vorname ?? "").toLowerCase().includes(q) ||
-      (i.entries_nachname ?? "").toLowerCase().includes(q) ||
-      (i.entries_email ?? "").toLowerCase().includes(q) ||
-      (i.entries_stufe ?? "").toLowerCase().includes(q)
-    );
-  });
+  return namiMembers?.value
+    ?.filter(
+      (i: any) =>
+        i.entries_mglType === "Mitglied" && i.entries_status === "Aktiv",
+    )
+    .filter((i: any) => {
+      if (!q) return true;
+      return (
+        String(i.entries_mitgliedsNummer ?? "").includes(q) ||
+        (i.entries_vorname ?? "").toLowerCase().includes(q) ||
+        (i.entries_nachname ?? "").toLowerCase().includes(q) ||
+        (i.entries_email ?? "").toLowerCase().includes(q) ||
+        (i.entries_stufe ?? "").toLowerCase().includes(q)
+      );
+    });
 });
 
 const { data: selectedMember, pending: selectionPending } = useAsyncData(
