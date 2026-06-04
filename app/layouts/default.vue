@@ -179,6 +179,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
       icon: "i-lucide-message-circle-heart",
       to: "/feedback",
     },
+    { label: "Changelog", icon: "i-lucide-code", to: "/changelog" },
     {
       label: "Einstellungen",
       icon: "i-lucide-settings",
@@ -208,6 +209,7 @@ const searchGroups = computed(() => [
         icon: "i-lucide-message-circle-heart",
         to: "/feedback",
       },
+      { label: "Changelog", icon: "i-lucide-code", to: "/changelog" },
       { label: "Einstellungen", icon: "i-lucide-settings", to: "/settings" },
     ],
   },
