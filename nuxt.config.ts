@@ -8,6 +8,9 @@ export default defineNuxtConfig({
   pocketbase: {
     url: process.env.POCKETBASE_URL,  // Your PocketBase URL
   },
+  experimental: {
+    payloadExtraction: true
+  },
   nitro: {
     output: {
       //fix for nuxt dev deleting the generated output folder

@@ -11,15 +11,23 @@
       class="flex flex-col gap-4"
       @submit="onSaveCredentials"
     >
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <UFormField label="Benutzername" name="namiUsername">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <UFormField
+          label="Benutzername"
+          name="namiUsername"
+          class="col-span-2 md:col-span-1"
+        >
           <UInput
             v-model="credentials.namiUsername"
             placeholder="NaMi Benutzername"
             class="w-full"
           />
         </UFormField>
-        <UFormField label="Passwort" name="namiPassword">
+        <UFormField
+          label="Passwort"
+          name="namiPassword"
+          class="col-span-2 md:col-span-1"
+        >
           <UInput
             v-model="credentials.namiPassword"
             type="password"
@@ -27,7 +35,12 @@
             class="w-full"
           />
         </UFormField>
-        <UFormField label="Gruppierungsnummer" name="namiGroupId">
+        <UFormField
+          class="col-span-2"
+          label="Gruppierungsnummer"
+          name="namiGroupId"
+          description="Meistens Stammesnummer ohne führende 0"
+        >
           <UInput
             v-model="credentials.namiGroupId"
             placeholder="z. B. 131913"

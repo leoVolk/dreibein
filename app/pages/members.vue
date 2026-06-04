@@ -26,11 +26,27 @@
         </p>
       </template>
     </UEmpty>
+
+    <UTable
+      v-else
+      :loading="membersPending"
+      :data="filteredNamiMembers || []"
+      :columns="columns"
+      class="flex-1"
+    >
+      <template #empty>
+        <UButton
+          variant="ghost"
+          :loading="membersPending"
+          loading-icon="i-lucide-loader"
+        ></UButton>
+      </template>
+    </UTable>
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { TableColumn, TableRow } from "@nuxt/ui";
+import type { TableColumn } from "@nuxt/ui";
 
 definePageMeta({
   middleware: ["auth"],
@@ -70,7 +86,52 @@ if (namiSettings.value) {
   credentials.namiGroupId = (namiSettings.value as any).namiGroupId ?? "";
 }
 
-const { data: logs, pending } = useAsyncData("nami-members", () =>
-  pb.send("/api/nami/members", { method: "GET" }),
+const columns: TableColumn<any>[] = [
+  { header: "Mitgliedernummer", accessorKey: "entries_mitgliedsNummer" },
+  { header: "Nachname", accessorKey: "entries_nachname" },
+  { header: "Vorname", accessorKey: "entries_vorname" },
+  { header: "Stufe", accessorKey: "entries_stufe" },
+  { header: "Status", accessorKey: "entries_status" },
+  { header: "Typ", accessorKey: "entries_mglType" },
+  { header: "Geschlecht", accessorKey: "entries_geschlecht" },
+  {
+    header: "Geburtsdatum",
+    accessorKey: "entries_geburtsDatum",
+    cell: ({ row }) => row.original.entries_geburtsDatum?.slice(0, 10) ?? "",
+  },
+  {
+    header: "Eintrittsdatum",
+    accessorKey: "entries_eintrittsdatum",
+    cell: ({ row }) => row.original.entries_eintrittsdatum?.slice(0, 10) ?? "",
+  },
+  { header: "E-Mail", accessorKey: "entries_email" },
+  {
+    header: "E-Mail Erziehungsberechtigter",
+    accessorKey: "entries_emailVertretungsberechtigter",
+  },
+];
+
+const { data: namiMembers, pending: membersPending } = useAsyncData(
+  "nami-members",
+  () => pb.send("/api/nami/members", { method: "GET" }),
+  {
+    transform: (res) =>
+      res.items.filter(
+        (i: any) =>
+          i.entries_mglType === "Mitglied" && i.entries_status === "Aktiv",
+      ),
+  },
+);
+
+const filteredNamiMembers = computed(() =>
+  namiMembers?.value?.filter(
+    (i: any) =>
+      i.entries_mglType === "Mitglied" && i.entries_status === "Aktiv",
+  ),
+);
+
+const { data: selectedMember, pending: selectionPending } = useAsyncData(
+  "member-data",
+  () => pb.send(`/api/nami/members/${"310471"}`, { method: "GET" }),
 );
 </script>

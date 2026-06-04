@@ -30,14 +30,15 @@
         to="/items"
       />
       <StatTile
-        label="Mitglieder "
-        :value="stats.members"
+        label="Aktive Mitglieder"
+        :value="filteredNamiMembers?.length || 0"
+        :loading="membersPending"
         icon="i-lucide-users"
         to="/members"
       />
     </div>
 
-    <MembersByGroupChart />
+    <!-- <MembersByGroupChart /> -->
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <OverviewCard
@@ -153,20 +154,36 @@ const updatedMeta = (item: Bare) => formatEventDate(item.updated);
 const { data: stats, refresh: refreshStats } = await useAsyncData(
   "dashboard-stats",
   async () => {
-    const [events, lists, items, members] = await Promise.all([
+    const [events, lists, items] = await Promise.all([
       pb.collection("events").getList(1, 1, { requestKey: null }),
       pb.collection("lists").getList(1, 1, { requestKey: null }),
       pb.collection("items").getList(1, 1, { requestKey: null }),
-      pb.collection("members").getList(1, 1, { requestKey: null }),
     ]);
     return {
       events: events.totalItems,
       lists: lists.totalItems,
       items: items.totalItems,
-      members: members.totalItems,
     };
   },
-  { default: () => ({ events: 0, lists: 0, items: 0, members: 0 }) },
+  { default: () => ({ events: 0, lists: 0, items: 0 }) },
+);
+
+const { data: namiMembers, pending: membersPending } = useAsyncData(
+  "nami-members",
+  () => pb.send("/api/nami/members", { method: "GET" }),
+  {
+    transform: (res) => res.items,
+    getCachedData(key, nuxtApp, context) {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key];
+    },
+  },
+);
+
+const filteredNamiMembers = computed(() =>
+  namiMembers?.value?.filter(
+    (i: any) =>
+      i.entries_mglType === "Mitglied" && i.entries_status === "Aktiv",
+  ),
 );
 
 const { data: upcomingEvents, refresh: refreshUpcoming } = await useAsyncData(
@@ -225,9 +242,5 @@ useRealtimeRefresh("lists", () => {
 useRealtimeRefresh("items", () => {
   refreshStats();
   refreshAttention();
-});
-
-useRealtimeRefresh("members", () => {
-  refreshStats();
 });
 </script>
