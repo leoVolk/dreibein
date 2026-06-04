@@ -122,51 +122,26 @@ routerAdd("GET", "/api/nami/members", (e) => {
   if (!e.requestInfo().auth || e.requestInfo().auth.collection().name !== "users") {
     return e.json(401, { message: "Unauthorized" });
   }
-
-  var BASE = "https://nami.dpsg.de/ica/rest";
-
-  function getSession() {
-    var rows = $app.findRecordsByFilter("settings", 'integration = "nami"');
-    if (!rows.length) throw new Error("NaMi Einstellungen nicht gefunden");
-    var s = rows[ 0 ];
-    var username = s.getString("namiUsername");
-    var password = s.getString("namiPassword");
-    var groupId = s.getString("namiGroupId");
-    if (!username || !password || !groupId) throw new Error("NaMi Einstellungen unvollständig");
-    var res = $http.send({
-      url: BASE + "/nami/auth/manual/sessionStartup",
-      method: "POST",
-      body: "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password) + "&Login=API&redirectTo=",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-    if (res.statusCode !== 200) throw new Error("Login fehlgeschlagen (HTTP " + res.statusCode + ")");
-    var d = res.json;
-    if (!d || d.statusCode !== 0) throw new Error("Login fehlgeschlagen: " + (d && d.statusMessage ? d.statusMessage : "Ungültige Anmeldedaten"));
-    var raw = res.headers[ "Set-Cookie" ] || res.headers[ "set-cookie" ] || "";
-    var cookie = (Array.isArray(raw) ? raw : String(raw).split("\n")).map(function (c) { return c.split(";")[ 0 ].trim(); }).filter(function (c) { return !!c; }).join("; ");
-    if (!cookie) throw new Error("Session-Cookie nicht empfangen");
-    return { cookie: cookie, groupId: groupId };
-  }
+  const { namiSession, namiLogout, NAMI_BASE } = require(`${__hooks}/nami.js`);
 
   var session;
-  try { session = getSession(); } catch (err) { return e.json(502, { message: String(err) }); }
+  try { session = namiSession(); } catch (err) { return e.json(502, { message: String(err) }); }
 
-  var membersRes;
+  var res;
   try {
-    membersRes = $http.send({
-      url: BASE + "/nami/mitglied/filtered-for-navigation/gruppierung/gruppierung/" + session.groupId + "/flist?page=1&start=0&limit=5000",
+    res = $http.send({
+      url: NAMI_BASE + "/nami/mitglied/filtered-for-navigation/gruppierung/gruppierung/" + session.groupId + "/flist?page=1&start=0&limit=5000",
       method: "GET",
-      headers: { "Cookie": session.cookie },
+      headers: { "Cookie": session.cookieStr },
     });
   } catch (err) {
-    try { $http.send({ url: BASE + "/nami/auth/logout", method: "GET", headers: { "Cookie": session.cookie } }); } catch (_) { }
+    namiLogout(session.cookieStr);
     return e.json(502, { message: "NaMi nicht erreichbar: " + String(err) });
   }
 
-  try { $http.send({ url: BASE + "/nami/auth/logout", method: "GET", headers: { "Cookie": session.cookie } }); } catch (_) { }
-
-  if (membersRes.statusCode !== 200) return e.json(502, { message: "NaMi Mitgliederliste fehlgeschlagen (HTTP " + membersRes.statusCode + ")" });
-  var data = membersRes.json;
+  namiLogout(session.cookieStr);
+  if (res.statusCode !== 200) return e.json(502, { message: "NaMi Mitgliederliste fehlgeschlagen (HTTP " + res.statusCode + ")" });
+  var data = res.json;
   if (!data || !data.success) return e.json(502, { message: "NaMi Mitgliederliste fehlgeschlagen" });
   return e.json(200, { items: data.data || [], total: data.totalEntries || 0 });
 });
@@ -175,53 +150,56 @@ routerAdd("GET", "/api/nami/members/{id}", (e) => {
   if (!e.requestInfo().auth || e.requestInfo().auth.collection().name !== "users") {
     return e.json(401, { message: "Unauthorized" });
   }
-
-  var BASE = "https://nami.dpsg.de/ica/rest";
+  const { namiSession, namiLogout, NAMI_BASE } = require(`${__hooks}/nami.js`);
   var memberId = e.request.pathValue("id");
 
-  function getSession() {
-    var rows = $app.findRecordsByFilter("settings", 'integration = "nami"', "", 1, 0);
-    if (!rows.length) throw new Error("NaMi Einstellungen nicht gefunden");
-    var s = rows[ 0 ];
-    var username = s.getString("namiUsername");
-    var password = s.getString("namiPassword");
-    var groupId = s.getString("namiGroupId");
-    if (!username || !password || !groupId) throw new Error("NaMi Einstellungen unvollständig");
-    var res = $http.send({
-      url: BASE + "/nami/auth/manual/sessionStartup",
-      method: "POST",
-      body: "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password) + "&Login=API&redirectTo=",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-    if (res.statusCode !== 200) throw new Error("Login fehlgeschlagen (HTTP " + res.statusCode + ")");
-    var d = res.json;
-    if (!d || d.statusCode !== 0) throw new Error("Login fehlgeschlagen: " + (d && d.statusMessage ? d.statusMessage : "Ungültige Anmeldedaten"));
-    var raw = res.headers[ "Set-Cookie" ] || res.headers[ "set-cookie" ] || "";
-    var cookie = (Array.isArray(raw) ? raw : String(raw).split("\n")).map(function (c) { return c.split(";")[ 0 ].trim(); }).filter(function (c) { return !!c; }).join("; ");
-    if (!cookie) throw new Error("Session-Cookie nicht empfangen");
-    return { cookie: cookie, groupId: groupId };
-  }
-
   var session;
-  try { session = getSession(); } catch (err) { return e.json(502, { message: String(err) }); }
+  try { session = namiSession(); } catch (err) { return e.json(502, { message: String(err) }); }
 
-  var detailRes;
+  var res;
   try {
-    detailRes = $http.send({
-      url: BASE + "/nami/mitglied/filtered-for-navigation/gruppierung/gruppierung/" + session.groupId + "/" + memberId,
+    res = $http.send({
+      url: NAMI_BASE + "/nami/mitglied/filtered-for-navigation/gruppierung/gruppierung/" + session.groupId + "/" + memberId,
       method: "GET",
-      headers: { "Cookie": session.cookie },
+      headers: { "Cookie": session.cookieStr },
     });
   } catch (err) {
-    try { $http.send({ url: BASE + "/nami/auth/logout", method: "GET", headers: { "Cookie": session.cookie } }); } catch (_) { }
+    namiLogout(session.cookieStr);
     return e.json(502, { message: "NaMi nicht erreichbar: " + String(err) });
   }
 
-  try { $http.send({ url: BASE + "/nami/auth/logout", method: "GET", headers: { "Cookie": session.cookie } }); } catch (_) { }
-
-  if (detailRes.statusCode !== 200) return e.json(502, { message: "NaMi Mitglied fehlgeschlagen (HTTP " + detailRes.statusCode + ")" });
-  var data = detailRes.json;
+  namiLogout(session.cookieStr);
+  if (res.statusCode !== 200) return e.json(502, { message: "NaMi Mitglied fehlgeschlagen (HTTP " + res.statusCode + ")" });
+  var data = res.json;
   if (!data || !data.success) return e.json(404, { message: "Mitglied nicht gefunden" });
+  return e.json(200, data.data);
+});
+
+routerAdd("GET", "/api/nami/stats", (e) => {
+  if (!e.requestInfo().auth || e.requestInfo().auth.collection().name !== "users") {
+    return e.json(401, { message: "Unauthorized" });
+  }
+  const { namiSession, namiLogout, NAMI_BASE } = require(`${__hooks}/nami.js`);
+
+  var session;
+  try { session = namiSession(); } catch (err) { return e.json(502, { message: String(err) }); }
+
+  var res;
+  try {
+    res = $http.send({
+      url: NAMI_BASE + "/dashboard/stats/stats",
+      method: "GET",
+      headers: { "Cookie": session.cookieStr },
+    });
+  } catch (err) {
+    namiLogout(session.cookieStr);
+    return e.json(502, { message: "NaMi nicht erreichbar: " + String(err) });
+  }
+
+  namiLogout(session.cookieStr);
+  if (res.statusCode !== 200) return e.json(502, { message: "NaMi Stats fehlgeschlagen (HTTP " + res.statusCode + ")" });
+  var data = res.json;
+  if (!data || !data.success) return e.json(502, { message: "NaMi Stats fehlgeschlagen" });
   return e.json(200, data.data);
 });
 

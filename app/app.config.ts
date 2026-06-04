@@ -20,8 +20,8 @@ export default defineAppConfig({
       variants: {
         pinned: {
           true: {
-            th: 'sticky bg-default z-1',
-            td: 'sticky bg-default z-1'
+            th: 'sticky bg-transparent',
+            td: 'sticky bg-default/50 z-1 backdrop-blur-xs'
           }
         },
       }

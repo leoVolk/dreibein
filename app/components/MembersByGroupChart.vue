@@ -6,7 +6,7 @@
           <UIcon name="i-lucide-users" class="size-5 text-primary" />
           <span>Mitglieder je Stufe</span>
           <UBadge color="neutral" variant="subtle" size="sm">
-            {{ total }}
+            {{ members?.length }}
           </UBadge>
         </h3>
       </div>
@@ -32,7 +32,9 @@
             :style="{ backgroundColor: row.color }"
           />
           <template #content>
-            <p class="text-base font-semibold">{{ row.name }}: {{ row.count }}</p>
+            <p class="text-base font-semibold">
+              {{ row.name }}: {{ row.count }}
+            </p>
           </template>
         </UTooltip>
         <p class="text-sm md:hidden shrink-0">{{ row.count }} {{ row.name }}</p>
@@ -56,66 +58,41 @@
 </template>
 
 <script lang="ts" setup>
-const { pb } = usePocketbase();
+const props = defineProps<{
+  members: any[];
+}>();
 
-const { data: ranks, refresh: refreshRanks } = await useAsyncData(
-  "dashboard-ranks-list",
-  () =>
-    pb
-      .collection(Collections.Ranks)
-      .getFullList<RanksResponse>({ sort: "sort,name", requestKey: null }),
-  { default: () => [] as RanksResponse[] },
-);
-
-const isColumn = ref(false);
-
-const { data: members, refresh: refreshMembers } = await useAsyncData(
-  "dashboard-members-by-rank",
-  () =>
-    pb.collection(Collections.Members).getFullList<MembersResponse>({
-      fields: "ranks",
-      requestKey: null,
-    }),
-  { default: () => [] as MembersResponse[] },
-);
-
-useRealtimeRefresh(Collections.Members, refreshMembers);
-useRealtimeRefresh(Collections.Ranks, refreshRanks);
+const COLORS = [
+  "#f59e0b",
+  "#b5669a",
+  "#8b5cf6",
+  "#10b981",
+  "#ef4444",
+  "#ec4899",
+  "#14b8a6",
+  "#f97316",
+];
 
 const rows = computed(() => {
-  const rankCounts = new Map<string, number>();
-  let noRankCount = 0;
-
-  for (const member of members.value) {
-    if (!member.ranks?.length) {
-      noRankCount++;
-    } else {
-      for (const rankId of member.ranks) {
-        rankCounts.set(rankId, (rankCounts.get(rankId) ?? 0) + 1);
-      }
-    }
+  const groups: Record<string, number> = {};
+  for (const m of props.members ?? []) {
+    const stufe = m.entries_stufe || "Keine Stufe";
+    groups[stufe] = (groups[stufe] ?? 0) + 1;
   }
-
-  const result = ranks.value
-    .map((r) => ({
-      id: r.id,
-      name: r.name || r.id,
-      color: r.colour || "var(--ui-color-neutral-400)",
-      count: rankCounts.get(r.id) ?? 0,
-    }))
-    .filter((r) => r.count > 0);
-
-  if (noRankCount > 0) {
-    result.push({
-      id: "none",
-      name: "Ohne Stufe",
-      color: "var(--ui-color-neutral-400)",
-      count: noRankCount,
-    });
-  }
-
-  return result;
+  return Object.entries(groups)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count], i) => ({
+      id: name,
+      name,
+      count,
+      color: COLORS[i % COLORS.length],
+    }));
 });
 
-const total = computed(() => rows.value.reduce((acc, r) => acc + r.count, 0));
+const total = computed(() => props.members?.length ?? 0);
 </script>
+<style>
+.test {
+  color: #b5669a;
+}
+</style>
