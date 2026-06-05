@@ -16,5 +16,3 @@
   --ui-text-toned: var(--color-gray-200);
   --ui-text-muted: var(--color-gray-300);
 }
-@import "tailwindcss";
-@import "@nuxt/ui";

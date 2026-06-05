@@ -9,7 +9,9 @@
     <UDashboardSidebar :ui="{ footer: 'border-t border-default' }">
       <template #header="{ collapsed }">
         <UIcon name="i-lucide-tent" class="size-5 text-primary" />
-        <h2 v-if="!collapsed" class="font-semibold text-2xl">3Bein</h2>
+        <h2 v-if="!collapsed" class="font-semibold text-2xl">
+          <span class="text-primary">3</span>Bein
+        </h2>
         <UBadge class="hidden lg:block" color="primary" variant="soft" size="sm"
           >v0.5.0</UBadge
         >
@@ -67,7 +69,9 @@
         <UDashboardNavbar class="lg:hidden" toggle-side="right">
           <template #left>
             <UIcon name="i-lucide-tent" class="size-5 text-primary" />
-            <h2 class="font-semibold text-2xl">3Bein</h2>
+            <h2 class="font-semibold text-2xl">
+              <span class="text-primary">3</span>Bein
+            </h2>
             <UBadge
               class="hidden lg:block"
               color="primary"
