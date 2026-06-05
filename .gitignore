@@ -27,3 +27,5 @@ logs
 db/pb_data
 db/pb_public
 db/dreibein
+
+.claude

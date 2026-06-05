@@ -1,0 +1,9 @@
+node_modules
+.nuxt
+.output
+dist
+db/pb_data
+db/pb_public
+db/dreibein
+.env
+.env.*

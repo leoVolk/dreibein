@@ -6,7 +6,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css', '~/assets/css/full-calendar.css'],
   modules: ['pocketbase-nuxt', '@nuxt/ui', '@nuxtjs/mdc', '@nuxt/fonts', 'nuxt-charts'],
   pocketbase: {
-    url: process.env.POCKETBASE_URL,  // Your PocketBase URL
+    // Falls back to '/' for same-origin Docker hosting; set POCKETBASE_URL in .env for local dev
+    url: process.env.POCKETBASE_URL || '/',
   },
   experimental: {
     payloadExtraction: true
