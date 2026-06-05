@@ -26,7 +26,7 @@ The recommended way to run 3Bein. The Nuxt frontend is served directly by the Po
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-org/dreibein.git
+git clone https://github.com/leoVolk/dreibein
 cd dreibein
 ```
 
@@ -42,11 +42,11 @@ The first build takes a few minutes (compiles Go + builds the Nuxt SPA).
 
 Navigate to [http://localhost:8080](http://localhost:8080).
 
-On first boot, PocketBase will prompt you to create a **superuser** (admin) account at [http://localhost:8080/_/](http://localhost:8080/_/). Do this before anything else.
+On first boot, PocketBase will prompt you to create a **superuser** (admin) account at [http://localhost:8080/\_/](http://localhost:8080/_/). Do this before anything else.
 
 ### 4. Import the database schema
 
-1. Go to [http://localhost:8080/_/](http://localhost:8080/_/) and log in with your superuser account
+1. Go to [http://localhost:8080/\_/](http://localhost:8080/_/) and log in with your superuser account
 2. Navigate to **Settings → Import collections**
 3. Upload the `pb_schema.json` file from the root of this repository
 4. Confirm the import
@@ -99,7 +99,7 @@ POCKETBASE_ADMIN_PASSWORD=yourpassword
 npm run dev:pocketbase
 ```
 
-On first run, create a superuser at [http://localhost:8090/_/](http://localhost:8090/_/) and import `pb_schema.json` as described in step 4 of the Docker setup above.
+On first run, create a superuser at [http://localhost:8090/\_/](http://localhost:8090/_/) and import `pb_schema.json` as described in step 4 of the Docker setup above.
 
 ### 4. Start the Nuxt dev server
 
@@ -139,10 +139,10 @@ Credentials are stored server-side in the `settings` collection in PocketBase an
 
 ## Configuration
 
-| Variable | Description |
-|---|---|
-| `POCKETBASE_URL` | PocketBase URL for local development |
-| `POCKETBASE_ADMIN_EMAIL` | Superuser email — only used by `generate-types` |
+| Variable                    | Description                                        |
+| --------------------------- | -------------------------------------------------- |
+| `POCKETBASE_URL`            | PocketBase URL for local development               |
+| `POCKETBASE_ADMIN_EMAIL`    | Superuser email — only used by `generate-types`    |
 | `POCKETBASE_ADMIN_PASSWORD` | Superuser password — only used by `generate-types` |
 
 In Docker, no environment variables are required. The frontend uses relative URLs and talks to the PocketBase instance it is served from.
@@ -165,10 +165,10 @@ npm run generate-types
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | [Nuxt 3](https://nuxt.com) (SPA mode) |
-| UI | [Nuxt UI v3](https://ui.nuxt.com) + [Tailwind CSS v4](https://tailwindcss.com) |
-| Backend | [PocketBase](https://pocketbase.io) (Go) |
-| Hooks | PocketBase JSVM (JavaScript) |
-| Database | SQLite (embedded in PocketBase) |
+| Layer    | Technology                                                                     |
+| -------- | ------------------------------------------------------------------------------ |
+| Frontend | [Nuxt 3](https://nuxt.com) (SPA mode)                                          |
+| UI       | [Nuxt UI v3](https://ui.nuxt.com) + [Tailwind CSS v4](https://tailwindcss.com) |
+| Backend  | [PocketBase](https://pocketbase.io) (Go)                                       |
+| Hooks    | PocketBase JSVM (JavaScript)                                                   |
+| Database | SQLite (embedded in PocketBase)                                                |
