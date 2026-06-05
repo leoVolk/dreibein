@@ -22,8 +22,9 @@ WORKDIR /pb
 COPY --from=backend /app/dreibein .
 COPY --from=frontend /app/db/pb_public ./pb_public
 COPY db/pb_hooks ./pb_hooks
+COPY db/pb_migrations ./pb_migrations
 
 EXPOSE 8080
 VOLUME ["/pb/pb_data"]
 
-CMD ["./dreibein", "serve", "--http=0.0.0.0:8080"]
+CMD ["./dreibein", "serve", "--http=0.0.0.0:8080", "--migrationsDir=/pb/pb_migrations"]
