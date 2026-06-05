@@ -6,7 +6,7 @@
         class="flex flex-col h-full overflow-y-auto w-2xl max-w-2xl"
       >
         <div
-          class="flex items-center justify-between p-4 border-b border-default"
+          class="flex items-center justify-between p-4 border-b border-default sticky top-0 dark:bg-neutral-900/50 bg-neutral-50/50 backdrop-blur-sm shadow-md"
         >
           <div>
             <h2 class="text-xl font-semibold">

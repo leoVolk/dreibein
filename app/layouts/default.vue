@@ -11,7 +11,7 @@
         <UIcon name="i-lucide-tent" class="size-5 text-primary" />
         <h2 v-if="!collapsed" class="font-semibold text-2xl">3Bein</h2>
         <UBadge class="hidden lg:block" color="primary" variant="soft" size="sm"
-          >v.0.1.0</UBadge
+          >v0.5.0</UBadge
         >
       </template>
 
