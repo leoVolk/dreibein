@@ -39,7 +39,8 @@
         <h1 class="text-2xl text-center font-bold mb-1">Gut Pfad!</h1>
         <p class="text-center text-muted text-sm mb-6">
           Erstelle dein
-          <span class="text-foreground font-semibold">3Bein</span> Konto.
+          <span class="text-primary">III</span
+          ><span class="text-foreground font-semibold">Bein</span> Konto.
         </p>
 
         <UForm
@@ -161,7 +162,9 @@ const errors = reactive({
 const token = route.params.token as string;
 
 try {
-  const record = await pb.collection("invites").getFirstListItem<InviteRecord>(`token = "${token}"`);
+  const record = await pb
+    .collection("invites")
+    .getFirstListItem<InviteRecord>(`token = "${token}"`);
   if (record.expires && new Date(record.expires) < new Date()) {
     expiredInvite.value = true;
   } else {

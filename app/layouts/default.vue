@@ -10,7 +10,7 @@
       <template #header="{ collapsed }">
         <UIcon name="i-lucide-tent" class="size-5 text-primary" />
         <h2 v-if="!collapsed" class="font-semibold text-2xl">
-          <span class="text-primary">3</span>Bein
+          <span class="text-primary">III</span>Bein
         </h2>
         <UBadge class="hidden lg:block" color="primary" variant="soft" size="sm"
           >v0.5.0</UBadge
@@ -70,7 +70,7 @@
           <template #left>
             <UIcon name="i-lucide-tent" class="size-5 text-primary" />
             <h2 class="font-semibold text-2xl">
-              <span class="text-primary">3</span>Bein
+              <span class="text-primary">III</span>Bein
             </h2>
             <UBadge
               class="hidden lg:block"
