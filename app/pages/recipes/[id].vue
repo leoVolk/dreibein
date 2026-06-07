@@ -17,6 +17,8 @@
             {{ recipe.name }}
           </h1>
           <div class="flex gap-2">
+            <RecipeAddToShoppingListModal v-if="recipe" :recipe="recipe" />
+
             <RecipeFormDrawer
               title="Rezept bearbeiten"
               :loading="saving"
