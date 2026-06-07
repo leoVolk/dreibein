@@ -159,6 +159,20 @@ watch(selectedEventId, () => {
   refreshLists();
 });
 
+// Fetch existing items in the selected list for deduplication
+const { data: existingListItems, refresh: refreshListItems } =
+  await useAsyncData("existing-list-items-for-modal", () => {
+    if (!selectedListId.value) return Promise.resolve([]);
+    return pb
+      .collection(Collections.Shoppinglistsitems)
+      .getFullList<ShoppinglistsitemsResponse>({
+        filter: `list = "${selectedListId.value}"`,
+        requestKey: null,
+      });
+  });
+
+watch(selectedListId, () => refreshListItems());
+
 const listOptions = computed(() =>
   (shoppingLists.value ?? []).map((l) => ({ label: l.name, value: l.id })),
 );
@@ -182,9 +196,28 @@ const onConfirm = async (close: () => void) => {
   if (!selectedListId.value) return;
   saving.value = true;
   try {
-    await Promise.all(
-      scaledIngredients.value.map((ing) =>
-        pb.collection(Collections.Shoppinglistsitems).create(
+    // Work on a mutable copy so we can update amounts as we merge,
+    // preventing double-merges when multiple ingredients match the same item.
+    const existing = [...(existingListItems.value ?? [])];
+    let merged = 0;
+    let created = 0;
+
+    for (const ing of scaledIngredients.value) {
+      const match = findFuzzyMatch(existing, ing.name ?? "");
+      if (match) {
+        const newAmount =
+          match.amount != null || ing.scaledAmount != null
+            ? (match.amount ?? 0) + (ing.scaledAmount ?? 0)
+            : undefined;
+        await pb
+          .collection(Collections.Shoppinglistsitems)
+          .update(match.id, { amount: newAmount });
+        // Update local copy so subsequent ingredients don't double-merge
+        const idx = existing.findIndex((e) => e.id === match.id);
+        if (idx !== -1) existing[idx] = { ...existing[idx], amount: newAmount };
+        merged++;
+      } else {
+        await pb.collection(Collections.Shoppinglistsitems).create(
           {
             name: ing.name,
             amount: ing.scaledAmount,
@@ -193,12 +226,17 @@ const onConfirm = async (close: () => void) => {
             list: selectedListId.value,
           },
           { requestKey: null },
-        ),
-      ),
-    );
+        );
+        created++;
+      }
+    }
+
+    const parts: string[] = [];
+    if (created > 0) parts.push(`${created} neu hinzugefügt`);
+    if (merged > 0) parts.push(`${merged} zusammengeführt`);
     toast.add({
       title: "Zutaten hinzugefügt",
-      description: `${scaledIngredients.value.length} Artikel zur Einkaufsliste hinzugefügt.`,
+      description: parts.join(", "),
       icon: "i-lucide-shopping-cart",
     });
     close();

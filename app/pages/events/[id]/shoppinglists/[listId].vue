@@ -207,8 +207,29 @@ const resetAdd = () => Object.assign(addState, emptyState());
 const onCreate = async () => {
   saving.value = true;
   try {
-    await pb.collection(Collections.Shoppinglistsitems).create({ ...addState });
-    toast.add({ title: "Artikel hinzugefügt", icon: "i-lucide-shopping-cart" });
+    const match = findFuzzyMatch(items.value ?? [], addState.name ?? "");
+    if (match) {
+      const newAmount =
+        match.amount != null || addState.amount != null
+          ? (match.amount ?? 0) + (addState.amount ?? 0)
+          : undefined;
+      await pb
+        .collection(Collections.Shoppinglistsitems)
+        .update(match.id, { amount: newAmount });
+      toast.add({
+        title: "Menge aktualisiert",
+        description: `„${addState.name}" wurde zu „${match.name}" zusammengeführt.`,
+        icon: "i-lucide-git-merge",
+      });
+    } else {
+      await pb
+        .collection(Collections.Shoppinglistsitems)
+        .create({ ...addState });
+      toast.add({
+        title: "Artikel hinzugefügt",
+        icon: "i-lucide-shopping-cart",
+      });
+    }
     resetAdd();
     addOpen.value = false;
     await refreshItems();
