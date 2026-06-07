@@ -8,9 +8,47 @@
       ]"
     />
 
-    <UPageHeader v-if="recipe" :title="recipe.name">
+    <UPageHeader v-if="recipe">
+      <template #headline>
+        <div class="flex justify-between w-full items-center gap-4">
+          <h1
+            class="text-3xl sm:text-4xl font-bold text-highlighted text-pretty"
+          >
+            {{ recipe.name }}
+          </h1>
+          <div class="flex gap-2">
+            <RecipeFormDrawer
+              title="Rezept bearbeiten"
+              :loading="saving"
+              v-model:open="editOpen"
+              v-model:state="editState"
+              v-model:ingredient-rows="ingredientRows"
+              @submit="onUpdate"
+              @close="resetEdit"
+            >
+              <template #trigger="{ open: openDrawer }">
+                <UButton
+                  icon="i-lucide-pencil"
+                  color="neutral"
+                  variant="outline"
+                  @click="openDrawer"
+                />
+              </template>
+            </RecipeFormDrawer>
+
+            <DeleteConfirmModal
+              title="Rezept löschen"
+              description="Willst du dieses Rezept wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+              confirm-label="Rezept löschen"
+              @confirm="onDelete"
+            >
+              <UButton icon="i-lucide-trash" color="error" variant="outline" />
+            </DeleteConfirmModal>
+          </div>
+        </div>
+      </template>
       <template #description>
-        <div class="flex flex-wrap gap-1">
+        <div class="flex flex-wrap gap-1 mt-2">
           <UBadge
             v-for="cat in recipe.category"
             :key="cat"
@@ -35,36 +73,6 @@
             <span>{{ recipe.servings }} Portionen</span>
           </div>
         </div>
-      </template>
-
-      <template #actions>
-        <RecipeFormDrawer
-          title="Rezept bearbeiten"
-          :loading="saving"
-          v-model:open="editOpen"
-          v-model:state="editState"
-          v-model:ingredient-rows="ingredientRows"
-          @submit="onUpdate"
-          @close="resetEdit"
-        >
-          <template #trigger="{ open: openDrawer }">
-            <UButton
-              icon="i-lucide-pencil"
-              color="neutral"
-              variant="outline"
-              @click="openDrawer"
-            />
-          </template>
-        </RecipeFormDrawer>
-
-        <DeleteConfirmModal
-          title="Rezept löschen"
-          description="Willst du dieses Rezept wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
-          confirm-label="Rezept löschen"
-          @confirm="onDelete"
-        >
-          <UButton icon="i-lucide-trash" color="error" variant="outline" />
-        </DeleteConfirmModal>
       </template>
     </UPageHeader>
 

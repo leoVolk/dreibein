@@ -9,26 +9,24 @@
       />
     </div>
 
-    <UPageHeader title="Rezeptesammlung">
-      <template #actions>
-        <RecipeFormDrawer
-          title="Neues Rezept"
-          :loading="saving"
-          v-model:open="createOpen"
-          v-model:state="createState"
-          v-model:ingredient-rows="ingredientRows"
-          @submit="onCreate"
-          @close="resetCreate"
-        >
-          <template #trigger="{ open: openDrawer }">
-            <UButton
-              icon="i-lucide-plus"
-              color="primary"
-              label="Neues Rezept"
-              @click="openDrawer"
-            />
-          </template>
-        </RecipeFormDrawer>
+    <UPageHeader>
+      <template #headline>
+        <div class="flex justify-between w-full items-center gap-4">
+          <h1 class="text-3xl sm:text-4xl font-bold text-highlighted">Rezeptesammlung</h1>
+          <RecipeFormDrawer
+            title="Neues Rezept"
+            :loading="saving"
+            v-model:open="createOpen"
+            v-model:state="createState"
+            v-model:ingredient-rows="ingredientRows"
+            @submit="onCreate"
+            @close="resetCreate"
+          >
+            <template #trigger="{ open: openDrawer }">
+              <UButton icon="i-lucide-plus" color="primary" label="Neues Rezept" @click="openDrawer" />
+            </template>
+          </RecipeFormDrawer>
+        </div>
       </template>
     </UPageHeader>
 

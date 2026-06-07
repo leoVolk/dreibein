@@ -52,6 +52,7 @@
             class="w-20"
             size="sm"
           />
+
           <USelect
             v-model="row.unit"
             :items="unitOptions"
