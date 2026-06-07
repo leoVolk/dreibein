@@ -49,6 +49,13 @@
       </template>
       <template #description>
         <div class="flex flex-wrap gap-1 mt-2">
+          <div
+            v-if="recipe.servings"
+            class="flex items-center gap-1 text-sm text-muted ml-1"
+          >
+            <UIcon name="i-lucide-users" class="size-3.5" />
+            <span>{{ recipe.servings }} Portionen</span>
+          </div>
           <UBadge
             v-for="cat in recipe.category"
             :key="cat"
@@ -65,13 +72,6 @@
           >
             {{ tag }}
           </UBadge>
-          <div
-            v-if="recipe.servings"
-            class="flex items-center gap-1 text-sm text-muted ml-1"
-          >
-            <UIcon name="i-lucide-users" class="size-3.5" />
-            <span>{{ recipe.servings }} Portionen</span>
-          </div>
         </div>
       </template>
     </UPageHeader>

@@ -305,7 +305,6 @@ export const ShoppinglistsitemsCategoryOptions = {
 export type ShoppinglistsitemsCategoryOptions = typeof ShoppinglistsitemsCategoryOptions[keyof typeof ShoppinglistsitemsCategoryOptions]
 export type ShoppinglistsitemsRecord = {
 	amount?: number
-	assignedTo?: RecordIdString
 	category?: ShoppinglistsitemsCategoryOptions
 	checked?: boolean
 	created: IsoAutoDateString
