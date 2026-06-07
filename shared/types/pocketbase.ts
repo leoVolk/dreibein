@@ -20,6 +20,7 @@ export const Collections = {
 	Lists: "lists",
 	Notes: "notes",
 	Participants: "participants",
+	Recipes: "recipes",
 	Settings: "settings",
 	Shoppinglists: "shoppinglists",
 	Shoppinglistsitems: "shoppinglistsitems",
@@ -237,6 +238,34 @@ export type ParticipantsRecord = {
 	zip?: number
 }
 
+export const RecipesTagsOptions = {
+	"vegan": "vegan",
+	"vegetarisch": "vegetarisch",
+	"glutenfrei": "glutenfrei",
+	"lactosefrei": "lactosefrei",
+} as const
+export type RecipesTagsOptions = typeof RecipesTagsOptions[keyof typeof RecipesTagsOptions]
+
+export const RecipesCategoryOptions = {
+	"Frühstück": "Frühstück",
+	"Mitagessen": "Mitagessen",
+	"Abendessen": "Abendessen",
+	"Snack": "Snack",
+	"Dessert": "Dessert",
+} as const
+export type RecipesCategoryOptions = typeof RecipesCategoryOptions[keyof typeof RecipesCategoryOptions]
+export type RecipesRecord = {
+	category?: RecipesCategoryOptions[]
+	created: IsoAutoDateString
+	id: string
+	ingredients?: RecordIdString[]
+	name?: string
+	preparation?: HTMLString
+	servings?: number
+	tags?: RecipesTagsOptions[]
+	updated: IsoAutoDateString
+}
+
 export type SettingsRecord = {
 	created: IsoAutoDateString
 	id: string
@@ -262,6 +291,8 @@ export const ShoppinglistsitemsUnitOptions = {
 	"L": "L",
 	"mL": "mL",
 	"Packung": "Packung",
+	"EL": "EL",
+	"TL": "TL",
 } as const
 export type ShoppinglistsitemsUnitOptions = typeof ShoppinglistsitemsUnitOptions[keyof typeof ShoppinglistsitemsUnitOptions]
 
@@ -315,6 +346,7 @@ export type ItemsResponse<Texpand = unknown> = Required<ItemsRecord> & BaseSyste
 export type ListsResponse<Texpand = unknown> = Required<ListsRecord> & BaseSystemFields<Texpand>
 export type NotesResponse<Texpand = unknown> = Required<NotesRecord> & BaseSystemFields<Texpand>
 export type ParticipantsResponse<Texpand = unknown> = Required<ParticipantsRecord> & BaseSystemFields<Texpand>
+export type RecipesResponse<Texpand = unknown> = Required<RecipesRecord> & BaseSystemFields<Texpand>
 export type SettingsResponse<Texpand = unknown> = Required<SettingsRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsResponse<Texpand = unknown> = Required<ShoppinglistsRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsitemsResponse<Texpand = unknown> = Required<ShoppinglistsitemsRecord> & BaseSystemFields<Texpand>
@@ -337,6 +369,7 @@ export type CollectionRecords = {
 	lists: ListsRecord
 	notes: NotesRecord
 	participants: ParticipantsRecord
+	recipes: RecipesRecord
 	settings: SettingsRecord
 	shoppinglists: ShoppinglistsRecord
 	shoppinglistsitems: ShoppinglistsitemsRecord
@@ -358,6 +391,7 @@ export type CollectionResponses = {
 	lists: ListsResponse
 	notes: NotesResponse
 	participants: ParticipantsResponse
+	recipes: RecipesResponse
 	settings: SettingsResponse
 	shoppinglists: ShoppinglistsResponse
 	shoppinglistsitems: ShoppinglistsitemsResponse

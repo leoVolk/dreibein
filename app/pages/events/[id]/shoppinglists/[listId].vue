@@ -1,11 +1,16 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex lg:justify-between lg:items-center flex-col lg:flex-row gap-4">
+    <div
+      class="flex lg:justify-between lg:items-center flex-col lg:flex-row gap-4"
+    >
       <UBreadcrumb
         :items="[
           { label: 'Home', to: '/' },
           { label: 'Läger & Aktionen', to: '/events' },
-          { label: shoppingList?.name ?? '...', to: `/events/${route.params.id}` },
+          {
+            label: shoppingList?.name ?? '...',
+            to: `/events/${route.params.id}`,
+          },
           { label: 'Einkaufsliste' },
         ]"
       />
@@ -14,7 +19,9 @@
     <UPageHeader v-if="shoppingList">
       <template #headline>
         <div class="flex justify-between w-full items-center gap-4">
-          <h1 class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted">
+          <h1
+            class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+          >
             {{ shoppingList.name }}
           </h1>
           <div class="flex gap-4">
@@ -28,7 +35,11 @@
               @close="resetAdd"
             >
               <template #trigger="{ open: openDrawer }">
-                <UButton icon="i-lucide-plus" color="primary" @click="openDrawer" />
+                <UButton
+                  icon="i-lucide-plus"
+                  color="primary"
+                  @click="openDrawer"
+                />
               </template>
               <ShoppinglistItemFields v-model="addState" />
             </FormDrawer>
@@ -39,19 +50,18 @@
               confirm-label="Löschen"
               @confirm="onDeleteList"
             >
-              <UButton label="Liste löschen" color="error" icon="i-lucide-trash" />
+              <UButton
+                label="Liste löschen"
+                color="error"
+                icon="i-lucide-trash"
+              />
             </DeleteConfirmModal>
           </div>
         </div>
       </template>
     </UPageHeader>
 
-    <UTable
-      v-if="items?.length"
-      :data="items"
-      :columns="columns"
-      sticky
-    >
+    <UTable v-if="items?.length" :data="items" :columns="columns" sticky>
       <template #checked-cell="{ row }">
         <UCheckbox
           :model-value="row.original.checked"
@@ -135,8 +145,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { ShoppinglistsitemsRecord, ShoppinglistsitemsResponse } from "~/../../shared/types/pocketbase";
-
 definePageMeta({ middleware: ["auth"] });
 
 const route = useRoute();
@@ -145,7 +153,7 @@ const { pb } = usePocketbase();
 const toast = useToast();
 const toastError = useToastError();
 
-const listId = route.params.id as string;
+const listId = route.params.listId as string;
 
 const { data: shoppingList, refresh: refreshList } = await useAsyncData(
   `shoppinglist-${listId}`,
@@ -155,11 +163,13 @@ const { data: shoppingList, refresh: refreshList } = await useAsyncData(
 const { data: items, refresh: refreshItems } = await useAsyncData(
   `shoppinglist-items-${listId}`,
   () =>
-    pb.collection(Collections.Shoppinglistsitems).getFullList<ShoppinglistsitemsResponse>({
-      filter: `list = "${listId}"`,
-      sort: "category,name",
-      requestKey: null,
-    }),
+    pb
+      .collection(Collections.Shoppinglistsitems)
+      .getFullList<ShoppinglistsitemsResponse>({
+        filter: `list = "${listId}"`,
+        sort: "category,name",
+        requestKey: null,
+      }),
 );
 
 useRealtimeRefresh("shoppinglistsitems", refreshItems);
@@ -177,7 +187,10 @@ const columns = [
 const addOpen = ref(false);
 const saving = ref(false);
 
-const emptyState = (): Omit<ShoppinglistsitemsRecord, "id" | "created" | "updated"> => ({
+const emptyState = (): Omit<
+  ShoppinglistsitemsRecord,
+  "id" | "created" | "updated"
+> => ({
   name: "",
   amount: undefined,
   unit: undefined,
@@ -218,7 +231,9 @@ const openEdit = (item: ShoppinglistsitemsResponse) => {
 const onUpdate = async (id: string) => {
   saving.value = true;
   try {
-    await pb.collection(Collections.Shoppinglistsitems).update(id, editStates[id]);
+    await pb
+      .collection(Collections.Shoppinglistsitems)
+      .update(id, editStates[id]);
     toast.add({ title: "Artikel gespeichert", icon: "i-lucide-save" });
     editOpen[id] = false;
     await refreshItems();
@@ -230,9 +245,14 @@ const onUpdate = async (id: string) => {
 };
 
 // --- Toggle checked ---
-const onToggleChecked = async (item: ShoppinglistsitemsResponse, val: boolean) => {
+const onToggleChecked = async (
+  item: ShoppinglistsitemsResponse,
+  val: boolean,
+) => {
   try {
-    await pb.collection(Collections.Shoppinglistsitems).update(item.id, { checked: val });
+    await pb
+      .collection(Collections.Shoppinglistsitems)
+      .update(item.id, { checked: val });
     await refreshItems();
   } catch (e: any) {
     toastError(e);
@@ -255,7 +275,9 @@ const onDelete = async (id: string, close: () => void) => {
 const onDeleteList = async (close: () => void) => {
   if (!shoppingList.value) return;
   try {
-    await pb.collection(Collections.Shoppinglists).delete(shoppingList.value.id);
+    await pb
+      .collection(Collections.Shoppinglists)
+      .delete(shoppingList.value.id);
     toast.add({ title: "Liste gelöscht", icon: "i-lucide-trash" });
     close();
     router.push(`/events/${route.params.id}`);

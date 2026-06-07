@@ -169,7 +169,11 @@ const items = computed<NavigationMenuItem[][]>(() => [
       label: "Alle Materialien",
       icon: "i-lucide-list",
       to: "/items",
-      defaultOpen: true,
+    },
+    {
+      label: "Rezepte",
+      icon: "i-lucide-cooking-pot",
+      to: "/recipes",
     },
   ],
   [
