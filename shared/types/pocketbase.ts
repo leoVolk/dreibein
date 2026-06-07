@@ -22,6 +22,7 @@ export const Collections = {
 	Participants: "participants",
 	Settings: "settings",
 	Shoppinglists: "shoppinglists",
+	Shoppinglistsitems: "shoppinglistsitems",
 	Users: "users",
 } as const
 export type Collections = typeof Collections[keyof typeof Collections]
@@ -250,8 +251,38 @@ export type ShoppinglistsRecord = {
 	created: IsoAutoDateString
 	event?: RecordIdString
 	id: string
-	items?: RecordIdString[]
 	name?: string
+	updated: IsoAutoDateString
+}
+
+export const ShoppinglistsitemsUnitOptions = {
+	"Stück": "Stück",
+	"kg": "kg",
+	"g": "g",
+	"L": "L",
+	"mL": "mL",
+	"Packung": "Packung",
+} as const
+export type ShoppinglistsitemsUnitOptions = typeof ShoppinglistsitemsUnitOptions[keyof typeof ShoppinglistsitemsUnitOptions]
+
+export const ShoppinglistsitemsCategoryOptions = {
+	"Lebensmittel": "Lebensmittel",
+	"Hygiene": "Hygiene",
+	"Sonstiges": "Sonstiges",
+	"Programm": "Programm",
+} as const
+export type ShoppinglistsitemsCategoryOptions = typeof ShoppinglistsitemsCategoryOptions[keyof typeof ShoppinglistsitemsCategoryOptions]
+export type ShoppinglistsitemsRecord = {
+	amount?: number
+	assignedTo?: RecordIdString
+	category?: ShoppinglistsitemsCategoryOptions
+	checked?: boolean
+	created: IsoAutoDateString
+	id: string
+	list?: RecordIdString
+	name?: string
+	note?: string
+	unit?: ShoppinglistsitemsUnitOptions
 	updated: IsoAutoDateString
 }
 
@@ -286,6 +317,7 @@ export type NotesResponse<Texpand = unknown> = Required<NotesRecord> & BaseSyste
 export type ParticipantsResponse<Texpand = unknown> = Required<ParticipantsRecord> & BaseSystemFields<Texpand>
 export type SettingsResponse<Texpand = unknown> = Required<SettingsRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsResponse<Texpand = unknown> = Required<ShoppinglistsRecord> & BaseSystemFields<Texpand>
+export type ShoppinglistsitemsResponse<Texpand = unknown> = Required<ShoppinglistsitemsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 
 // Types containing all Records and Responses, useful for creating typing helper functions
@@ -307,6 +339,7 @@ export type CollectionRecords = {
 	participants: ParticipantsRecord
 	settings: SettingsRecord
 	shoppinglists: ShoppinglistsRecord
+	shoppinglistsitems: ShoppinglistsitemsRecord
 	users: UsersRecord
 }
 
@@ -327,6 +360,7 @@ export type CollectionResponses = {
 	participants: ParticipantsResponse
 	settings: SettingsResponse
 	shoppinglists: ShoppinglistsResponse
+	shoppinglistsitems: ShoppinglistsitemsResponse
 	users: UsersResponse
 }
 

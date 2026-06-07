@@ -100,7 +100,7 @@
           item-icon="i-lucide-shopping-bag"
           :items="(shoppingLists ?? []).slice(0, 5)"
           empty-description="Noch keine Einkaufslisten angelegt."
-          :meta="itemsCount"
+          :to-for="shoppingListTo"
         >
           <template #action>
             <CreateShoppingList
@@ -169,7 +169,7 @@
         item-icon="i-lucide-shopping-bag"
         :items="shoppingLists ?? []"
         empty-description="Noch keine Einkaufslisten angelegt."
-        :meta="itemsCount"
+        :to-for="shoppingListTo"
       >
         <template #action>
           <CreateShoppingList
@@ -253,12 +253,12 @@ watch(activeTab, (tab) => {
 const eventListTo = (item: OverviewItem) =>
   `/events/${id.value}/lists/${item.id}`;
 const noteTo = (item: OverviewItem) => `/events/${id.value}/notes/${item.id}`;
+const shoppingListTo = (item: OverviewItem) =>
+  `/events/${id.value}/shoppinglists/${item.id}`;
 
 const participantsTo = (item: OverviewItem) =>
   `/events/${id.value}/participants`;
 
-const itemsCount = (item: OverviewItem) =>
-  `${(item.items ?? []).length} Einträge`;
 const updatedMeta = (item: OverviewItem) => formatDate(item.updated);
 
 const { data: event } = await useAsyncData(

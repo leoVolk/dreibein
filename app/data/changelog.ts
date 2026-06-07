@@ -14,6 +14,19 @@ export const CHANGE_META: Record<ChangeType, { color: BadgeProps["color"]; label
 
 export const changelog: ChangelogEntry[] = [
   {
+    title: "Einkaufslisten",
+    date: "2026-06-07",
+    badge: "0.6.0",
+    changes: [
+      { type: "feat", label: "Einkaufslisten-Detailseite mit vollständiger Artikelverwaltung" },
+      { type: "feat", label: "Artikel hinzufügen und bearbeiten über den FormDrawer" },
+      { type: "feat", label: "Artikel abhaken direkt in der Tabelle" },
+      { type: "feat", label: "Kategorien und Einheiten als auswählbare Felder" },
+      { type: "feat", label: "Einkaufslisten auf der Veranstaltungsseite verlinkt" },
+      { type: "feat", label: "Echtzeit-Updates für Artikeländerungen" },
+    ],
+  },
+  {
     title: "NaMi Integration & Teilnehmerverwaltung",
     date: "2026-06-04",
     badge: "0.5.0",
