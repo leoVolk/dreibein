@@ -164,7 +164,7 @@ const token = route.params.token as string;
 try {
   const record = await pb
     .collection("invites")
-    .getFirstListItem<InviteRecord>(`token = "${token}"`);
+    .getFirstListItem<InviteRecord>(`token = "${token}"`, { query: { token } });
   if (record.expires && new Date(record.expires) < new Date()) {
     expiredInvite.value = true;
   } else {
