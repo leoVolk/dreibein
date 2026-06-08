@@ -113,6 +113,12 @@ const { data: events, refresh: refreshEvents } = await useAsyncData<any>(() =>
   pb.collection("events").getFullList(),
 );
 
+const { data: wikiSections, refresh: refreshWikiSections } = await useAsyncData<any>(() =>
+  pb.collection("wikisections").getFullList({ sort: "order,name" }),
+);
+
+useRealtimeRefresh("wikisections", refreshWikiSections);
+
 const { isLoading } = usePBLoading();
 
 useRealtimeRefresh("lists", refreshLists);
@@ -131,6 +137,14 @@ const eventLinks = computed(() =>
     label: event.name,
     icon: "i-lucide-calendar-1",
     to: `/events/${event.id}`,
+  })),
+);
+
+const wikiLinks = computed(() =>
+  (wikiSections.value ?? []).map((section: any) => ({
+    label: section.name,
+    icon: section.icon || "i-lucide-book-open",
+    to: `/wiki/${section.id}`,
   })),
 );
 
@@ -167,6 +181,12 @@ const items = computed<NavigationMenuItem[][]>(() => [
       label: "Alle Materialien",
       icon: "i-lucide-list",
       to: "/items",
+    },
+    {
+      label: "Wiki",
+      icon: "i-lucide-brain",
+      to: "/wiki",
+      children: wikiLinks.value,
     },
     {
       label: "Rezepte",

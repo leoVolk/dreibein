@@ -25,6 +25,8 @@ export const Collections = {
 	Shoppinglists: "shoppinglists",
 	Shoppinglistsitems: "shoppinglistsitems",
 	Users: "users",
+	Wikipages: "wikipages",
+	Wikisections: "wikisections",
 } as const
 export type Collections = typeof Collections[keyof typeof Collections]
 
@@ -330,6 +332,39 @@ export type UsersRecord = {
 	verified?: boolean
 }
 
+export const WikipagesTagsOptions = {
+	"Lager": "Lager",
+	"Erste Hilfe": "Erste Hilfe",
+	"Abrechnung": "Abrechnung",
+	"Material": "Material",
+	"Projekte": "Projekte",
+	"Anleitungen": "Anleitungen",
+	"Formulare": "Formulare",
+	"HowTos": "HowTos",
+	"Spiele- und Methodensammlung": "Spiele- und Methodensammlung",
+	"Rüsthaus": "Rüsthaus",
+	"Protokolle": "Protokolle",
+} as const
+export type WikipagesTagsOptions = typeof WikipagesTagsOptions[keyof typeof WikipagesTagsOptions]
+export type WikipagesRecord = {
+	content?: HTMLString
+	created: IsoAutoDateString
+	id: string
+	section?: RecordIdString
+	tags?: WikipagesTagsOptions
+	title?: string
+	updated: IsoAutoDateString
+}
+
+export type WikisectionsRecord = {
+	created: IsoAutoDateString
+	icon?: string
+	id: string
+	name?: string
+	order?: number
+	updated: IsoAutoDateString
+}
+
 // Response types include system fields and match responses from the PocketBase API
 export type AuthoriginsResponse<Texpand = unknown> = Required<AuthoriginsRecord> & BaseSystemFields<Texpand>
 export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRecord> & BaseSystemFields<Texpand>
@@ -350,6 +385,8 @@ export type SettingsResponse<Texpand = unknown> = Required<SettingsRecord> & Bas
 export type ShoppinglistsResponse<Texpand = unknown> = Required<ShoppinglistsRecord> & BaseSystemFields<Texpand>
 export type ShoppinglistsitemsResponse<Texpand = unknown> = Required<ShoppinglistsitemsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
+export type WikipagesResponse<Texpand = unknown> = Required<WikipagesRecord> & BaseSystemFields<Texpand>
+export type WikisectionsResponse<Texpand = unknown> = Required<WikisectionsRecord> & BaseSystemFields<Texpand>
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 
@@ -373,6 +410,8 @@ export type CollectionRecords = {
 	shoppinglists: ShoppinglistsRecord
 	shoppinglistsitems: ShoppinglistsitemsRecord
 	users: UsersRecord
+	wikipages: WikipagesRecord
+	wikisections: WikisectionsRecord
 }
 
 export type CollectionResponses = {
@@ -395,6 +434,8 @@ export type CollectionResponses = {
 	shoppinglists: ShoppinglistsResponse
 	shoppinglistsitems: ShoppinglistsitemsResponse
 	users: UsersResponse
+	wikipages: WikipagesResponse
+	wikisections: WikisectionsResponse
 }
 
 // Utility types for create/update operations
