@@ -75,21 +75,21 @@ const router = useRouter();
 const toast = useToast();
 const toastError = useToastError();
 
-const sectionId = route.params.sectionId as string;
+const sectionName = route.params.sectionName as string;
 
 const { data: section } = await useAsyncData(
-  `wiki-section-${sectionId}`,
+  `wiki-section-${sectionName}`,
   () =>
     pb
       .collection(Collections.Wikisections)
-      .getOne<WikisectionsResponse>(sectionId),
+      .getFirstListItem<WikisectionsResponse>(`name = "${sectionName}"`),
 );
 
 const { data: pages } = await useAsyncData(
-  `wiki-pages-${sectionId}`,
+  `wiki-pages-${sectionName}`,
   () =>
     pb.collection(Collections.Wikipages).getFullList<WikipagesResponse>({
-      filter: `section = "${sectionId}"`,
+      filter: `section.name = "${sectionName}"`,
       fields: "id",
       requestKey: null,
     }),
@@ -112,13 +112,13 @@ const onCreatePage = async () => {
   try {
     const record = await pb.collection(Collections.Wikipages).create({
       ...pageState,
-      section: sectionId,
+      section: sectionName,
       content: "",
     });
     toast.add({ title: "Seite erstellt", icon: "i-lucide-file-text" });
     pageOpen.value = false;
     resetPage();
-    router.push(`/wiki/${sectionId}/${record.id}`);
+    router.push(`/wiki/${sectionName}/${record.id}`);
   } catch (e: any) {
     toastError(e);
   } finally {
@@ -130,11 +130,11 @@ const onDeleteSection = async (close: () => void) => {
   try {
     const allPages = await pb
       .collection(Collections.Wikipages)
-      .getFullList({ filter: `section = "${sectionId}"`, requestKey: null });
+      .getFullList({ filter: `section = "${sectionName}"`, requestKey: null });
     await Promise.all(
       allPages.map((p) => pb.collection(Collections.Wikipages).delete(p.id)),
     );
-    await pb.collection(Collections.Wikisections).delete(sectionId);
+    await pb.collection(Collections.Wikisections).delete(sectionName);
     toast.add({ title: "Sektion gelöscht", icon: "i-lucide-trash" });
     close();
     router.push("/wiki");

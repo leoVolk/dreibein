@@ -114,14 +114,14 @@ const { data: allPages, refresh: refreshPages } = await useAsyncData(
 const navigationItems = computed(() =>
   (sections.value ?? []).map((section) => ({
     label: section.name,
-    // to: `/wiki/${section.id}`,
+    to: `/wiki/${section.name}`,
     icon: section.icon || "i-lucide-book-open",
     defaultOpen: true,
     children: (allPages.value ?? [])
       .filter((p) => p.section === section.id)
       .map((p) => ({
         label: p.title,
-        to: `/wiki/${section.id}/${p.id}`,
+        to: `/wiki/${section.name}/${p.title}`,
         icon: "i-lucide-file-text",
       })),
   })),
