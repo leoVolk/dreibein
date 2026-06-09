@@ -63,6 +63,16 @@
       description="Erstelle die erste Seite in dieser Sektion."
       size="sm"
     />
+
+    <div v-else class="flex flex-col gap-4">
+      <UPageCard
+        v-for="page in pages"
+        :key="page.id"
+        :title="page.title"
+        :to="`/wiki/${section?.name}/${page.title}`"
+        :description="page.content || '-'"
+      />
+    </div>
   </div>
 </template>
 
@@ -85,14 +95,11 @@ const { data: section } = await useAsyncData(
       .getFirstListItem<WikisectionsResponse>(`name = "${sectionName}"`),
 );
 
-const { data: pages } = await useAsyncData(
-  `wiki-pages-${sectionName}`,
-  () =>
-    pb.collection(Collections.Wikipages).getFullList<WikipagesResponse>({
-      filter: `section.name = "${sectionName}"`,
-      fields: "id",
-      requestKey: null,
-    }),
+const { data: pages } = await useAsyncData(`wiki-pages-${sectionName}`, () =>
+  pb.collection(Collections.Wikipages).getFullList<WikipagesResponse>({
+    filter: `section.name = "${sectionName}"`,
+    requestKey: null,
+  }),
 );
 
 const tagOptions = Object.values(WikipagesTagsOptions);
@@ -128,9 +135,10 @@ const onCreatePage = async () => {
 
 const onDeleteSection = async (close: () => void) => {
   try {
-    const allPages = await pb
-      .collection(Collections.Wikipages)
-      .getFullList({ filter: `section.name = "${sectionName}"`, requestKey: null });
+    const allPages = await pb.collection(Collections.Wikipages).getFullList({
+      filter: `section.name = "${sectionName}"`,
+      requestKey: null,
+    });
     await Promise.all(
       allPages.map((p) => pb.collection(Collections.Wikipages).delete(p.id)),
     );
