@@ -56,6 +56,14 @@
       </template>
     </UPageHeader>
 
+    <UAlert
+      color="info"
+      variant="outline"
+      title=""
+      description="Erstelle eine neue Seite über `Neue Sektion` oder durch einen Rechtsklick im Inhaltsverzeichnis."
+      icon="i-lucide-info"
+    />
+
     <div class="flex lg:flex-row flex-col gap-6 relative items-start">
       <div
         v-if="sections?.length"

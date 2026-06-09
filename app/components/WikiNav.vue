@@ -19,7 +19,14 @@
       </UCard>
     </UContextMenu>
 
-    <!-- Page creation drawer — triggered by context menu -->
+    <UEmpty
+      v-else
+      icon="i-lucide-book-open"
+      title="Noch keine Sektionen"
+      size="sm"
+    />
+
+    <!-- Page creation drawer -->
     <FormDrawer
       class="hidden"
       v-model:open="pageOpen"
@@ -49,7 +56,36 @@
       </UFormField>
     </FormDrawer>
 
-    <!-- Delete confirmation modal — triggered by context menu -->
+    <!-- Sub-section creation drawer -->
+    <FormDrawer
+      class="hidden"
+      v-model:open="subSectionOpen"
+      title="Neue Untersektion"
+      :loading="subSectionSaving"
+      :state="subSectionState"
+      @submit="onCreateSubSection"
+      @close="resetSubSection"
+    >
+      <template #trigger />
+      <UFormField label="Name" name="name" required class="w-full">
+        <UInput
+          v-model="subSectionState.name"
+          class="w-full"
+          size="lg"
+          placeholder="z.B. Zelte"
+        />
+      </UFormField>
+      <UFormField label="Icon" name="icon" class="w-full">
+        <UInput
+          v-model="subSectionState.icon"
+          class="w-full"
+          size="lg"
+          placeholder="i-lucide-folder"
+        />
+      </UFormField>
+    </FormDrawer>
+
+    <!-- Delete confirmation modal -->
     <UModal
       v-model:open="deleteOpen"
       :title="
@@ -58,8 +94,8 @@
     >
       <template #body>
         <p v-if="deleteTarget?.type === 'section'">
-          Willst du die Sektion „{{ deleteTarget.section.name }}" und alle
-          enthaltenen Seiten wirklich löschen? Diese Aktion kann nicht
+          Willst du „{{ deleteTarget.section.name }}" und alle enthaltenen
+          Untersektionen und Seiten wirklich löschen? Diese Aktion kann nicht
           rückgängig gemacht werden.
         </p>
         <p v-else-if="deleteTarget?.type === 'page'">
@@ -109,23 +145,29 @@ const toast = useToast();
 const toastError = useToastError();
 const router = useRouter();
 
-// ── Navigation items ──────────────────────────────────────────────────────────
+// ── Navigation tree ───────────────────────────────────────────────────────────
 
-const navigationItems = computed(() =>
-  props.sections.map((section) => ({
-    label: section.name,
-    to: `/wiki/${section.name}`,
-    icon: section.icon || "i-lucide-book-open",
-    defaultOpen: true,
-    children: props.allPages
-      .filter((p) => p.section === section.id)
-      .map((p) => ({
-        label: p.title,
-        to: `/wiki/${section.name}/${p.title}`,
-        icon: "i-lucide-file-text",
-      })),
-  })),
-);
+const buildNavTree = (parentId: string | null): object[] =>
+  props.sections
+    .filter((s) => (parentId ? s.parent === parentId : !s.parent))
+    .map((s) => ({
+      label: s.name,
+      to: `/wiki/${s.name}`,
+      icon: s.icon || "i-lucide-book-open",
+      defaultOpen: true,
+      children: [
+        ...buildNavTree(s.id),
+        ...props.allPages
+          .filter((p) => p.section === s.id)
+          .map((p) => ({
+            label: p.title,
+            to: `/wiki/${s.name}/${p.title}`,
+            icon: "i-lucide-file-text",
+          })),
+      ],
+    }));
+
+const navigationItems = computed(() => buildNavTree(null));
 
 // ── Page creation ─────────────────────────────────────────────────────────────
 
@@ -164,6 +206,35 @@ const onCreatePage = async () => {
   }
 };
 
+// ── Sub-section creation ──────────────────────────────────────────────────────
+
+const subSectionOpen = ref(false);
+const subSectionSaving = ref(false);
+const subSectionTargetParent = ref<WikisectionsResponse | null>(null);
+
+const emptySubSectionState = () => ({ name: "", icon: "" });
+const subSectionState = reactive(emptySubSectionState());
+const resetSubSection = () =>
+  Object.assign(subSectionState, emptySubSectionState());
+
+const onCreateSubSection = async () => {
+  if (!subSectionTargetParent.value) return;
+  subSectionSaving.value = true;
+  try {
+    await pb.collection(Collections.Wikisections).create({
+      ...subSectionState,
+      parent: subSectionTargetParent.value.id,
+    });
+    toast.add({ title: "Untersektion erstellt", icon: "i-lucide-folder" });
+    subSectionOpen.value = false;
+    resetSubSection();
+  } catch (e: any) {
+    toastError(e);
+  } finally {
+    subSectionSaving.value = false;
+  }
+};
+
 // ── Deletion ──────────────────────────────────────────────────────────────────
 
 type DeleteTarget =
@@ -174,20 +245,36 @@ const deleteOpen = ref(false);
 const deleteDeleting = ref(false);
 const deleteTarget = ref<DeleteTarget | null>(null);
 
+// Returns all descendants deepest-first so we can delete children before parents.
+const getAllDescendants = (parentId: string): WikisectionsResponse[] => {
+  const direct = props.sections.filter((s) => s.parent === parentId);
+  return [...direct.flatMap((s) => getAllDescendants(s.id)), ...direct];
+};
+
+const deleteSectionCascade = async (section: WikisectionsResponse) => {
+  const descendants = getAllDescendants(section.id);
+  const allIds = [section.id, ...descendants.map((s) => s.id)];
+  for (const id of allIds) {
+    const pages = await pb
+      .collection(Collections.Wikipages)
+      .getFullList({ filter: `section = "${id}"`, requestKey: null });
+    await Promise.all(
+      pages.map((p) => pb.collection(Collections.Wikipages).delete(p.id)),
+    );
+  }
+  // descendants are deepest-first, so children are deleted before their parents
+  for (const s of descendants) {
+    await pb.collection(Collections.Wikisections).delete(s.id);
+  }
+  await pb.collection(Collections.Wikisections).delete(section.id);
+};
+
 const confirmDelete = async (close: () => void) => {
   if (!deleteTarget.value) return;
   deleteDeleting.value = true;
   try {
     if (deleteTarget.value.type === "section") {
-      const { section } = deleteTarget.value;
-      const pages = await pb.collection(Collections.Wikipages).getFullList({
-        filter: `section.name = "${section.name}"`,
-        requestKey: null,
-      });
-      await Promise.all(
-        pages.map((p) => pb.collection(Collections.Wikipages).delete(p.id)),
-      );
-      await pb.collection(Collections.Wikisections).delete(section.id);
+      await deleteSectionCascade(deleteTarget.value.section);
       toast.add({ title: "Sektion gelöscht", icon: "i-lucide-trash" });
       close();
       router.push("/wiki");
@@ -234,12 +321,7 @@ const detectContextTarget = (e: MouseEvent) => {
       (p) => p.title === pageTitle && p.section === section?.id,
     );
     if (section && page) {
-      contextTarget.value = {
-        type: "page",
-        section,
-        pageTitle,
-        pageId: page.id,
-      };
+      contextTarget.value = { type: "page", section, pageTitle, pageId: page.id };
     }
     return;
   }
@@ -266,30 +348,37 @@ const contextMenuItems = computed<ContextMenuItem[][]>(() => {
 
   if (contextTarget.value.type === "section") {
     const { section } = contextTarget.value;
-    return [
-      [
-        {
-          label: `Neue Seite in „${section.name}"`,
-          icon: "i-lucide-file-plus",
-          onSelect: () => {
-            pageTargetSection.value = section;
-            pageOpen.value = true;
-          },
+    const actions: ContextMenuItem[] = [
+      {
+        label: `Neue Seite in „${section.name}"`,
+        icon: "i-lucide-file-plus",
+        onSelect: () => {
+          pageTargetSection.value = section;
+          pageOpen.value = true;
         },
-        {
-          label: "Sektion löschen",
-          icon: "i-lucide-trash",
-          color: "error" as const,
-          onSelect: () => {
-            deleteTarget.value = { type: "section", section };
-            deleteOpen.value = true;
-          },
+      },
+      {
+        label: `Neue Untersektion in „${section.name}"`,
+        icon: "i-lucide-folder-plus",
+        onSelect: () => {
+          subSectionTargetParent.value = section;
+          subSectionOpen.value = true;
         },
-      ],
-      [createSection],
+      },
+      {
+        label: "Sektion löschen",
+        icon: "i-lucide-trash",
+        color: "error" as const,
+        onSelect: () => {
+          deleteTarget.value = { type: "section", section };
+          deleteOpen.value = true;
+        },
+      },
     ];
+    return [actions, [createSection]];
   }
 
+  // Page target
   const { section, pageTitle, pageId } = contextTarget.value;
   return [
     [

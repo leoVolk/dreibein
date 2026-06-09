@@ -47,7 +47,7 @@
 
         <DeleteConfirmModal
           title="Sektion löschen"
-          description="Willst du diese Sektion wirklich löschen? Alle Seiten werden ebenfalls gelöscht."
+          description="Willst du diese Sektion und alle enthaltenen Untersektionen und Seiten wirklich löschen?"
           confirm-label="Sektion löschen"
           @confirm="onDeleteSection"
         >
@@ -56,23 +56,49 @@
       </div>
     </div>
 
+    <!-- Sub-sections (only shown for top-level sections) -->
+    <div v-if="subSections?.length" class="flex flex-col gap-2">
+      <p class="text-sm font-medium text-muted">Untersektionen</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <NuxtLink
+          v-for="sub in subSections"
+          :key="sub.id"
+          :to="`/wiki/${sub.name}`"
+          class="flex items-center gap-3 rounded-lg border border-default p-4 hover:bg-elevated transition-colors"
+        >
+          <UIcon
+            :name="sub.icon || 'i-lucide-folder'"
+            class="size-5 text-primary shrink-0"
+          />
+          <span class="font-medium text-sm">{{ sub.name }}</span>
+        </NuxtLink>
+      </div>
+    </div>
+
+    <!-- Pages -->
+    <div v-if="pages?.length" class="flex flex-col gap-4">
+      <p v-if="subSections?.length" class="text-sm font-medium text-muted">
+        Seiten
+      </p>
+      <UPageCard
+        v-for="page in pages"
+        :key="page.id"
+        :title="page.title"
+        :to="`/wiki/${sectionName}/${page.title}`"
+        :ui="{ container: 'p-4!' }"
+        spotlight
+        spotlight-color="primary"
+      >
+      </UPageCard>
+    </div>
+
     <UEmpty
-      v-if="!pages?.length"
+      v-if="!subSections?.length && !pages?.length"
       icon="i-lucide-file-text"
       title="Noch keine Seiten"
       description="Erstelle die erste Seite in dieser Sektion."
       size="sm"
     />
-
-    <div v-else class="flex flex-col gap-4">
-      <UPageCard
-        v-for="page in pages"
-        :key="page.id"
-        :title="page.title"
-        :to="`/wiki/${section?.name}/${page.title}`"
-        :description="page.content || '-'"
-      />
-    </div>
   </div>
 </template>
 
@@ -93,6 +119,16 @@ const { data: section } = await useAsyncData(
     pb
       .collection(Collections.Wikisections)
       .getFirstListItem<WikisectionsResponse>(`name = "${sectionName}"`),
+);
+
+const { data: subSections } = await useAsyncData(
+  `wiki-subsections-${sectionName}`,
+  () =>
+    pb.collection(Collections.Wikisections).getFullList<WikisectionsResponse>({
+      filter: `parent.name = "${sectionName}"`,
+      sort: "order,name",
+      requestKey: null,
+    }),
 );
 
 const { data: pages } = await useAsyncData(`wiki-pages-${sectionName}`, () =>
@@ -135,12 +171,27 @@ const onCreatePage = async () => {
 
 const onDeleteSection = async (close: () => void) => {
   try {
-    const allPages = await pb.collection(Collections.Wikipages).getFullList({
-      filter: `section.name = "${sectionName}"`,
+    // Delete pages in sub-sections, then sub-sections themselves
+    if (subSections.value?.length) {
+      for (const sub of subSections.value) {
+        const subPages = await pb
+          .collection(Collections.Wikipages)
+          .getFullList({ filter: `section = "${sub.id}"`, requestKey: null });
+        await Promise.all(
+          subPages.map((p) =>
+            pb.collection(Collections.Wikipages).delete(p.id),
+          ),
+        );
+        await pb.collection(Collections.Wikisections).delete(sub.id);
+      }
+    }
+    // Delete direct pages
+    const directPages = await pb.collection(Collections.Wikipages).getFullList({
+      filter: `section = "${section.value!.id}"`,
       requestKey: null,
     });
     await Promise.all(
-      allPages.map((p) => pb.collection(Collections.Wikipages).delete(p.id)),
+      directPages.map((p) => pb.collection(Collections.Wikipages).delete(p.id)),
     );
     await pb.collection(Collections.Wikisections).delete(section.value!.id);
     toast.add({ title: "Sektion gelöscht", icon: "i-lucide-trash" });

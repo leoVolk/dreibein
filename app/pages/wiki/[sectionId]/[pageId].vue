@@ -15,7 +15,8 @@
           />
           <h1
             v-else
-            class="text-3xl sm:text-4xl font-bold text-highlighted text-pretty"
+            class="text-3xl sm:text-4xl font-bold text-highlighted text-pretty cursor-text"
+            @dblclick="startEdit"
           >
             {{ page.title }}
           </h1>
@@ -96,10 +97,15 @@
       </UEditor>
       <div
         v-else-if="page.content"
-        class="prose dark:prose-invert max-w-none"
+        class="prose dark:prose-invert max-w-none cursor-text"
         v-html="page.content"
+        @dblclick="startEdit"
       />
-      <p v-else class="text-muted text-sm italic">
+      <p
+        v-else
+        class="text-muted text-sm italic cursor-text"
+        @dblclick="startEdit"
+      >
         Noch kein Inhalt. Klicke auf Bearbeiten, um loszulegen.
       </p>
     </div>
