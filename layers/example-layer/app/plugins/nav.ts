@@ -1,5 +1,5 @@
 export default defineNuxtPlugin(() => {
-  const { register } = useModNav();
+  const { register } = useLayerNav();
 
   register({
     label: "Beispiel-Erweiterung",

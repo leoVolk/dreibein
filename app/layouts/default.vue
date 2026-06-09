@@ -100,7 +100,7 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 
 const { user, signOut } = usePocketbaseAuth();
 const { pb } = usePocketbase();
-const { items: modNavItems } = useModNav();
+const { items: layerNavItems } = useLayerNav();
 
 const router = useRouter();
 
@@ -180,7 +180,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
       to: "/recipes",
     },
     /* Entries for layers */
-    /* ...modNavItems.value, */
+    /* ...layerNavItems.value, */
   ],
   [
     {
