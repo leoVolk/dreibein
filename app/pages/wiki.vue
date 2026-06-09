@@ -56,30 +56,19 @@
       </template>
     </UPageHeader>
 
-    <div class="grid grid-cols-4 gap-6 relative items-start">
-      <div class="lg:col-span-1 col-span-4 lg:sticky top-0">
-        <UCard class="z-auto" :ui="{ body: 'p-2!' }" v-if="sections?.length">
-          <template #header>
-            <span class="text-lg font-medium">Inhaltsverzeichnis</span>
-          </template>
-          <template #default>
-            <UNavigationMenu
-              :items="navigationItems"
-              orientation="vertical"
-              highlight
-            />
-          </template>
-        </UCard>
-
-        <UEmpty
-          v-else
-          icon="i-lucide-book-open"
-          title="Noch keine Sektionen"
-          size="sm"
+    <div class="flex lg:flex-row flex-col gap-6 relative items-start">
+      <div
+        v-if="sections?.length"
+        class="lg:sticky flex-1 w-full lg:max-w-1/4 top-0"
+      >
+        <WikiNav
+          :sections="sections ?? []"
+          :all-pages="allPages ?? []"
+          @create-section="sectionOpen = true"
         />
       </div>
 
-      <div class="lg:col-span-3 col-span-4">
+      <div class="flex-1 w-full">
         <NuxtPage />
       </div>
     </div>
@@ -88,25 +77,6 @@
 
 <script lang="ts" setup>
 definePageMeta({ middleware: ["auth"] });
-
-import type { ContextMenuItem } from "@nuxt/ui";
-
-const contextMenuItems = ref<ContextMenuItem[][]>([
-  [
-    {
-      label: "Neue Sektion",
-      onSelect() {
-        sectionOpen.value = true;
-      },
-    },
-    {
-      label: "Neue Seite",
-      onSelect(e) {
-        console.log(e);
-      },
-    },
-  ],
-]);
 
 const { pb } = usePocketbase();
 const toast = useToast();
@@ -128,22 +98,6 @@ const { data: allPages, refresh: refreshPages } = await useAsyncData(
       sort: "title",
       requestKey: null,
     }),
-);
-
-const navigationItems = computed(() =>
-  (sections.value ?? []).map((section) => ({
-    label: section.name,
-    to: `/wiki/${section.name}`,
-    icon: section.icon || "i-lucide-book-open",
-    defaultOpen: true,
-    children: (allPages.value ?? [])
-      .filter((p) => p.section === section.id)
-      .map((p) => ({
-        label: p.title,
-        to: `/wiki/${section.name}/${p.title}`,
-        icon: "i-lucide-file-text",
-      })),
-  })),
 );
 
 useRealtimeRefresh("wikisections", refreshSections);
