@@ -163,6 +163,85 @@ npm run generate-types
 
 ---
 
+## Extensions
+
+3Bein supports community extensions via [Nuxt Layers](https://nuxt.com/docs/guide/going-further/layers). An extension is a self-contained folder that can add pages, components, composables, and a sidebar nav entry — without touching any core files.
+
+Nuxt automatically picks up any layer placed in the `layers/` directory — no config change required.
+
+> **Limitation:** Extensions are build-time only. Adding or removing one requires a rebuild (`docker-compose up --build` or `npm run build`).
+
+### Adding an extension
+
+Drop the layer folder into `layers/` and rebuild:
+
+```
+layers/
+└── my-extension/     ← Nuxt discovers this automatically
+```
+
+### Anatomy of an extension
+
+```
+layers/my-extension/
+├── nuxt.config.ts          # required — marks this directory as a Nuxt layer
+└── app/
+    ├── pages/
+    │   └── my-extension.vue  # adds /my-extension to the router automatically
+    ├── components/           # auto-imported alongside core components
+    ├── composables/          # auto-imported
+    └── plugins/
+        └── nav.ts            # registers a sidebar entry via useNavExtensions()
+```
+
+**`nuxt.config.ts`** (minimal):
+
+```ts
+import { defineNuxtConfig } from "nuxt/config";
+export default defineNuxtConfig({});
+```
+
+**`app/plugins/nav.ts`** — injects a sidebar entry:
+
+```ts
+export default defineNuxtPlugin(() => {
+  useModNav().register({
+    label: "My Extension",
+    icon: "i-lucide-puzzle",
+    to: "/my-extension",
+  });
+});
+```
+
+**`app/pages/my-extension.vue`** — a normal Nuxt page:
+
+```vue
+<template>
+  <div>
+    <h1>My Extension</h1>
+  </div>
+</template>
+
+<script lang="ts" setup>
+definePageMeta({ middleware: ["auth"] });
+</script>
+```
+
+### PocketBase extensions
+
+Layers can also ship backend logic by including:
+
+- `db/pb_migrations/` — new collections or schema changes (PocketBase loads all migration files on startup)
+- `db/pb_hooks/` — JavaScript server-side hooks
+
+### Example layer
+
+`layers/example-layer/` is included in the repo as a working reference. It adds a "Beispiel-Erweiterung" entry to the sidebar and a single page at `/example-layer`. Delete the folder to remove it.
+
+For more on the Nuxt Layer system see the [official documentation](https://nuxt.com/docs/guide/going-further/layers).
+
+---
+
 ## Tech Stack
 
 | Layer    | Technology                                                                     |

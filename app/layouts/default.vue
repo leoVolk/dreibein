@@ -100,6 +100,7 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 
 const { user, signOut } = usePocketbaseAuth();
 const { pb } = usePocketbase();
+const { items: modNavItems } = useModNav();
 
 const router = useRouter();
 
@@ -178,6 +179,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
       icon: "i-lucide-cooking-pot",
       to: "/recipes",
     },
+    ...modNavItems.value,
   ],
   [
     {
