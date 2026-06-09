@@ -1,8 +1,10 @@
 <template>
   <div class="flex flex-col gap-2">
     <div v-if="recentPages?.length" class="flex flex-col gap-2">
-      <p class="text-sm font-medium text-muted">Zuletzt aktualisiert</p>
-      <UCard :ui="{ body: 'p-0' }">
+      <UCard>
+        <template #header>
+          <p class="text-lg font-medium">Zuletzt aktualisiert</p>
+        </template>
         <ul class="divide-y divide-default">
           <li v-for="page in recentPages" :key="page.id">
             <NuxtLink
@@ -10,13 +12,23 @@
               class="flex items-center justify-between px-4 py-3 hover:bg-elevated transition-colors"
             >
               <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-file-text" class="size-4 text-muted shrink-0" />
+                <UIcon
+                  name="i-lucide-file-text"
+                  class="size-4 text-muted shrink-0"
+                />
                 <span class="font-medium text-sm">{{ page.title }}</span>
-                <UBadge v-if="page.tags" color="neutral" variant="subtle" size="xs">
+                <UBadge
+                  v-if="page.tags"
+                  color="neutral"
+                  variant="subtle"
+                  size="xs"
+                >
                   {{ page.tags }}
                 </UBadge>
               </div>
-              <span class="text-xs text-muted">{{ formatDate(page.updated) }}</span>
+              <span class="text-xs text-muted">{{
+                formatDate(page.updated)
+              }}</span>
             </NuxtLink>
           </li>
         </ul>

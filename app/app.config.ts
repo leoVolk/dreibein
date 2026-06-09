@@ -31,6 +31,11 @@ export default defineAppConfig({
         label: 'text-lg'
       }
     },
+    card: {
+      slots: {
+        body: '!p-2'
+      }
+    },
     pageHeader: {
       slots: {
         root: 'pb-4 pt-0'

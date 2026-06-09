@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-col gap-4">
-    <UPageHeader v-if="page" class="sticky top-0">
+    <UPageHeader
+      v-if="page"
+      class="sticky top-0 px-4 dark:bg-neutral-900/50 bg-neutral-50/50 backdrop-blur-sm"
+    >
       <template #headline>
         <div class="flex justify-between w-full items-center gap-4">
           <UInput
@@ -76,7 +79,7 @@
       </template>
     </UPageHeader>
 
-    <div v-if="page">
+    <div v-if="page" class="px-4">
       <UEditor
         v-if="isEditing"
         v-slot="{ editor }"
