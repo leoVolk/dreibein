@@ -144,7 +144,7 @@ const wikiLinks = computed(() =>
   (wikiSections.value ?? []).map((section: any) => ({
     label: section.name,
     icon: section.icon || "i-lucide-book-open",
-    to: `/wiki/${section.id}`,
+    to: `/wiki/${section.name}`,
   })),
 );
 

@@ -75,7 +75,7 @@ const router = useRouter();
 const toast = useToast();
 const toastError = useToastError();
 
-const sectionName = route.params.sectionName as string;
+const sectionName = route.params.sectionId as string;
 
 const { data: section } = await useAsyncData(
   `wiki-section-${sectionName}`,
@@ -112,13 +112,13 @@ const onCreatePage = async () => {
   try {
     const record = await pb.collection(Collections.Wikipages).create({
       ...pageState,
-      section: sectionName,
+      section: section.value!.id,
       content: "",
     });
     toast.add({ title: "Seite erstellt", icon: "i-lucide-file-text" });
     pageOpen.value = false;
     resetPage();
-    router.push(`/wiki/${sectionName}/${record.id}`);
+    router.push(`/wiki/${sectionName}/${record.title}`);
   } catch (e: any) {
     toastError(e);
   } finally {
@@ -130,11 +130,11 @@ const onDeleteSection = async (close: () => void) => {
   try {
     const allPages = await pb
       .collection(Collections.Wikipages)
-      .getFullList({ filter: `section = "${sectionName}"`, requestKey: null });
+      .getFullList({ filter: `section.name = "${sectionName}"`, requestKey: null });
     await Promise.all(
       allPages.map((p) => pb.collection(Collections.Wikipages).delete(p.id)),
     );
-    await pb.collection(Collections.Wikisections).delete(sectionName);
+    await pb.collection(Collections.Wikisections).delete(section.value!.id);
     toast.add({ title: "Sektion gelöscht", icon: "i-lucide-trash" });
     close();
     router.push("/wiki");

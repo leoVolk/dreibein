@@ -58,7 +58,7 @@
 
     <div class="grid grid-cols-4 gap-6 relative items-start">
       <div class="lg:col-span-1 col-span-4 lg:sticky top-0">
-        <UCard v-if="sections?.length" class="z-auto" :ui="{ body: 'p-2!' }">
+        <UCard class="z-auto" :ui="{ body: 'p-2!' }" v-if="sections?.length">
           <template #header>
             <span class="text-lg font-medium">Inhaltsverzeichnis</span>
           </template>
@@ -88,6 +88,25 @@
 
 <script lang="ts" setup>
 definePageMeta({ middleware: ["auth"] });
+
+import type { ContextMenuItem } from "@nuxt/ui";
+
+const contextMenuItems = ref<ContextMenuItem[][]>([
+  [
+    {
+      label: "Neue Sektion",
+      onSelect() {
+        sectionOpen.value = true;
+      },
+    },
+    {
+      label: "Neue Seite",
+      onSelect(e) {
+        console.log(e);
+      },
+    },
+  ],
+]);
 
 const { pb } = usePocketbase();
 const toast = useToast();

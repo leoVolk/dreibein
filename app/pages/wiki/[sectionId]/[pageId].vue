@@ -117,15 +117,13 @@ const router = useRouter();
 const toast = useToast();
 const toastError = useToastError();
 
-const sectionId = route.params.sectionId as string;
-const pageId = route.params.pageId as string;
+const sectionName = route.params.sectionId as string;
+const pageTitle = route.params.pageId as string;
 
-type PageExpand = { section: WikisectionsResponse };
-
-const { data: page, refresh } = await useAsyncData(`wiki-page-${pageId}`, () =>
+const { data: page, refresh } = await useAsyncData(`wiki-page-${sectionName}-${pageTitle}`, () =>
   pb
     .collection(Collections.Wikipages)
-    .getOne<WikipagesResponse<PageExpand>>(pageId, { expand: "section" }),
+    .getFirstListItem<WikipagesResponse>(`title = "${pageTitle}" && section.name = "${sectionName}"`),
 );
 
 const tagOptions = Object.values(WikipagesTagsOptions);
@@ -154,10 +152,14 @@ const onCancel = () => {
 const onSave = async () => {
   saving.value = true;
   try {
-    await pb.collection(Collections.Wikipages).update(pageId, editState);
+    await pb.collection(Collections.Wikipages).update(page.value!.id, editState);
     toast.add({ title: "Seite gespeichert", icon: "i-lucide-save" });
     isEditing.value = false;
-    await refresh();
+    if (editState.title !== pageTitle) {
+      router.replace(`/wiki/${sectionName}/${editState.title}`);
+    } else {
+      await refresh();
+    }
   } catch (e: any) {
     toastError(e);
   } finally {
@@ -167,7 +169,7 @@ const onSave = async () => {
 
 const onDelete = async (close: () => void) => {
   try {
-    await pb.collection(Collections.Wikipages).delete(pageId);
+    await pb.collection(Collections.Wikipages).delete(page.value!.id);
     toast.add({ title: "Seite gelöscht", icon: "i-lucide-trash" });
     close();
     router.push(`/wiki`);

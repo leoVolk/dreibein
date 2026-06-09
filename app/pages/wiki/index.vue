@@ -8,7 +8,7 @@
         <ul class="divide-y divide-default">
           <li v-for="page in recentPages" :key="page.id">
             <NuxtLink
-              :to="`/wiki/${page.section}/${page.id}`"
+              :to="`/wiki/${page.expand?.section?.name ?? page.section}/${page.title}`"
               class="flex items-center justify-between px-4 py-3 hover:bg-elevated transition-colors"
             >
               <div class="flex items-center gap-2">
@@ -50,10 +50,12 @@ definePageMeta({ middleware: ["auth"] });
 
 const { pb } = usePocketbase();
 
+type PageExpand = { section: WikisectionsResponse };
+
 const { data: recentPages } = await useAsyncData("wiki-recent-pages", () =>
   pb
     .collection(Collections.Wikipages)
-    .getList<WikipagesResponse>(1, 8, { sort: "-updated", requestKey: null })
+    .getList<WikipagesResponse<PageExpand>>(1, 8, { sort: "-updated", expand: "section", requestKey: null })
     .then((r) => r.items),
 );
 
