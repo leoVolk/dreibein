@@ -179,7 +179,8 @@ const items = computed<NavigationMenuItem[][]>(() => [
       icon: "i-lucide-cooking-pot",
       to: "/recipes",
     },
-    ...modNavItems.value,
+    /* Entries for layers */
+    /* ...modNavItems.value, */
   ],
   [
     {
