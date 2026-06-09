@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-2">
     <div v-if="recentPages?.length" class="flex flex-col gap-2">
-      <UCard>
+      <UCard :ui="{ body: 'p-2!' }">
         <template #header>
           <p class="text-lg font-medium">Zuletzt aktualisiert</p>
         </template>

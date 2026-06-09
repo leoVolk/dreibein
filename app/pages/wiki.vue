@@ -58,7 +58,7 @@
 
     <div class="grid grid-cols-4 gap-6 relative items-start">
       <div class="lg:col-span-1 col-span-4 lg:sticky top-0">
-        <UCard v-if="sections?.length" class="z-auto">
+        <UCard v-if="sections?.length" class="z-auto" :ui="{ body: 'p-2!' }">
           <template #header>
             <span class="text-lg font-medium">Inhaltsverzeichnis</span>
           </template>
