@@ -1,18 +1,6 @@
 <template>
   <div class="flex flex-col gap-4">
-    <UBreadcrumb
-      :items="[
-        { label: 'Home', to: '/' },
-        { label: 'Wiki', to: '/wiki' },
-        {
-          label: page?.expand?.section?.name ?? '...',
-          to: `/wiki/${sectionId}`,
-        },
-        { label: page?.title ?? '...' },
-      ]"
-    />
-
-    <UPageHeader v-if="page">
+    <UPageHeader v-if="page" class="sticky top-0">
       <template #headline>
         <div class="flex justify-between w-full items-center gap-4">
           <UInput
@@ -58,7 +46,11 @@
                 confirm-label="Seite löschen"
                 @confirm="onDelete"
               >
-                <UButton icon="i-lucide-trash" color="error" variant="outline" />
+                <UButton
+                  icon="i-lucide-trash"
+                  color="error"
+                  variant="outline"
+                />
               </DeleteConfirmModal>
             </template>
           </div>
@@ -84,7 +76,7 @@
       </template>
     </UPageHeader>
 
-    <UCard v-if="page">
+    <div v-if="page">
       <UEditor
         v-if="isEditing"
         v-slot="{ editor }"
@@ -107,7 +99,7 @@
       <p v-else class="text-muted text-sm italic">
         Noch kein Inhalt. Klicke auf Bearbeiten, um loszulegen.
       </p>
-    </UCard>
+    </div>
   </div>
 </template>
 
@@ -127,12 +119,10 @@ const pageId = route.params.pageId as string;
 
 type PageExpand = { section: WikisectionsResponse };
 
-const { data: page, refresh } = await useAsyncData(
-  `wiki-page-${pageId}`,
-  () =>
-    pb
-      .collection(Collections.Wikipages)
-      .getOne<WikipagesResponse<PageExpand>>(pageId, { expand: "section" }),
+const { data: page, refresh } = await useAsyncData(`wiki-page-${pageId}`, () =>
+  pb
+    .collection(Collections.Wikipages)
+    .getOne<WikipagesResponse<PageExpand>>(pageId, { expand: "section" }),
 );
 
 const tagOptions = Object.values(WikipagesTagsOptions);
@@ -177,7 +167,7 @@ const onDelete = async (close: () => void) => {
     await pb.collection(Collections.Wikipages).delete(pageId);
     toast.add({ title: "Seite gelöscht", icon: "i-lucide-trash" });
     close();
-    router.push(`/wiki/${sectionId}`);
+    router.push(`/wiki`);
   } catch (e: any) {
     toastError(e);
   }
@@ -196,10 +186,30 @@ const toolbarItems = [
       icon: "i-lucide-heading",
       content: { align: "start" },
       items: [
-        { kind: "heading", level: 1, icon: "i-lucide-heading-1", label: "Überschrift 1" },
-        { kind: "heading", level: 2, icon: "i-lucide-heading-2", label: "Überschrift 2" },
-        { kind: "heading", level: 3, icon: "i-lucide-heading-3", label: "Überschrift 3" },
-        { kind: "heading", level: 4, icon: "i-lucide-heading-4", label: "Überschrift 4" },
+        {
+          kind: "heading",
+          level: 1,
+          icon: "i-lucide-heading-1",
+          label: "Überschrift 1",
+        },
+        {
+          kind: "heading",
+          level: 2,
+          icon: "i-lucide-heading-2",
+          label: "Überschrift 2",
+        },
+        {
+          kind: "heading",
+          level: 3,
+          icon: "i-lucide-heading-3",
+          label: "Überschrift 3",
+        },
+        {
+          kind: "heading",
+          level: 4,
+          icon: "i-lucide-heading-4",
+          label: "Überschrift 4",
+        },
       ],
     },
   ],
