@@ -362,6 +362,7 @@ export type WikisectionsRecord = {
 	id: string
 	name?: string
 	order?: number
+	parent?: RecordIdString
 	updated: IsoAutoDateString
 }
 
