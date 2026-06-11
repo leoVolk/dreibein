@@ -13,8 +13,8 @@
 
     <UCard>
       <template #header>
-        <div v-if="!isEditing" class="flex justify-between items-center">
-          <h2 class="text-2xl">{{ note.name }}</h2>
+        <div v-if="!isEditing" class="flex flex-wrap justify-between items-center gap-3">
+          <h2 class="text-2xl min-w-0">{{ note.name }}</h2>
 
           <UButton
             label="Bearbeiten"

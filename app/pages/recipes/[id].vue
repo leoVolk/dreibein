@@ -10,13 +10,13 @@
 
     <UPageHeader v-if="recipe">
       <template #headline>
-        <div class="flex justify-between w-full items-center gap-4">
+        <div class="flex flex-wrap justify-between w-full items-center gap-3">
           <h1
-            class="text-3xl sm:text-4xl font-bold text-highlighted text-pretty"
+            class="text-3xl sm:text-4xl font-bold text-highlighted text-pretty min-w-0"
           >
             {{ recipe.name }}
           </h1>
-          <div class="flex gap-2">
+          <div class="flex gap-2 shrink-0">
             <RecipeAddToShoppingListModal v-if="recipe" :recipe="recipe" />
 
             <RecipeFormDrawer

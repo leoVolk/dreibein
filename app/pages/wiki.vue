@@ -9,8 +9,8 @@
 
     <UPageHeader>
       <template #headline>
-        <div class="flex justify-between w-full items-center gap-4">
-          <h1 class="text-3xl sm:text-4xl font-bold text-highlighted">Wiki</h1>
+        <div class="flex flex-wrap justify-between w-full items-center gap-3">
+          <h1 class="text-3xl sm:text-4xl font-bold text-highlighted min-w-0">Wiki</h1>
           <FormDrawer
             v-model:open="sectionOpen"
             title="Neue Sektion"

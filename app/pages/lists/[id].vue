@@ -11,13 +11,13 @@
     <div v-if="list">
       <UPageHeader>
         <template #headline>
-          <div class="flex justify-between w-full items-center gap-4">
+          <div class="flex flex-wrap justify-between w-full items-center gap-3">
             <h1
-              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted min-w-0"
             >
               {{ list.name }}
             </h1>
-            <div class="flex gap-4">
+            <div class="flex gap-2 shrink-0">
               <CreateItem :list="list!" @refresh="refreshItems()" />
               <DeleteConfirmModal
                 title="Liste löschen"

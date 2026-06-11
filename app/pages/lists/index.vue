@@ -12,13 +12,13 @@
     <div v-if="data?.length">
       <UPageHeader>
         <template #headline>
-          <div class="flex justify-between w-full items-center gap-4">
+          <div class="flex flex-wrap justify-between w-full items-center gap-3">
             <h1
-              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted min-w-0"
             >
               Material Listen
             </h1>
-            <CreateList @refresh="refresh()" />
+            <CreateList class="shrink-0" @refresh="refresh()" />
           </div>
         </template>
       </UPageHeader>

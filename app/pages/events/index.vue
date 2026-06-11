@@ -12,13 +12,13 @@
     <div v-if="events?.length">
       <UPageHeader>
         <template #headline>
-          <div class="flex justify-between w-full items-center gap-4">
+          <div class="flex flex-wrap justify-between w-full items-center gap-3">
             <h1
-              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted"
+              class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted min-w-0"
             >
               Läger & Aktionen
             </h1>
-            <AddEvent @refresh="refresh()" />
+            <AddEvent class="shrink-0" @refresh="refresh()" />
           </div>
         </template>
       </UPageHeader>

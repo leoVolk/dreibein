@@ -5,22 +5,22 @@
       class="sticky top-0 px-4 dark:bg-neutral-900/50 bg-neutral-50/50 backdrop-blur-sm"
     >
       <template #headline>
-        <div class="flex justify-between w-full items-center gap-4">
+        <div class="flex flex-wrap justify-between w-full items-center gap-3">
           <UInput
             v-if="isEditing"
             v-model="editState.title"
-            class="flex-1 text-3xl font-bold"
+            class="flex-1 min-w-0 text-3xl font-bold"
             size="xl"
             placeholder="Seitentitel"
           />
           <h1
             v-else
-            class="text-3xl sm:text-4xl font-bold text-highlighted text-pretty cursor-text"
+            class="text-3xl sm:text-4xl font-bold text-highlighted text-pretty cursor-text min-w-0"
             @dblclick="startEdit"
           >
             {{ page.title }}
           </h1>
-          <div class="flex gap-2">
+          <div class="flex gap-2 shrink-0">
             <template v-if="isEditing">
               <UButton
                 icon="i-lucide-x"

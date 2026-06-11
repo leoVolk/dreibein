@@ -1,15 +1,15 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div v-if="section" class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
+    <div v-if="section" class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
         <UIcon
           v-if="section.icon"
           :name="section.icon"
           class="size-6 text-primary shrink-0"
         />
-        <h2 class="text-xl font-semibold">{{ section.name }}</h2>
+        <h2 class="text-xl font-semibold truncate">{{ section.name }}</h2>
       </div>
-      <div class="flex gap-2">
+      <div class="flex gap-2 shrink-0">
         <FormDrawer
           v-model:open="pageOpen"
           title="Neue Seite"
