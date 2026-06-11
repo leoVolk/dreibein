@@ -26,6 +26,7 @@
     "@fullcalendar/vue3": "^6.1.20",
     "@nuxt/ui": "^4.5.1",
     "@nuxtjs/mdc": "^0.20.1",
+    "@nuxtjs/robots": "^6.1.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "nuxt": "^4.3.0",
