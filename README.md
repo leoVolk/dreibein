@@ -1,6 +1,6 @@
 # 3Bein
 
-A self-hosted management platform for scout groups. Built on top of [PocketBase](https://pocketbase.io) and [Nuxt 3](https://nuxt.com), served as a single binary + SPA.
+A self-hosted management platform for scout groups. Built on top of [PocketBase](https://pocketbase.io) and [Nuxt 4](https://nuxt.com), served as a single binary + SPA.
 
 ## Features
 
@@ -246,8 +246,8 @@ For more on the Nuxt Layer system see the [official documentation](https://nuxt.
 
 | Layer    | Technology                                                                     |
 | -------- | ------------------------------------------------------------------------------ |
-| Frontend | [Nuxt 3](https://nuxt.com) (SPA mode)                                          |
-| UI       | [Nuxt UI v3](https://ui.nuxt.com) + [Tailwind CSS v4](https://tailwindcss.com) |
+| Frontend | [Nuxt 4](https://nuxt.com) (SPA mode)                                          |
+| UI       | [Nuxt UI v4](https://ui.nuxt.com) + [Tailwind CSS v4](https://tailwindcss.com) |
 | Backend  | [PocketBase](https://pocketbase.io) (Go)                                       |
 | Hooks    | PocketBase JSVM (JavaScript)                                                   |
 | Database | SQLite (embedded in PocketBase)                                                |
