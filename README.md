@@ -12,6 +12,7 @@ A self-hosted management platform for scout groups. Built on top of [PocketBase]
 - **Calendar** — overview of all upcoming events
 - **Invite system** — token-based, time-limited email invites (no open registration)
 - **NaMi Integration** — read-only live connection to the DPSG NaMi member database
+- **Internal Wiki** - rich-text, section/page-based wiki
 
 ---
 
