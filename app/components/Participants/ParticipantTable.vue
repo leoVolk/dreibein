@@ -50,6 +50,34 @@
       </UBadge>
     </template>
 
+    <template #disinfection-cell="{ row }">
+      <UCheckbox
+        :model-value="row.original.disinfection"
+        @update:model-value="onToggle(row.original, 'disinfection')"
+      />
+    </template>
+
+    <template #fever-cell="{ row }">
+      <UCheckbox
+        :model-value="row.original.fever"
+        @update:model-value="onToggle(row.original, 'fever')"
+      />
+    </template>
+
+    <template #splinter-cell="{ row }">
+      <UCheckbox
+        :model-value="row.original.splinter"
+        @update:model-value="onToggle(row.original, 'splinter')"
+      />
+    </template>
+
+    <template #tick-cell="{ row }">
+      <UCheckbox
+        :model-value="row.original.tick"
+        @update:model-value="onToggle(row.original, 'tick')"
+      />
+    </template>
+
     <template #actions-cell="{ row }">
       <div class="flex items-center gap-1">
         <UTooltip
@@ -113,8 +141,25 @@ const columns = computed<TableColumn<ParticipantsResponse>[]>(() => [
       ]
     : []),
   { header: "Notizen", accessorKey: "notes" },
+  { id: "disinfection", header: "Desinfektion" },
+  { id: "fever", header: "Fieber" },
+  { id: "splinter", header: "Splitter" },
+  { id: "tick", header: "Zecke" },
   { header: "", id: "actions" },
 ]);
+
+type BooleanField = "disinfection" | "fever" | "splinter" | "tick";
+
+const onToggle = async (participant: ParticipantsResponse, field: BooleanField) => {
+  try {
+    await pb
+      .collection(Collections.Participants)
+      .update(participant.id, { [field]: !participant[field] });
+    emit("refresh");
+  } catch (error: any) {
+    toastError(error);
+  }
+};
 
 const onTogglePaid = async (participant: ParticipantsResponse) => {
   try {
