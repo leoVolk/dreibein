@@ -1,4 +1,4 @@
-const bool = (v: boolean) => (v ? "✓" : "");
+const bool = (v: boolean) => (v ? "Ja" : "Nein");
 
 export const useParticipantsPDF = () => {
   const exportPDF = async (participants: ParticipantsResponse[], eventName?: string) => {
