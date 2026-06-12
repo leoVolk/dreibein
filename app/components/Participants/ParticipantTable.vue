@@ -80,6 +80,10 @@
 
     <template #actions-cell="{ row }">
       <div class="flex items-center gap-1">
+        <ParticipantEditDrawer
+          :participant="row.original"
+          @refresh="emit('refresh')"
+        />
         <UTooltip
           :text="
             row.original.paid
@@ -140,17 +144,23 @@ const columns = computed<TableColumn<ParticipantsResponse>[]>(() => [
         } as TableColumn<ParticipantsResponse>,
       ]
     : []),
-  { header: "Notizen", accessorKey: "notes" },
   { id: "disinfection", header: "Desinfektion" },
   { id: "fever", header: "Fieber" },
   { id: "splinter", header: "Splitter" },
   { id: "tick", header: "Zecke" },
+  { header: "Ernährungswünsche", accessorKey: "dietaryPreferences" },
+  { header: "Allergien", accessorKey: "allergies" },
+  { header: "Krankheiten", accessorKey: "illnesses" },
+  { header: "Medikamente", accessorKey: "medications" },
   { header: "", id: "actions" },
 ]);
 
 type BooleanField = "disinfection" | "fever" | "splinter" | "tick";
 
-const onToggle = async (participant: ParticipantsResponse, field: BooleanField) => {
+const onToggle = async (
+  participant: ParticipantsResponse,
+  field: BooleanField,
+) => {
   try {
     await pb
       .collection(Collections.Participants)
