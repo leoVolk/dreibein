@@ -220,22 +220,32 @@ export type NotesRecord = {
 
 export type ParticipantsRecord = {
 	age?: number
+	allergies?: string
 	city?: string
 	created: IsoAutoDateString
+	dietaryPreferences?: string
+	disinfection?: boolean
 	email?: string
 	emailGuardian?: string
 	event?: RecordIdString
+	fever?: boolean
 	firstname?: string
 	id: string
+	illnesses?: string
 	isLeader?: boolean
 	lastname?: string
+	medications?: string
 	mobile?: string
+	nameGuardian?: string
 	notes?: string
+	other?: string
 	paid?: boolean
 	phone?: string
 	phoneGuardian?: string
 	rank?: string
+	splinter?: boolean
 	street?: string
+	tick?: boolean
 	updated: IsoAutoDateString
 	zip?: number
 }
