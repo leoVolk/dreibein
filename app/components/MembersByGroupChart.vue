@@ -62,31 +62,12 @@ const props = defineProps<{
   } | null;
 }>();
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Biber: "bg-white",
-  Wölfling: "bg-orange-500",
-  Jungpfadfinder: "bg-blue-600",
-  Pfadfinder: "bg-green-500",
-  Rover: "bg-red-500",
-  Vorstand: "bg-yellow-500",
-  Rechtsträger: "bg-fuchsia-500",
-  Sonstige: "bg-gray-500",
-};
-
-const FALLBACK_COLORS = [
-  "bg-cyan-500",
-  "bg-pink-500",
-  "bg-lime-500",
-  "bg-indigo-500",
-];
-
 const rows = computed(() =>
   (props.stats?.statsCategories ?? []).map((c, i) => ({
     id: c.name,
     name: c.name,
     count: c.count,
-    colorClass:
-      CATEGORY_COLORS[c.name] ?? FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+    colorClass: getRankColor(c.name, i).tailwind,
   })),
 );
 
