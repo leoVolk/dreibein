@@ -8,10 +8,21 @@
     <template #name-cell="{ row }">
       <div class="flex items-center gap-2">
         <span>{{ row.original.firstname }} {{ row.original.lastname }}</span>
-        <UBadge v-if="row.original.isLeader" color="primary" variant="subtle" size="xs">
+        <UBadge
+          v-if="row.original.isLeader"
+          color="primary"
+          variant="subtle"
+          size="xs"
+        >
           Leitung
         </UBadge>
       </div>
+    </template>
+
+    <template #rank-cell="{ row }">
+      <UBadge :class="`${getRankColor(row.original.rank).tailwind}`">
+        {{ row.original.rank }}
+      </UBadge>
     </template>
 
     <template #contact-cell="{ row }">
@@ -24,7 +35,10 @@
     </template>
 
     <template v-if="showAddress" #address-cell="{ row }">
-      <div v-if="row.original.street" class="flex flex-col gap-0.5 text-xs text-muted">
+      <div
+        v-if="row.original.street"
+        class="flex flex-col gap-0.5 text-xs text-muted"
+      >
         <span>{{ row.original.street }}</span>
         <span>{{ row.original.zip }} {{ row.original.city }}</span>
       </div>
@@ -39,11 +53,19 @@
     <template #actions-cell="{ row }">
       <div class="flex items-center gap-1">
         <UTooltip
-          :text="row.original.paid ? 'Als ausstehend markieren' : 'Als bezahlt markieren'"
+          :text="
+            row.original.paid
+              ? 'Als ausstehend markieren'
+              : 'Als bezahlt markieren'
+          "
           :delay-duration="100"
         >
           <UButton
-            :icon="row.original.paid ? 'i-lucide-banknote-x' : 'i-lucide-banknote-arrow-up'"
+            :icon="
+              row.original.paid
+                ? 'i-lucide-banknote-x'
+                : 'i-lucide-banknote-arrow-up'
+            "
             :color="row.original.paid ? 'error' : 'success'"
             variant="ghost"
             @click="onTogglePaid(row.original)"
@@ -78,11 +100,18 @@ const columnPinning = ref({ right: ["actions"] });
 
 const columns = computed<TableColumn<ParticipantsResponse>[]>(() => [
   { id: "name", header: "Name" },
-  { id: "paid", header: "Bezahlt" },
+  { id: "paid", header: "Bezahlung" },
   { header: "Stufe", accessorKey: "rank" },
   { header: "Alter", accessorKey: "age" },
   { id: "contact", header: "Kontakt" },
-  ...(props.showAddress ? [{ id: "address", header: "Adresse" } as TableColumn<ParticipantsResponse>] : []),
+  ...(props.showAddress
+    ? [
+        {
+          id: "address",
+          header: "Adresse",
+        } as TableColumn<ParticipantsResponse>,
+      ]
+    : []),
   { header: "Notizen", accessorKey: "notes" },
   { header: "", id: "actions" },
 ]);
