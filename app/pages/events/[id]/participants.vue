@@ -9,7 +9,25 @@
       ]"
     />
 
-    <UPageHeader :title="`Teilnehmer ${event?.name ?? ''}`" />
+    <UPageHeader>
+      <template #headline>
+        <div class="flex flex-wrap justify-between w-full items-center gap-3">
+          <h1 class="text-3xl sm:text-4xl font-bold text-highlighted min-w-0">
+            Teilnehmer {{ event?.name ?? "" }}
+          </h1>
+          <UButton
+            class="shrink-0"
+            icon="i-lucide-download"
+            color="neutral"
+            variant="outline"
+            label="PDF Export"
+            :disabled="!participants?.length"
+            :loading="exporting"
+            @click="onExportPDF"
+          />
+        </div>
+      </template>
+    </UPageHeader>
 
     <ParticipantTable
       :participants="participants ?? []"
@@ -44,4 +62,17 @@ const { data: participants, refresh } = await useAsyncData(
 );
 
 useRealtimeRefresh(Collections.Participants, refresh);
+
+const { exportPDF } = useParticipantsPDF();
+const exporting = ref(false);
+
+const onExportPDF = async () => {
+  if (!participants.value?.length) return;
+  exporting.value = true;
+  try {
+    await exportPDF(participants.value, event.value?.name);
+  } finally {
+    exporting.value = false;
+  }
+};
 </script>
