@@ -22,8 +22,7 @@
             variant="outline"
             label="PDF Export"
             :disabled="!participants?.length"
-            :loading="exporting"
-            @click="onExportPDF"
+            @click="pdfModalOpen = true"
           />
         </div>
       </template>
@@ -33,6 +32,12 @@
       :participants="participants ?? []"
       show-address
       @refresh="refresh()"
+    />
+
+    <ParticipantsPDFModal
+      v-model:open="pdfModalOpen"
+      :participants="participants ?? []"
+      :event-name="event?.name"
     />
   </div>
 </template>
@@ -63,16 +68,5 @@ const { data: participants, refresh } = await useAsyncData(
 
 useRealtimeRefresh(Collections.Participants, refresh);
 
-const { exportPDF } = useParticipantsPDF();
-const exporting = ref(false);
-
-const onExportPDF = async () => {
-  if (!participants.value?.length) return;
-  exporting.value = true;
-  try {
-    await exportPDF(participants.value, event.value?.name);
-  } finally {
-    exporting.value = false;
-  }
-};
+const pdfModalOpen = ref(false);
 </script>
