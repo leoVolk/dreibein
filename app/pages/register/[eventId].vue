@@ -45,7 +45,7 @@
             Persönliche Daten
           </p>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Vorname" required class="w-full">
               <UInput v-model="state.firstname" class="w-full" />
             </UFormField>
@@ -54,7 +54,7 @@
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Stufe" class="w-full">
               <USelect
                 v-model="state.rank"
@@ -68,7 +68,7 @@
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Ausweis- / Passnummer" class="w-full">
               <UInput v-model="state.idNumber" class="w-full" />
             </UFormField>
@@ -91,7 +91,7 @@
             />
           </UFormField>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Krankenkasse" class="w-full">
               <UInput v-model="state.healthInsurance" class="w-full" />
             </UFormField>
@@ -107,7 +107,7 @@
             Notfallkontakte
           </p>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Name Notfallkontakt 1" class="w-full">
               <UInput v-model="state.nameEmergency1" class="w-full" />
             </UFormField>
@@ -129,7 +129,7 @@
             Gesundheitsbogen
           </p>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Allergien" class="w-full">
               <UTextarea v-model="state.allergies" class="w-full" :rows="2" />
             </UFormField>
@@ -158,7 +158,7 @@
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Impfungen" class="w-full">
               <UInput v-model="state.vaccination" class="w-full" />
             </UFormField>
@@ -182,7 +182,7 @@
             Ich erteile die Erlaubnis für folgende Aktivitäten:
           </p>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <UCheckbox
               v-model="state.swimmer"
               label="Die teilnehmende Person ist Schwimmer/In"
@@ -192,7 +192,7 @@
               label="und darf ohne Aufsicht schwimmen gehen"
             />
             <UCheckbox
-              class="col-span-2"
+              class="col-span-1 sm:col-span-2"
               v-model="state.mayRoam"
               label="Darf in 3er Gruppen eigenständig bei z.B. Stadtausflügen bewegen"
             />
@@ -203,7 +203,7 @@
             durchzuführen:
           </p>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <UCheckbox v-model="state.desinfection" label="Desinfektion" />
             <UCheckbox v-model="state.fever" label="Fieberthermometer" />
             <UCheckbox v-model="state.splinter" label="Splitterpinzette" />

@@ -38,7 +38,6 @@
 
     <ParticipantTable
       :participants="participants ?? []"
-      show-address
       @refresh="refresh()"
     />
 

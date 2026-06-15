@@ -16,7 +16,7 @@
       />
     </template>
 
-    <!-- Personal -->
+    <!-- Persönlich -->
     <p class="text-xs font-semibold uppercase tracking-wider text-muted">
       Persönlich
     </p>
@@ -32,130 +32,127 @@
 
     <div class="grid grid-cols-2 gap-4">
       <UFormField label="Stufe" name="rank" class="w-full">
-        <UInput v-model="state.rank" class="w-full" />
+        <USelect
+          v-model="state.rank"
+          :items="rankOptions"
+          placeholder="Bitte wählen..."
+          class="w-full"
+        />
       </UFormField>
-      <UFormField label="Alter" name="age" class="w-full">
-        <UInput v-model.number="state.age" type="number" class="w-full" />
+      <UFormField label="Geburtsdatum" name="birthdate" class="w-full">
+        <UInput v-model="state.birthdate" type="date" class="w-full" />
       </UFormField>
     </div>
 
-    <div class="flex gap-6">
-      <USwitch v-model="state.isLeader" label="Leitung" />
-      <USwitch v-model="state.paid" label="Beitrag bezahlt" />
-    </div>
+    <UFormField label="Ausweis- / Passnummer" name="idNumber" class="w-full">
+      <UInput v-model="state.idNumber" class="w-full" />
+    </UFormField>
 
-    <!-- Contact -->
+    <!-- Krankenversicherung -->
     <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
-      Kontakt
+      Krankenversicherung
     </p>
 
-    <UFormField label="E-Mail" name="email" class="w-full">
-      <UInput v-model="state.email" type="email" class="w-full" />
+    <UFormField label="Versicherungsart" name="insuranceType" class="w-full">
+      <USelect
+        :model-value="state.insuranceType"
+        :items="insuranceTypeOptions"
+        placeholder="Bitte wählen..."
+        class="w-full"
+        @update:model-value="state.insuranceType = $event"
+      />
     </UFormField>
 
     <div class="grid grid-cols-2 gap-4">
-      <UFormField label="Mobil" name="mobile" class="w-full">
-        <UInput v-model="state.mobile" class="w-full" />
+      <UFormField label="Krankenkasse" name="healthInsurance" class="w-full">
+        <UInput v-model="state.healthInsurance" class="w-full" />
       </UFormField>
-      <UFormField label="Telefon" name="phone" class="w-full">
-        <UInput v-model="state.phone" class="w-full" />
-      </UFormField>
-    </div>
-
-    <!-- Guardian -->
-    <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
-      Erziehungsberechtigte/r
-    </p>
-
-    <UFormField label="Name" name="nameGuardian" class="w-full">
-      <UInput v-model="state.nameGuardian" class="w-full" />
-    </UFormField>
-
-    <div class="grid grid-cols-2 gap-4">
-      <UFormField label="E-Mail" name="emailGuardian" class="w-full">
-        <UInput v-model="state.emailGuardian" type="email" class="w-full" />
-      </UFormField>
-      <UFormField label="Telefon" name="phoneGuardian" class="w-full">
-        <UInput v-model="state.phoneGuardian" class="w-full" />
+      <UFormField label="Versichert über" name="insuranceCoveredBy" class="w-full">
+        <UInput v-model="state.insuranceCoveredBy" class="w-full" />
       </UFormField>
     </div>
 
-    <!-- Address -->
-    <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
-      Adresse
-    </p>
-
-    <UFormField label="Straße" name="street" class="w-full">
-      <UInput v-model="state.street" class="w-full" />
-    </UFormField>
-
-    <div class="grid grid-cols-3 gap-4">
-      <UFormField label="PLZ" name="zip" class="w-full">
-        <UInput v-model.number="state.zip" type="number" class="w-full" />
-      </UFormField>
-      <UFormField label="Ort" name="city" class="col-span-2 w-full">
-        <UInput v-model="state.city" class="w-full" />
-      </UFormField>
-    </div>
-
-    <!-- Emergency contacts -->
+    <!-- Notfallkontakte -->
     <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
       Notfallkontakte
     </p>
 
-    <UFormField label="Notfallkontakt 1" name="emergency1" class="w-full">
-      <UInput v-model="state.emergency1" class="w-full" />
-    </UFormField>
+    <div class="grid grid-cols-2 gap-4">
+      <UFormField label="Name Notfallkontakt 1" name="nameEmergency1" class="w-full">
+        <UInput v-model="state.nameEmergency1" class="w-full" />
+      </UFormField>
+      <UFormField label="Telefon Notfallkontakt 1" name="phoneEmergency1" class="w-full">
+        <UInput v-model="state.phoneEmergency1" class="w-full" />
+      </UFormField>
+      <UFormField label="Name Notfallkontakt 2" name="nameEmergency2" class="w-full">
+        <UInput v-model="state.nameEmergency2" class="w-full" />
+      </UFormField>
+      <UFormField label="Telefon Notfallkontakt 2" name="phoneEmergency2" class="w-full">
+        <UInput v-model="state.phoneEmergency2" class="w-full" />
+      </UFormField>
+    </div>
 
-    <UFormField label="Notfallkontakt 2" name="emergency2" class="w-full">
-      <UInput v-model="state.emergency2" class="w-full" />
-    </UFormField>
-
-    <!-- Health -->
+    <!-- Gesundheit -->
     <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
-      Gesundheit
+      Gesundheitsbogen
     </p>
 
-    <UFormField label="Allergien" name="allergies" class="w-full">
-      <UTextarea v-model="state.allergies" class="w-full" :rows="2" />
-    </UFormField>
+    <div class="grid grid-cols-2 gap-4">
+      <UFormField label="Allergien" name="allergies" class="w-full">
+        <UTextarea v-model="state.allergies" class="w-full" :rows="2" />
+      </UFormField>
+      <UFormField label="Ernährungswünsche" name="dietaryPreferences" class="w-full">
+        <UTextarea v-model="state.dietaryPreferences" class="w-full" :rows="2" />
+      </UFormField>
+      <UFormField label="Krankheiten" name="illnesses" class="w-full">
+        <UTextarea v-model="state.illnesses" class="w-full" :rows="2" />
+      </UFormField>
+      <UFormField label="Medikamente" name="medications" class="w-full">
+        <UTextarea v-model="state.medications" class="w-full" :rows="2" />
+      </UFormField>
+      <UFormField label="Verbotene Aktivitäten" name="forbiddenActivities" class="w-full">
+        <UTextarea v-model="state.forbiddenActivities" class="w-full" :rows="2" />
+      </UFormField>
+      <UFormField label="Sonstiges" name="other" class="w-full">
+        <UTextarea v-model="state.other" class="w-full" :rows="2" />
+      </UFormField>
+    </div>
 
-    <UFormField label="Ernährung" name="dietaryPreferences" class="w-full">
-      <UTextarea v-model="state.dietaryPreferences" class="w-full" :rows="2" />
-    </UFormField>
+    <div class="grid grid-cols-2 gap-4">
+      <UFormField label="Impfungen" name="vaccination" class="w-full">
+        <UInput v-model="state.vaccination" class="w-full" />
+      </UFormField>
+      <UFormField label="Datum Tetanus-Impfung" name="dateTetanusVaccination" class="w-full">
+        <UInput v-model="state.dateTetanusVaccination" type="date" class="w-full" />
+      </UFormField>
+    </div>
 
-    <UFormField label="Krankheiten" name="illnesses" class="w-full">
-      <UTextarea v-model="state.illnesses" class="w-full" :rows="2" />
-    </UFormField>
-
-    <UFormField label="Medikamente" name="medications" class="w-full">
-      <UTextarea v-model="state.medications" class="w-full" :rows="2" />
-    </UFormField>
-
-    <UFormField label="Sonstiges" name="other" class="w-full">
-      <UTextarea v-model="state.other" class="w-full" :rows="2" />
-    </UFormField>
-
-    <!-- Medical supplies -->
+    <!-- Erlaubnisse -->
     <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
-      Berechtigung
+      Erlaubnisse
     </p>
 
     <div class="grid grid-cols-2 gap-3">
-      <UCheckbox v-model="state.disinfection" label="Desinfektion" />
+      <UCheckbox v-model="state.swimmer" label="Ist Schwimmer/in" />
+      <UCheckbox v-model="state.maySwim" label="Schwimmen erlaubt" />
+      <UCheckbox v-model="state.mayRoam" label="Darf Gelände verlassen" class="col-span-2" />
+      <UCheckbox v-model="state.desinfection" label="Desinfektion" />
       <UCheckbox v-model="state.fever" label="Fieberthermometer" />
       <UCheckbox v-model="state.splinter" label="Splitterpinzette" />
-      <UCheckbox v-model="state.tick" label="Zeckenpinzette" />
+      <UCheckbox v-model="state.ticks" label="Zeckenpinzette" />
     </div>
 
-    <!-- Notes -->
+    <!-- Einwilligungen -->
     <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
-      Notizen
+      Einwilligungen
     </p>
 
-    <UFormField name="notes" class="w-full">
-      <UTextarea v-model="state.notes" class="w-full" :rows="3" />
-    </UFormField>
+    <div class="flex flex-col gap-3">
+      <UCheckbox v-model="state.media" label="Medienveröffentlichung" />
+      <UCheckbox v-model="state.DSGVO" label="DSGVO" />
+      <UCheckbox v-model="state.privacyPolicy" label="Datenschutzrichtlinie" />
+      <UCheckbox v-model="state.permissions" label="Alle Erlaubnisse erteilt" />
+    </div>
   </FormDrawer>
 </template>
 
@@ -173,34 +170,41 @@ const toast = useToast();
 const open = ref(false);
 const saving = ref(false);
 
+const rankOptions = Object.keys(RANK_COLORS);
+const insuranceTypeOptions: string[] = Object.values(ParticipantsInsuranceTypeOptions);
+
 const buildState = () => ({
   firstname: props.participant.firstname,
   lastname: props.participant.lastname,
   rank: props.participant.rank,
-  age: props.participant.age,
-  isLeader: props.participant.isLeader,
-  paid: props.participant.paid,
-  email: props.participant.email,
-  mobile: props.participant.mobile,
-  phone: props.participant.phone,
-  nameGuardian: props.participant.nameGuardian,
-  emailGuardian: props.participant.emailGuardian,
-  phoneGuardian: props.participant.phoneGuardian,
-  emergency1: props.participant.emergency1,
-  emergency2: props.participant.emergency2,
-  street: props.participant.street,
-  zip: props.participant.zip,
-  city: props.participant.city,
+  birthdate: props.participant.birthdate ?? "",
+  idNumber: props.participant.idNumber,
+  insuranceType: props.participant.insuranceType as string | undefined,
+  healthInsurance: props.participant.healthInsurance,
+  insuranceCoveredBy: props.participant.insuranceCoveredBy,
+  nameEmergency1: props.participant.nameEmergency1,
+  phoneEmergency1: props.participant.phoneEmergency1,
+  nameEmergency2: props.participant.nameEmergency2,
+  phoneEmergency2: props.participant.phoneEmergency2,
   allergies: props.participant.allergies,
   dietaryPreferences: props.participant.dietaryPreferences,
   illnesses: props.participant.illnesses,
   medications: props.participant.medications,
+  forbiddenActivities: props.participant.forbiddenActivities,
   other: props.participant.other,
-  disinfection: props.participant.disinfection,
+  vaccination: props.participant.vaccination,
+  dateTetanusVaccination: props.participant.dateTetanusVaccination ?? "",
+  swimmer: props.participant.swimmer,
+  maySwim: props.participant.maySwim,
+  mayRoam: props.participant.mayRoam,
+  desinfection: props.participant.desinfection,
   fever: props.participant.fever,
   splinter: props.participant.splinter,
-  tick: props.participant.tick,
-  notes: props.participant.notes,
+  ticks: props.participant.ticks,
+  media: props.participant.media,
+  DSGVO: props.participant.DSGVO,
+  privacyPolicy: props.participant.privacyPolicy,
+  permissions: props.participant.permissions,
 });
 
 const state = reactive(buildState());
@@ -210,9 +214,12 @@ const resetState = () => Object.assign(state, buildState());
 const onSubmit = async () => {
   saving.value = true;
   try {
-    await pb
-      .collection(Collections.Participants)
-      .update(props.participant.id, state);
+    await pb.collection(Collections.Participants).update(props.participant.id, {
+      ...state,
+      insuranceType: state.insuranceType as typeof ParticipantsInsuranceTypeOptions[keyof typeof ParticipantsInsuranceTypeOptions] | undefined,
+      birthdate: state.birthdate || undefined,
+      dateTetanusVaccination: state.dateTetanusVaccination || undefined,
+    });
     toast.add({ title: "Teilnehmer gespeichert", icon: "i-lucide-check" });
     open.value = false;
     emit("refresh");
