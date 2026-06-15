@@ -15,15 +15,23 @@
           <h1 class="text-3xl sm:text-4xl font-bold text-highlighted min-w-0">
             Teilnehmer {{ event?.name ?? "" }}
           </h1>
-          <UButton
-            class="shrink-0"
-            icon="i-lucide-download"
-            color="neutral"
-            variant="outline"
-            label="PDF Export"
-            :disabled="!participants?.length"
-            @click="pdfModalOpen = true"
-          />
+          <div class="flex gap-2 shrink-0">
+            <UButton
+              icon="i-lucide-link"
+              color="neutral"
+              variant="outline"
+              label="Anmeldelink"
+              @click="copyRegistrationLink"
+            />
+            <UButton
+              icon="i-lucide-download"
+              color="neutral"
+              variant="outline"
+              label="PDF Export"
+              :disabled="!participants?.length"
+              @click="pdfModalOpen = true"
+            />
+          </div>
         </div>
       </template>
     </UPageHeader>
@@ -48,6 +56,7 @@ definePageMeta({ middleware: ["auth"] });
 
 const route = useRoute();
 const { pb } = usePocketbase();
+const toast = useToast();
 
 const id = computed(() => route.params.id as string);
 
@@ -69,4 +78,10 @@ const { data: participants, refresh } = await useAsyncData(
 useRealtimeRefresh(Collections.Participants, refresh);
 
 const pdfModalOpen = ref(false);
+
+const copyRegistrationLink = async () => {
+  const url = `${window.location.origin}/register/${id.value}`;
+  await navigator.clipboard.writeText(url);
+  toast.add({ title: "Anmeldelink kopiert", icon: "i-lucide-link" });
+};
 </script>

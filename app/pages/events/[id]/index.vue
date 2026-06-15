@@ -82,7 +82,17 @@
           empty-description="Noch keine Teilnehmer hinzugefügt."
           :meta="participantRank"
           :to-for="participantsTo"
-        />
+        >
+          <template #action>
+            <UButton
+              icon="i-lucide-arrow-right"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              :to="`/events/${id}/participants`"
+            />
+          </template>
+        </OverviewCard>
 
         <InvoiceCard
           :invoices="(invoices ?? []).slice(0, 5)"

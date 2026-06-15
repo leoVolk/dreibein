@@ -73,16 +73,6 @@
         </template>
 
         <template #actions-cell="{ row }">
-          <UTooltip text="Als Teilnehmer hinzufügen" :delay-duration="100">
-            <UButton
-              icon="i-lucide-list-plus"
-              color="primary"
-              variant="ghost"
-              aria-label="Actions"
-              @click="onMemberListClicked(row)"
-            />
-          </UTooltip>
-
           <UTooltip text="Infos anzeigen" :delay-duration="100">
             <UButton
               icon="i-lucide-info"
@@ -113,8 +103,6 @@ definePageMeta({
 });
 
 const { pb } = usePocketbase();
-const toast = useToast();
-const toastError = useToastError();
 const { exportPDF } = useMembersPDF();
 
 const exporting = ref(false);
@@ -153,11 +141,6 @@ const drawerOpen = ref(false);
 const selectedNamiId = ref<number | null>(null);
 const addModalOpen = ref(false);
 const selectedMember = ref<any>(null);
-
-const onMemberListClicked = (row: TableRow<any>) => {
-  selectedMember.value = row.original;
-  addModalOpen.value = true;
-};
 
 const onMemberInfoClick = (row: TableRow<any>) => {
   selectedNamiId.value = row.original.entries_id ?? row.original.id ?? null;
