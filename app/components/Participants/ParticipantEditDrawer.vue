@@ -98,6 +98,19 @@
       </UFormField>
     </div>
 
+    <!-- Emergency contacts -->
+    <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
+      Notfallkontakte
+    </p>
+
+    <UFormField label="Notfallkontakt 1" name="emergency1" class="w-full">
+      <UInput v-model="state.emergency1" class="w-full" />
+    </UFormField>
+
+    <UFormField label="Notfallkontakt 2" name="emergency2" class="w-full">
+      <UInput v-model="state.emergency2" class="w-full" />
+    </UFormField>
+
     <!-- Health -->
     <p class="text-xs font-semibold uppercase tracking-wider text-muted mt-2">
       Gesundheit
@@ -173,6 +186,8 @@ const buildState = () => ({
   nameGuardian: props.participant.nameGuardian,
   emailGuardian: props.participant.emailGuardian,
   phoneGuardian: props.participant.phoneGuardian,
+  emergency1: props.participant.emergency1,
+  emergency2: props.participant.emergency2,
   street: props.participant.street,
   zip: props.participant.zip,
   city: props.participant.city,

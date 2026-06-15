@@ -46,7 +46,128 @@
             />
           </UFormField>
 
-          <USwitch v-model="isLeader" label="Als Leiter hinzufügen" />
+          <div class="flex gap-6">
+            <USwitch v-model="isLeader" label="Als Leiter hinzufügen" />
+            <USwitch v-model="paid" label="Beitrag bezahlt" />
+          </div>
+
+          <UCollapsible v-model:open="detailsOpen">
+            <button
+              type="button"
+              class="flex items-center gap-1.5 text-sm text-muted hover:text-default transition-colors w-full"
+            >
+              <UIcon
+                name="i-lucide-chevron-right"
+                class="size-4 transition-transform"
+                :class="{ 'rotate-90': detailsOpen }"
+              />
+              Weitere Details (optional)
+            </button>
+
+            <template #content>
+              <div
+                class="flex flex-col gap-4 pt-3 border-t border-default mt-3"
+              >
+                <p
+                  class="text-xs font-semibold uppercase tracking-wider text-muted"
+                >
+                  Notfallkontakte
+                </p>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <UFormField
+                    label="Notfallkontakt 1"
+                    name="emergency1"
+                    class="w-full"
+                  >
+                    <UInput v-model="extra.emergency1" class="w-full" />
+                  </UFormField>
+                  <UFormField
+                    label="Notfallkontakt 2"
+                    name="emergency2"
+                    class="w-full"
+                  >
+                    <UInput v-model="extra.emergency2" class="w-full" />
+                  </UFormField>
+                </div>
+
+                <p
+                  class="text-xs font-semibold uppercase tracking-wider text-muted"
+                >
+                  Gesundheit
+                </p>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <UFormField label="Allergien" name="allergies" class="w-full">
+                    <UTextarea
+                      v-model="extra.allergies"
+                      class="w-full"
+                      :rows="2"
+                    />
+                  </UFormField>
+                  <UFormField
+                    label="Ernährungswünsche"
+                    name="dietaryPreferences"
+                    class="w-full"
+                  >
+                    <UTextarea
+                      v-model="extra.dietaryPreferences"
+                      class="w-full"
+                      :rows="2"
+                    />
+                  </UFormField>
+                  <UFormField
+                    label="Krankheiten"
+                    name="illnesses"
+                    class="w-full"
+                  >
+                    <UTextarea
+                      v-model="extra.illnesses"
+                      class="w-full"
+                      :rows="2"
+                    />
+                  </UFormField>
+                  <UFormField
+                    label="Medikamente"
+                    name="medications"
+                    class="w-full"
+                  >
+                    <UTextarea
+                      v-model="extra.medications"
+                      class="w-full"
+                      :rows="2"
+                    />
+                  </UFormField>
+                  <UFormField
+                    label="Sonstiges"
+                    name="other"
+                    class="col-span-2 w-full"
+                  >
+                    <UTextarea v-model="extra.other" class="w-full" :rows="2" />
+                  </UFormField>
+                </div>
+
+                <p
+                  class="text-xs font-semibold uppercase tracking-wider text-muted"
+                >
+                  Berechtigung
+                </p>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <UCheckbox
+                    v-model="extra.disinfection"
+                    label="Desinfektion"
+                  />
+                  <UCheckbox v-model="extra.fever" label="Fieberthermometer" />
+                  <UCheckbox
+                    v-model="extra.splinter"
+                    label="Splitterpinzette"
+                  />
+                  <UCheckbox v-model="extra.tick" label="Zeckenpinzette" />
+                </div>
+              </div>
+            </template>
+          </UCollapsible>
         </template>
       </div>
     </template>
@@ -81,7 +202,23 @@ const toast = useToast();
 const selectedEventId = ref<string | undefined>(undefined);
 const notes = ref("");
 const isLeader = ref(false);
+const paid = ref(false);
+const detailsOpen = ref(false);
 const saving = ref(false);
+
+const extra = reactive({
+  emergency1: "",
+  emergency2: "",
+  allergies: "",
+  dietaryPreferences: "",
+  illnesses: "",
+  medications: "",
+  other: "",
+  disinfection: false,
+  fever: false,
+  splinter: false,
+  tick: false,
+});
 
 const {
   data: detail,
@@ -141,7 +278,9 @@ const onSubmit = async () => {
       zip: m.plz ? parseInt(m.plz) : undefined,
       age: m.geburtsDatum ? calcAge(m.geburtsDatum) : undefined,
       isLeader: isLeader.value,
+      paid: paid.value,
       notes: notes.value || "",
+      ...extra,
     });
     toast.add({
       title: `${m.vorname} ${m.nachname} hinzugefügt`,
@@ -151,6 +290,21 @@ const onSubmit = async () => {
     selectedEventId.value = undefined;
     notes.value = "";
     isLeader.value = false;
+    paid.value = false;
+    detailsOpen.value = false;
+    Object.assign(extra, {
+      emergency1: "",
+      emergency2: "",
+      allergies: "",
+      dietaryPreferences: "",
+      illnesses: "",
+      medications: "",
+      other: "",
+      disinfection: false,
+      fever: false,
+      splinter: false,
+      tick: false,
+    });
     emit("added");
   } catch (error: any) {
     toast.add({

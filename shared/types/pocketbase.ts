@@ -227,6 +227,8 @@ export type ParticipantsRecord = {
 	disinfection?: boolean
 	email?: string
 	emailGuardian?: string
+	emergency1?: string
+	emergency2?: string
 	event?: RecordIdString
 	fever?: boolean
 	firstname?: string
