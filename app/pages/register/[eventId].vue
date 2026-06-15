@@ -40,6 +40,7 @@
       <!-- Form -->
       <UCard v-else-if="event">
         <div class="flex flex-col gap-5">
+          <!-- Persönliche Daten -->
           <p class="text-lg font-semibold uppercase tracking-wider text-muted">
             Persönliche Daten
           </p>
@@ -62,147 +63,176 @@
                 class="w-full"
               />
             </UFormField>
-            <UFormField label="Alter" class="w-full">
-              <UInput v-model.number="state.age" type="number" class="w-full" />
+            <UFormField label="Geburtsdatum" class="w-full">
+              <UInput v-model="state.birthdate" type="date" class="w-full" />
             </UFormField>
           </div>
 
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField label="Ausweis- / Passnummer" class="w-full">
+              <UInput v-model="state.idNumber" class="w-full" />
+            </UFormField>
+          </div>
+
+          <USeparator />
+
+          <!-- Krankenversicherung -->
           <p class="text-lg font-semibold uppercase tracking-wider text-muted">
-            Adresse
+            Krankenversicherung
           </p>
 
-          <UFormField label="Straße" class="w-full">
-            <UInput v-model="state.street" class="w-full" />
-          </UFormField>
-
-          <div class="grid grid-cols-3 gap-4">
-            <UFormField label="PLZ" class="w-full">
-              <UInput v-model.number="state.zip" type="number" class="w-full" />
-            </UFormField>
-            <UFormField label="Ort" class="col-span-2 w-full">
-              <UInput v-model="state.city" class="w-full" />
-            </UFormField>
-          </div>
-
-          <p
-            class="text-lg font-semibold uppercase tracking-wider text-muted mt-2"
-          >
-            Kontakt
-          </p>
-
-          <UFormField label="E-Mail" class="w-full">
-            <UInput v-model="state.email" type="email" class="w-full" />
+          <UFormField label="Versicherungsart" class="w-full">
+            <USelect
+              :model-value="state.insuranceType"
+              :items="insuranceTypeOptions"
+              placeholder="Bitte wählen..."
+              class="w-full"
+              @update:model-value="state.insuranceType = $event"
+            />
           </UFormField>
 
           <div class="grid grid-cols-2 gap-4">
-            <UFormField label="Mobil" class="w-full">
-              <UInput v-model="state.mobile" class="w-full" />
+            <UFormField label="Krankenkasse" class="w-full">
+              <UInput v-model="state.healthInsurance" class="w-full" />
             </UFormField>
-            <UFormField label="Telefon" class="w-full">
-              <UInput v-model="state.phone" class="w-full" />
-            </UFormField>
-          </div>
-
-          <p
-            class="text-lg font-semibold uppercase tracking-wider text-muted mt-2"
-          >
-            Erziehungsberechtigte/r
-          </p>
-
-          <UFormField label="Name" class="w-full">
-            <UInput v-model="state.nameGuardian" class="w-full" />
-          </UFormField>
-
-          <div class="grid grid-cols-2 gap-4">
-            <UFormField label="E-Mail" class="w-full">
-              <UInput
-                v-model="state.emailGuardian"
-                type="email"
-                class="w-full"
-              />
-            </UFormField>
-            <UFormField label="Telefon" class="w-full">
-              <UInput v-model="state.phoneGuardian" class="w-full" />
+            <UFormField label="Versichert über (Name)" class="w-full">
+              <UInput v-model="state.insuranceCoveredBy" class="w-full" />
             </UFormField>
           </div>
 
-          <p
-            class="text-xs font-semibold uppercase tracking-wider text-muted mt-2"
-          >
+          <USeparator />
+
+          <!-- Notfallkontakte -->
+          <p class="text-lg font-semibold uppercase tracking-wider text-muted">
             Notfallkontakte
           </p>
 
           <div class="grid grid-cols-2 gap-4">
-            <UFormField label="Notfallkontakt 1" class="w-full">
-              <UInput v-model="state.emergency1" class="w-full" />
+            <UFormField label="Name Notfallkontakt 1" class="w-full">
+              <UInput v-model="state.nameEmergency1" class="w-full" />
             </UFormField>
-            <UFormField label="Notfallkontakt 2" class="w-full">
-              <UInput v-model="state.emergency2" class="w-full" />
+            <UFormField label="Telefon Notfallkontakt 1" class="w-full">
+              <UInput v-model="state.phoneEmergency1" class="w-full" />
+            </UFormField>
+            <UFormField label="Name Notfallkontakt 2" class="w-full">
+              <UInput v-model="state.nameEmergency2" class="w-full" />
+            </UFormField>
+            <UFormField label="Telefon Notfallkontakt 2" class="w-full">
+              <UInput v-model="state.phoneEmergency2" class="w-full" />
             </UFormField>
           </div>
 
-          <p
-            class="text-lg font-semibold uppercase tracking-wider text-muted mt-2"
-          >
+          <USeparator />
+
+          <!-- Gesundheitsbogen -->
+          <p class="text-lg font-semibold uppercase tracking-wider text-muted">
             Gesundheitsbogen
           </p>
 
-          <div class="flex flex-col gap-4">
-            <div class="grid grid-cols-2 gap-4">
-              <UFormField label="Allergien" class="w-full">
-                <UTextarea v-model="state.allergies" class="w-full" :rows="2" />
-              </UFormField>
-              <UFormField label="Ernährungswünsche" class="w-full">
-                <UTextarea
-                  v-model="state.dietaryPreferences"
-                  class="w-full"
-                  :rows="2"
-                />
-              </UFormField>
-              <UFormField label="Krankheiten" class="w-full">
-                <UTextarea v-model="state.illnesses" class="w-full" :rows="2" />
-              </UFormField>
-              <UFormField label="Medikamente" class="w-full">
-                <UTextarea
-                  v-model="state.medications"
-                  class="w-full"
-                  :rows="2"
-                />
-              </UFormField>
-              <UFormField label="Sonstiges" class="col-span-2 w-full">
-                <UTextarea v-model="state.other" class="w-full" :rows="2" />
-              </UFormField>
-            </div>
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField label="Allergien" class="w-full">
+              <UTextarea v-model="state.allergies" class="w-full" :rows="2" />
+            </UFormField>
+            <UFormField label="Ernährungswünsche" class="w-full">
+              <UTextarea
+                v-model="state.dietaryPreferences"
+                class="w-full"
+                :rows="2"
+              />
+            </UFormField>
+            <UFormField label="Krankheiten" class="w-full">
+              <UTextarea v-model="state.illnesses" class="w-full" :rows="2" />
+            </UFormField>
+            <UFormField label="Medikamente" class="w-full">
+              <UTextarea v-model="state.medications" class="w-full" :rows="2" />
+            </UFormField>
+            <UFormField label="Verbotene Aktivitäten" class="w-full">
+              <UTextarea
+                v-model="state.forbiddenActivities"
+                class="w-full"
+                :rows="2"
+              />
+            </UFormField>
+            <UFormField label="Sonstiges" class="w-full">
+              <UTextarea v-model="state.other" class="w-full" :rows="2" />
+            </UFormField>
+          </div>
 
-            <p
-              class="text-lg font-semibold uppercase tracking-wider text-muted"
-            >
-              Berechtigung
-            </p>
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField label="Impfungen" class="w-full">
+              <UInput v-model="state.vaccination" class="w-full" />
+            </UFormField>
+            <UFormField label="Datum Tetanus-Impfung" class="w-full">
+              <UInput
+                v-model="state.dateTetanusVaccination"
+                type="date"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
 
-            <p class="text-xs text-muted -mt-2">
-              Ich erteile die Erlaubnis, folgende Erste-Hilfe-Maßnahmen bei
-              meinem Kind durchzuführen:
-            </p>
+          <USeparator />
 
-            <div class="grid grid-cols-2 gap-3">
-              <UCheckbox v-model="state.disinfection" label="Desinfektion" />
-              <UCheckbox v-model="state.fever" label="Fieberthermometer" />
-              <UCheckbox v-model="state.splinter" label="Splitterpinzette" />
-              <UCheckbox v-model="state.tick" label="Zeckenpinzette" />
-            </div>
+          <!-- Erlaubnisse -->
+          <p class="text-lg font-semibold uppercase tracking-wider text-muted">
+            Erlaubnisse
+          </p>
 
-            <p
-              class="text-lg font-semibold uppercase tracking-wider text-muted"
-            >
-              Anmerkungen
-            </p>
+          <p class="text-sm text-muted -mt-2">
+            Ich erteile die Erlaubnis für folgende Aktivitäten:
+          </p>
 
-            <UTextarea
-              v-model="state.notes"
-              placeholder="Weitere Hinweise..."
-              class="w-full"
-              :rows="3"
+          <div class="grid grid-cols-2 gap-3">
+            <UCheckbox
+              v-model="state.swimmer"
+              label="Die teilnehmende Person ist Schwimmer/In"
+            />
+            <UCheckbox
+              v-model="state.maySwim"
+              label="und darf ohne Aufsicht schwimmen gehen"
+            />
+            <UCheckbox
+              class="col-span-2"
+              v-model="state.mayRoam"
+              label="Darf in 3er Gruppen eigenständig bei z.B. Stadtausflügen bewegen"
+            />
+          </div>
+
+          <p class="text-sm text-muted">
+            Ich erteile die Erlaubnis, folgende Erste-Hilfe-Maßnahmen
+            durchzuführen:
+          </p>
+
+          <div class="grid grid-cols-2 gap-3">
+            <UCheckbox v-model="state.desinfection" label="Desinfektion" />
+            <UCheckbox v-model="state.fever" label="Fieberthermometer" />
+            <UCheckbox v-model="state.splinter" label="Splitterpinzette" />
+            <UCheckbox v-model="state.ticks" label="Zeckenpinzette" />
+          </div>
+
+          <USeparator />
+
+          <!-- Einwilligungen -->
+          <p class="text-lg font-semibold uppercase tracking-wider text-muted">
+            Einwilligungen
+          </p>
+
+          <div class="flex flex-col gap-3">
+            <UCheckbox
+              v-model="state.media"
+              label=" Ich stimme zu, dass während des Lagers Fotos und Videos von mir / meinem Kind aufgenommen und im Zusammenhang mit dem Lager zur Veröffentlichung in der Presse sowie auf Veranstaltungen und Internetseiten der DPSG-Meinolphus genutzt werden dürfen. * "
+            />
+            <UCheckbox
+              v-model="state.privacyPolicy"
+              label=" Die Erhebung und Verarbeitung der hier aufgenommenen Daten erfolgt zum Zweck der oben genannten Aktion und entsprechend unserer Datenschutzerklärung (https://dpsg-meinolphus.de/datenschutz). Mit Übermittlung des Datenblatts durch drücken des Icons „Übermitteln“ am Ende dieser Seite stimmst du / die anmeldenden Eltern der Erhebung und Verarbeitung der hier angegebenen Daten nach diesem Formular und entsprechend unserer Datenschutzerklärung zu. Nach beendigung des Lagers werden die erfassten Daten gelöscht. * "
+            />
+            <UCheckbox
+              v-model="state.permissions"
+              label=" Als teilnehmende Person bzw. Erziehungsberechtigte(r) bei minderjährigen Teilnehmenden bestätige ich die Richtigkeit aller gemachten Angaben. Über Änderungen werde ich die Lagerleitung umgehend informieren. Ich / Wir ermächtigen hiermit die Leitung während des Lagers, bei Erkrankung oder Verletzung des Teilnehmers / der Teilnehmerin, alle ärztlich notwendigen Maßnahmen (also evtl. auch Operationen), im Notfall ohne weitere Rücksprachen, einzuleiten. * "
+            />
+            <UCheckbox
+              v-model="state.DSGVO"
+              label=" Im Rahmen der Anmeldung zu Veranstaltungen, Freizeiten und Lagern erheben wir auf Grundlage Ihrer ausdrücklichen Einwilligung (Art. 6 Abs. 1 lit. a i.V.m. Art. 9 Abs. 2 lit. a DSGVO) gesundheitsbezogene Daten der Teilnehmenden. Hierzu können insbesondere Informationen zu Allergien, Unverträglichkeiten, bestehenden Erkrankungen sowie einzunehmenden Medikamenten gehören.  Diese Daten werden ausschließlich zum Zweck der Fürsorge und Sicherheit während der jeweiligen Veranstaltung verarbeitet. Sie werden ausschließlich den betreuenden Leitungspersonen der Veranstaltung zugänglich gemacht und spätestens 2 Wochen nach Ende der Veranstaltung unwiderruflich gelöscht.  Eine Weitergabe an Dritte erfolgt nicht, es sei denn, dies ist im medizinischen Notfall zur Abwendung einer Gefahr für Leib und Leben der betroffenen Person erforderlich (Art. 9 Abs. 2 lit. c DSGVO).  Die Einwilligung zur Verarbeitung dieser Daten ist freiwillig, jedoch Voraussetzung für die Teilnahme an der jeweiligen Veranstaltung, da wir andernfalls  "
             />
           </div>
 
@@ -239,38 +269,49 @@ const { data: event, pending: eventPending } = await useAsyncData(
       .catch(() => null),
 );
 
-const rankOptions = Object.keys(RANK_COLORS);
+const rankOptions = Object.keys(RANK_COLORS).filter(
+  (v) => v !== "Vorstand" && v !== "Rechtsträger",
+);
+
+const insuranceTypeOptions: string[] = Object.values(
+  ParticipantsInsuranceTypeOptions,
+);
 
 const submitted = ref(false);
 const saving = ref(false);
-const detailsOpen = ref(false);
 
 const state = reactive({
   firstname: "",
   lastname: "",
   rank: undefined as string | undefined,
-  age: undefined as number | undefined,
-  email: "",
-  mobile: "",
-  phone: "",
-  nameGuardian: "",
-  emailGuardian: "",
-  phoneGuardian: "",
-  emergency1: "",
-  emergency2: "",
+  birthdate: "",
+  idNumber: "",
+  swimmer: false,
+  insuranceType: undefined as string | undefined,
+  healthInsurance: "",
+  insuranceCoveredBy: "",
+  nameEmergency1: "",
+  phoneEmergency1: "",
+  nameEmergency2: "",
+  phoneEmergency2: "",
   allergies: "",
   dietaryPreferences: "",
   illnesses: "",
   medications: "",
+  forbiddenActivities: "",
   other: "",
-  street: "",
-  zip: undefined as number | undefined,
-  city: "",
-  disinfection: false,
+  vaccination: "",
+  dateTetanusVaccination: "",
+  maySwim: false,
+  mayRoam: false,
+  desinfection: false,
   fever: false,
   splinter: false,
-  tick: false,
-  notes: "",
+  ticks: false,
+  media: false,
+  DSGVO: false,
+  privacyPolicy: false,
+  permissions: false,
 });
 
 const onSubmit = async () => {
@@ -280,6 +321,11 @@ const onSubmit = async () => {
     await pb.collection(Collections.Participants).create({
       event: eventId.value,
       ...state,
+      insuranceType: state.insuranceType as
+        | (typeof ParticipantsInsuranceTypeOptions)[keyof typeof ParticipantsInsuranceTypeOptions]
+        | undefined,
+      birthdate: state.birthdate || undefined,
+      dateTetanusVaccination: state.dateTetanusVaccination || undefined,
     });
     submitted.value = true;
   } catch (error: any) {

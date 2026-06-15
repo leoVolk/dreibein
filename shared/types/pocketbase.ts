@@ -218,38 +218,47 @@ export type NotesRecord = {
 	updated: IsoAutoDateString
 }
 
+export const ParticipantsInsuranceTypeOptions = {
+	"Gesetzlich": "Gesetzlich",
+	"Privat mit Krankenkassenkarte": "Privat mit Krankenkassenkarte",
+	"Privat ohne Krankenkassenkarte": "Privat ohne Krankenkassenkarte",
+} as const
+export type ParticipantsInsuranceTypeOptions = typeof ParticipantsInsuranceTypeOptions[keyof typeof ParticipantsInsuranceTypeOptions]
 export type ParticipantsRecord = {
-	age?: number
+	DSGVO?: boolean
 	allergies?: string
-	city?: string
+	birthdate?: IsoDateString
 	created: IsoAutoDateString
+	dateTetanusVaccination?: IsoDateString
+	desinfection?: boolean
 	dietaryPreferences?: string
-	disinfection?: boolean
-	email?: string
-	emailGuardian?: string
-	emergency1?: string
-	emergency2?: string
-	event?: RecordIdString
 	fever?: boolean
 	firstname?: string
+	forbiddenActivities?: string
+	healthInsurance?: string
 	id: string
+	idNumber?: string
 	illnesses?: string
-	isLeader?: boolean
+	insuranceCoveredBy?: string
+	insuranceType?: ParticipantsInsuranceTypeOptions
 	lastname?: string
+	mayRoam?: boolean
+	maySwim?: boolean
+	media?: boolean
 	medications?: string
-	mobile?: string
-	nameGuardian?: string
-	notes?: string
+	nameEmergency1?: string
+	nameEmergency2?: string
 	other?: string
-	paid?: boolean
-	phone?: string
-	phoneGuardian?: string
+	permissions?: boolean
+	phoneEmergency1?: string
+	phoneEmergency2?: string
+	privacyPolicy?: boolean
 	rank?: string
 	splinter?: boolean
-	street?: string
-	tick?: boolean
+	swimmer?: boolean
+	ticks?: boolean
 	updated: IsoAutoDateString
-	zip?: number
+	vaccination?: string
 }
 
 export const RecipesTagsOptions = {
