@@ -220,11 +220,11 @@
           <div class="flex flex-col gap-3">
             <UCheckbox
               v-model="state.media"
-              label=" Ich stimme zu, dass während des Lagers Fotos und Videos von mir / meinem Kind aufgenommen und im Zusammenhang mit dem Lager zur Veröffentlichung in der Presse sowie auf Veranstaltungen und Internetseiten der DPSG-Meinolphus genutzt werden dürfen. * "
+              label=" Ich stimme zu, dass während des Lagers Fotos und Videos von mir / meinem Kind aufgenommen und im Zusammenhang mit dem Lager zur Veröffentlichung in der Presse sowie auf Veranstaltungen und Internetseiten des Stammes genutzt werden dürfen. * "
             />
             <UCheckbox
               v-model="state.privacyPolicy"
-              label=" Die Erhebung und Verarbeitung der hier aufgenommenen Daten erfolgt zum Zweck der oben genannten Aktion und entsprechend unserer Datenschutzerklärung (https://dpsg-meinolphus.de/datenschutz). Mit Übermittlung des Datenblatts durch drücken des Icons „Übermitteln“ am Ende dieser Seite stimmst du / die anmeldenden Eltern der Erhebung und Verarbeitung der hier angegebenen Daten nach diesem Formular und entsprechend unserer Datenschutzerklärung zu. Nach beendigung des Lagers werden die erfassten Daten gelöscht. * "
+              label=" Die Erhebung und Verarbeitung der hier aufgenommenen Daten erfolgt zum Zweck der oben genannten Aktion und entsprechend unserer Datenschutzerklärung. Mit Übermittlung des Datenblatts durch drücken des Icons „Übermitteln“ am Ende dieser Seite stimmst du / die anmeldenden Eltern der Erhebung und Verarbeitung der hier angegebenen Daten nach diesem Formular und entsprechend unserer Datenschutzerklärung zu. Nach beendigung des Lagers werden die erfassten Daten gelöscht. * "
             />
             <UCheckbox
               v-model="state.permissions"
