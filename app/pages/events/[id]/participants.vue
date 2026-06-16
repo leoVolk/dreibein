@@ -79,7 +79,15 @@ useRealtimeRefresh(Collections.Participants, refresh);
 const pdfModalOpen = ref(false);
 
 const copyRegistrationLink = async () => {
-  const url = `${window.location.origin}/register/${id.value}`;
+  if (!event.value?.token) {
+    toast.add({
+      title: "Kein Anmeldelink verfügbar",
+      color: "error",
+      icon: "i-lucide-alert-circle",
+    });
+    return;
+  }
+  const url = `${window.location.origin}/register/${event.value.token}`;
   await navigator.clipboard.writeText(url);
   toast.add({ title: "Anmeldelink kopiert", icon: "i-lucide-link" });
 };

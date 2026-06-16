@@ -128,6 +128,7 @@ export type EventsRecord<TdaysOfWeek = unknown> = {
 	id: string
 	name?: string
 	startDate?: IsoDateString
+	token: string
 	updated: IsoAutoDateString
 	updatedBy?: RecordIdString
 }

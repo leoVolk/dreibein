@@ -131,7 +131,14 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Allergien" class="w-full">
-              <UTextarea v-model="state.allergies" class="w-full" :rows="2" />
+              <UInputMenu
+                v-model="allergiesSelection"
+                :items="ALLERGY_OPTIONS"
+                multiple
+                create-item
+                placeholder="Allergien auswählen oder eingeben..."
+                class="w-full"
+              />
             </UFormField>
             <UFormField label="Ernährungswünsche" class="w-full">
               <UTextarea
@@ -160,7 +167,14 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Impfungen" class="w-full">
-              <UInput v-model="state.vaccination" class="w-full" />
+              <UInputMenu
+                v-model="vaccinationSelection"
+                :items="VACCINATION_OPTIONS"
+                multiple
+                create-item
+                placeholder="Impfungen auswählen oder eingeben..."
+                class="w-full"
+              />
             </UFormField>
             <UFormField label="Datum Tetanus-Impfung" class="w-full">
               <UInput
@@ -258,14 +272,14 @@ const route = useRoute();
 const { pb } = usePocketbase();
 const toast = useToast();
 
-const eventId = computed(() => route.params.eventId as string);
+const token = computed(() => route.params.token as string);
 
 const { data: event, pending: eventPending } = await useAsyncData(
-  () => `register-event-${eventId.value}`,
+  () => `register-event-${token.value}`,
   () =>
     pb
       .collection(Collections.Events)
-      .getOne<EventsResponse>(eventId.value)
+      .getFirstListItem<EventsResponse>(`token = "${token.value}"`)
       .catch(() => null),
 );
 
@@ -279,6 +293,9 @@ const insuranceTypeOptions: string[] = Object.values(
 
 const submitted = ref(false);
 const saving = ref(false);
+
+const allergiesSelection = ref<string[]>([]);
+const vaccinationSelection = ref<string[]>([]);
 
 const state = reactive({
   firstname: "",
@@ -315,12 +332,14 @@ const state = reactive({
 });
 
 const onSubmit = async () => {
-  if (!state.firstname || !state.lastname) return;
+  if (!state.firstname || !state.lastname || !event.value) return;
   saving.value = true;
   try {
     await pb.collection(Collections.Participants).create({
-      event: eventId.value,
+      event: event.value.id,
       ...state,
+      allergies: joinListString(allergiesSelection.value),
+      vaccination: joinListString(vaccinationSelection.value),
       insuranceType: state.insuranceType as
         | (typeof ParticipantsInsuranceTypeOptions)[keyof typeof ParticipantsInsuranceTypeOptions]
         | undefined,

@@ -99,7 +99,14 @@
 
     <div class="grid grid-cols-2 gap-4">
       <UFormField label="Allergien" name="allergies" class="w-full">
-        <UTextarea v-model="state.allergies" class="w-full" :rows="2" />
+        <UInputMenu
+          v-model="allergiesSelection"
+          :items="ALLERGY_OPTIONS"
+          multiple
+          create-item
+          placeholder="Allergien auswählen oder eingeben..."
+          class="w-full"
+        />
       </UFormField>
       <UFormField label="Ernährungswünsche" name="dietaryPreferences" class="w-full">
         <UTextarea v-model="state.dietaryPreferences" class="w-full" :rows="2" />
@@ -120,7 +127,14 @@
 
     <div class="grid grid-cols-2 gap-4">
       <UFormField label="Impfungen" name="vaccination" class="w-full">
-        <UInput v-model="state.vaccination" class="w-full" />
+        <UInputMenu
+          v-model="vaccinationSelection"
+          :items="VACCINATION_OPTIONS"
+          multiple
+          create-item
+          placeholder="Impfungen auswählen oder eingeben..."
+          class="w-full"
+        />
       </UFormField>
       <UFormField label="Datum Tetanus-Impfung" name="dateTetanusVaccination" class="w-full">
         <UInput v-model="state.dateTetanusVaccination" type="date" class="w-full" />
@@ -209,13 +223,22 @@ const buildState = () => ({
 
 const state = reactive(buildState());
 
-const resetState = () => Object.assign(state, buildState());
+const allergiesSelection = ref<string[]>(parseListString(props.participant.allergies));
+const vaccinationSelection = ref<string[]>(parseListString(props.participant.vaccination));
+
+const resetState = () => {
+  Object.assign(state, buildState());
+  allergiesSelection.value = parseListString(props.participant.allergies);
+  vaccinationSelection.value = parseListString(props.participant.vaccination);
+};
 
 const onSubmit = async () => {
   saving.value = true;
   try {
     await pb.collection(Collections.Participants).update(props.participant.id, {
       ...state,
+      allergies: joinListString(allergiesSelection.value),
+      vaccination: joinListString(vaccinationSelection.value),
       insuranceType: state.insuranceType as typeof ParticipantsInsuranceTypeOptions[keyof typeof ParticipantsInsuranceTypeOptions] | undefined,
       birthdate: state.birthdate || undefined,
       dateTetanusVaccination: state.dateTetanusVaccination || undefined,
