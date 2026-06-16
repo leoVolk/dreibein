@@ -37,6 +37,11 @@ export type RecordIdString = string
 export type FileNameString = string & { readonly filename: unique symbol }
 export type HTMLString = string
 
+export type GeoPoint = {
+	lon: number
+	lat: number
+}
+
 type ExpandType<T> = unknown extends T
 	? T extends unknown
 		? { expand?: unknown }
@@ -120,11 +125,13 @@ export type EventlistsRecord = {
 }
 
 export type EventsRecord<TdaysOfWeek = unknown> = {
+	address?: string
 	created: IsoAutoDateString
 	createdBy?: RecordIdString
 	daysOfWeek?: null | TdaysOfWeek
 	description?: string
 	endDate?: IsoDateString
+	geoLocation?: GeoPoint
 	id: string
 	name?: string
 	startDate?: IsoDateString

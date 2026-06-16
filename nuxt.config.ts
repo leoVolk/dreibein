@@ -4,7 +4,15 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css', '~/assets/css/full-calendar.css'],
-  modules: ['pocketbase-nuxt', '@nuxt/ui', '@nuxtjs/mdc', '@nuxt/fonts', 'nuxt-charts', '@nuxtjs/robots'],
+  modules: [
+    'pocketbase-nuxt',
+    '@nuxt/ui',
+    '@nuxtjs/mdc',
+    '@nuxt/fonts',
+    'nuxt-charts',
+    '@nuxtjs/robots',
+    '@nuxtjs/leaflet',
+  ],
   site: { indexable: false },
   pocketbase: {
     // Falls back to '/' for same-origin Docker hosting; set POCKETBASE_URL in .env for local dev

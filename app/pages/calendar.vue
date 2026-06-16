@@ -47,6 +47,8 @@ type CalEvent = {
   startDate?: string;
   endDate?: string;
   daysOfWeek?: number[];
+  address?: string;
+  geoLocation?: { lat: number; lon: number } | null;
 };
 
 const events = ref<CalEvent[]>([]);
