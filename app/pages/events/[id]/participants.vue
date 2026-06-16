@@ -87,7 +87,7 @@ const copyRegistrationLink = async () => {
     });
     return;
   }
-  const url = `${window.location.origin}/register/${event.value.token}`;
+  const url = `${window.location.origin}/anmeldungen/${event.value.token}`;
   await navigator.clipboard.writeText(url);
   toast.add({ title: "Anmeldelink kopiert", icon: "i-lucide-link" });
 };

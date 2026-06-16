@@ -10,11 +10,17 @@
             <span class="text-primary">III</span>Bein
           </span>
         </div>
-        <h1 class="text-2xl font-bold">Anmeldung</h1>
-        <p v-if="event" class="text-muted mt-1">{{ event.name }}</p>
-        <p v-else-if="eventPending" class="text-muted mt-1">Lädt...</p>
+        <h1 class="text-2xl font-bold">
+          Anmeldung <span v-if="event">{{ event.name }}</span>
+        </h1>
+
+        <p v-if="event" class="text-muted">
+          {{ new Date(event?.startDate).toLocaleDateString() }} -
+          {{ new Date(event?.endDate).toLocaleDateString() }}
+        </p>
+
         <UAlert
-          v-else
+          v-if="!event"
           color="error"
           icon="i-lucide-alert-circle"
           title="Veranstaltung nicht gefunden"
@@ -275,7 +281,7 @@ const toast = useToast();
 const token = computed(() => route.params.token as string);
 
 const { data: event, pending: eventPending } = await useAsyncData(
-  () => `register-event-${token.value}`,
+  () => `anmeldung-event-${token.value}`,
   () =>
     pb
       .collection(Collections.Events)

@@ -233,6 +233,7 @@ export type ParticipantsRecord = {
 	dateTetanusVaccination?: IsoDateString
 	desinfection?: boolean
 	dietaryPreferences?: string
+	event?: RecordIdString
 	fever?: boolean
 	firstname?: string
 	forbiddenActivities?: string
