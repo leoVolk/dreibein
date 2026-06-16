@@ -33,6 +33,23 @@
         </div>
       </template>
 
+      <template #title>
+        <div class="flex flex-wrap justify-between w-full items-center gap-3">
+          <h1
+            class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted min-w-0"
+          >
+            {{ event?.name }}
+          </h1>
+          <UButton
+            icon="i-lucide-pencil"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            @click="editorOpen = true"
+          />
+        </div>
+      </template>
+
       <template #description>
         <UTabs
           v-model="activeTab"
@@ -60,7 +77,10 @@
         v-if="activeTab === 'overview'"
         class="grid grid-cols-1 lg:grid-cols-2 gap-4"
       >
-        <UCard class="col-span-2">
+        <UCard
+          v-if="event?.geoLocation.lat && event.geoLocation.lon"
+          class="lg:col-span-2"
+        >
           <template #header>
             <div class="flex justify-between items-center gap-2">
               <h3 class="text-lg flex items-center gap-2">
@@ -74,9 +94,9 @@
           <template #default>
             <div class="h-56 w-full col-span-2">
               <LMap
-                :zoom="6"
+                :zoom="16"
                 ref="map"
-                :center="[47.21322, -1.559482]"
+                :center="[event.geoLocation.lat, event.geoLocation.lon]"
                 :use-global-leaflet="false"
               >
                 <LTileLayer
@@ -84,6 +104,10 @@
                   attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
                   layer-type="base"
                   name="OpenStreetMap"
+                />
+
+                <LMarker
+                  :lat-lng="[event.geoLocation.lat, event.geoLocation.lon]"
                 />
               </LMap>
             </div>
@@ -239,6 +263,14 @@
         </template>
       </OverviewCard>
     </div>
+
+    <EventEditor
+      v-model:open="editorOpen"
+      :event="
+        event ? { ...event, daysOfWeek: event.daysOfWeek ?? undefined } : null
+      "
+      @refresh="refreshEvent()"
+    />
   </div>
 </template>
 
@@ -246,6 +278,8 @@
 definePageMeta({
   middleware: ["auth"],
 });
+
+const editorOpen = ref(false);
 
 const { pb } = usePocketbase();
 const route = useRoute();
@@ -301,7 +335,7 @@ const participantsTo = (item: OverviewItem) =>
 
 const updatedMeta = (item: OverviewItem) => formatDate(item.updated);
 
-const { data: event } = await useAsyncData(
+const { data: event, refresh: refreshEvent } = await useAsyncData(
   () => `event-${id.value}`,
   () =>
     pb

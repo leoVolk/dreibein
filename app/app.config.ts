@@ -33,7 +33,8 @@ export default defineAppConfig({
     },
     pageHeader: {
       slots: {
-        root: 'pb-4 pt-0'
+        root: 'pb-4 pt-0',
+        title: ' w-full'
       }
     }
   }

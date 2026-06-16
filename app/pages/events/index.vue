@@ -11,7 +11,7 @@
 
     <div v-if="events?.length">
       <UPageHeader>
-        <template #headline>
+        <template #title>
           <div class="flex flex-wrap justify-between w-full items-center gap-3">
             <h1
               class="text-3xl sm:text-4xl text-pretty font-bold text-highlighted min-w-0"
@@ -24,14 +24,29 @@
       </UPageHeader>
 
       <div class="mt-8">
-        <UTable sticky v-model:column-pinning="columnPinning" :data="events" :columns="columns" @select="onSelect">
+        <UTable
+          sticky
+          v-model:column-pinning="columnPinning"
+          :data="events"
+          :columns="columns"
+          @select="onSelect"
+        >
           <template #actions-cell="{ row }">
-            <DeleteConfirmModal
-              title="Event löschen"
-              description="Willst du dieses Event wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
-              confirm-label="Event löschen"
-              @confirm="(close) => deleteEvent(row, close)"
-            />
+            <div class="flex items-center gap-1">
+              <UButton
+                icon="i-lucide-pencil"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                @click.stop="openEditor(row.original)"
+              />
+              <DeleteConfirmModal
+                title="Event löschen"
+                description="Willst du dieses Event wirklich löschen? Diese Aktion kann nicht mehr rückgängig gemacht werden."
+                confirm-label="Event löschen"
+                @confirm="(close) => deleteEvent(row, close)"
+              />
+            </div>
           </template>
         </UTable>
       </div>
@@ -53,6 +68,12 @@
         />
       </template>
     </UEmpty>
+
+    <EventEditor
+      v-model:open="editorOpen"
+      :event="editingEvent"
+      @refresh="refresh()"
+    />
   </div>
 </template>
 
@@ -69,6 +90,14 @@ definePageMeta({
 });
 
 const columnPinning = ref({ right: ["actions"] });
+
+const editorOpen = ref(false);
+const editingEvent = ref<any>(null);
+
+const openEditor = (event: any) => {
+  editingEvent.value = event;
+  editorOpen.value = true;
+};
 
 const { data: events, refresh } = await useAsyncData<any>(() =>
   pb.collection("events").getFullList({
